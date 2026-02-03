@@ -1,0 +1,1048 @@
+
+📋 RÉCAP ULTRA-DÉTAILLÉ DE CHAQUE FONCTIONNALITÉ
+
+🏗️ PHASE 1 - FONDATIONS
+1.1 Système d'Authentification
+Ce que ça fait :
+
+Page de connexion simple avec username/password
+Deux types de comptes : MJ (toi) et Joueurs
+Session persistante (reste connecté même si tu fermes le navigateur)
+Tu crées les comptes joueurs depuis ton interface MJ
+
+Interface :
+
+Page de login élégante
+Dashboard MJ : liste des comptes joueurs, bouton "Créer nouveau joueur"
+
+Technique :
+
+JWT tokens pour la sécurité
+Mots de passe hashés
+Protection des routes (certaines pages seulement pour MJ)
+
+
+1.2 Structure de Navigation
+Ce que ça fait :
+
+Menu latéral/barre de navigation avec :
+
+🏠 Accueil
+📚 Encyclopédie
+🎮 Session en cours
+👤 Mon personnage (pour joueurs)
+👑 Outils MJ (seulement pour toi)
+
+
+
+Interface :
+
+Design dark fantasy immersif
+Responsive (marche sur PC/tablette)
+Animations fluides entre les pages
+
+
+📚 PHASE 2 - ENCYCLOPÉDIE
+2.1 Structure de l'Encyclopédie
+Ce que ça fait :
+
+Catégories principales :
+
+📜 Histoire & Chronologie
+⚔️ Classes
+🌟 Panthéon des Dieux
+🗺️ Géographie & Lieux
+🧝 Races & Peuples
+📖 Lore & Légendes
+🎭 Factions & Organisations
+🔮 Magie & Systèmes
+🗡️ Objets & Artefacts
+
+
+
+Interface Joueur :
+
+Page avec menu des catégories
+Liste des articles par catégorie
+Clic sur article → Affichage complet avec images
+Recherche par mots-clés
+Favoris/bookmarks
+
+Interface MJ :
+
+Tout ce que les joueurs ont + bouton "Mode Édition"
+Voir les articles en brouillon (invisibles pour joueurs)
+Voir les articles partiels (version joueur vs version MJ)
+
+
+2.2 Éditeur d'Articles
+Ce que ça fait :
+
+Éditeur WYSIWYG (type Word) pour écrire tes articles
+Fonctionnalités :
+
+Texte enrichi (gras, italique, titres, listes)
+Upload d'images (drag & drop)
+Insertion de liens vers autres articles
+Tableaux
+Citations stylisées
+Blocs d'informations (encadrés)
+
+
+
+Interface MJ :
+
+Bouton "Nouvel Article"
+Formulaire avec :
+
+Titre
+Catégorie (dropdown)
+Contenu (éditeur riche)
+Images
+Tags
+Statut de visibilité :
+
+🔒 Brouillon (seulement toi)
+✅ Public (tout le monde)
+👁️ Partiel (version courte publique + version complète MJ)
+🎯 Ciblé (visible par certains joueurs seulement)
+
+
+
+
+
+Fonctionnalités avancées :
+
+Prévisualisation avant publication
+Historique des modifications
+Duplication d'article (template)
+Import/Export (backup)
+
+
+2.3 Système de Révélation Progressive
+Ce que ça fait :
+
+Tu prépares du contenu en brouillon
+Pendant la session, tu peux cliquer "Révéler" → devient instantanément visible pour les joueurs
+Notification aux joueurs : "🔔 Nouvel article disponible : Les Ruines de Kael'Thar"
+
+Interface MJ :
+
+Dashboard avec tous les articles
+Filtres : Brouillon / Public / Partiel
+Bouton rapide "Révéler" sur chaque article
+Option "Révéler à..." pour choisir joueurs spécifiques
+
+Cas d'usage :
+
+Les joueurs découvrent une ville → Tu révèles l'article de la ville
+Un joueur obtient un artefact légendaire → Tu révèles uniquement à lui l'article complet
+La campagne avance → Tu dévoiles progressivement l'histoire
+
+
+2.4 Liens Hypertextes entre Articles
+Ce que ça fait :
+
+Dans un article, tu peux créer un lien vers un autre article
+Exemple : Dans l'article "Royaume d'Eldoria", tu mentionnes "le dieu Solarius" → Lien cliquable vers l'article "Solarius"
+
+Interface :
+
+Lors de l'édition, tu tapes @ et ça autocomplete avec les articles existants
+Tooltips au survol (aperçu rapide de l'article lié)
+Navigation fluide entre articles (comme Wikipédia)
+
+
+🧙 PHASE 3 - PERSONNAGES
+3.1 Créateur de Fiche de Personnage
+Ce que ça fait :
+
+Interface pour créer un perso à la D&D
+Étapes de création :
+
+Infos de base : Nom, Race, Classe, Background, Alignement
+Caractéristiques : Force, Dextérité, Constitution, Intelligence, Sagesse, Charisme (attribution de points ou roll de dés)
+Calculs automatiques : Modificateurs, bonus de maîtrise, CA, initiative, PV max
+Compétences : Sélection des maîtrises selon la classe
+Équipement de départ : Selon la classe
+Traits personnels : Idéaux, liens, défauts
+
+
+
+Interface MJ :
+
+Bouton "Créer nouveau personnage"
+Formulaire en plusieurs étapes
+Possibilité d'inviter le joueur à rejoindre la création (co-création en temps réel)
+Preview de la fiche finale
+
+Interface Joueur :
+
+Notification "Le MJ t'invite à créer ton personnage"
+Interface guidée avec explications
+Choix interactifs
+
+
+3.2 Feuille de Personnage Complète
+Ce que ça fait :
+
+Reproduction fidèle d'une feuille D&D 5e (comme ton image) avec :
+
+Bloc Principal :
+
+Nom, Classe & Niveau, Race, Background, Alignement
+XP actuel / XP prochain niveau
+Portrait (upload d'image)
+
+Caractéristiques :
+
+Les 6 stats avec modificateurs
+Bonus de maîtrise
+Jets de sauvegarde (avec cases cochées pour maîtrises)
+Compétences (avec cases cochées pour maîtrises/expertise)
+Inspiration (case à cocher)
+
+Combat :
+
+CA (Armure Class)
+Initiative
+Vitesse
+PV Max / PV Actuels / PV Temporaires
+Dés de vie (total / utilisés)
+Jets de mort (succès/échecs)
+
+Attaques & Sorts :
+
+Liste des armes (nom, bonus, dégâts, type)
+Liste des sorts (nom, niveau, école, temps d'incantation, portée, durée, description)
+Emplacements de sorts par niveau
+
+Équipement & Inventaire :
+
+Liste des objets avec quantité
+Poids total / Capacité de charge
+Pièces d'or (PO)
+
+Traits & Capacités :
+
+Traits raciaux
+Capacités de classe
+Historique
+Idéaux, Liens, Défauts
+
+Interface :
+
+Design magnifique type parchemin médiéval
+Tout est éditable en cliquant dessus
+Modifications sauvegardées instantanément
+Calculs automatiques
+
+Permissions :
+
+Joueur peut voir et modifier SA fiche
+MJ peut voir et modifier TOUTES les fiches
+
+
+3.3 Système de Level-Up
+Ce que ça fait :
+
+Quand tu décides qu'un joueur monte de niveau :
+
+Étape 1 - Notification :
+
+Le joueur reçoit "🎉 Tu passes niveau 2 !"
+Pop-up explicative des gains
+
+Étape 2 - Automatique :
+
+PV Max augmentent (roll de dé de vie ou moyenne)
+Bonus de maîtrise augmente (tous les 4 niveaux)
+Emplacements de sorts mis à jour
+
+Étape 3 - Choix du Joueur :
+
+Si la classe propose un choix (ex: Sous-classe au niveau 3)
+Pop-up avec les options :
+
+  Choisis ta voie :
+  
+  ⚔️ Voie du Guerrier
+  "Spécialiste du combat rapproché..."
+  
+  🛡️ Voie du Protecteur
+  "Défenseur de tes alliés..."
+
+Le joueur clique sur son choix
+
+Étape 4 - Application Automatique :
+
+Selon le choix, ajout automatique des capacités
+Nouvelles compétences/sorts débloqués
+Mise à jour de la fiche
+
+Interface MJ :
+
+Dashboard avec liste des joueurs
+Bouton "Faire monter de niveau" sur chaque joueur
+Configuration des choix possibles au level-up (tu prépares en avance ce qui est disponible)
+
+
+3.4 Gestion de l'Inventaire
+Ce que ça fait :
+
+Système complet d'inventaire avec :
+
+Nom de l'objet
+Quantité
+Poids
+Description
+Propriétés (magique, maudit, etc.)
+Valeur en PO
+
+
+
+Fonctionnalités :
+
+Drag & drop pour réorganiser
+Équiper/déséquiper (calcul automatique de la CA)
+Filtres (armes, armures, consommables, etc.)
+Calcul automatique du poids total
+Alerte si surcharge
+
+Interface MJ :
+
+Tu peux donner des objets aux joueurs instantanément
+Créer de nouveaux objets (avec stats)
+Retirer des objets
+
+Cas d'usage :
+
+"Tu trouves une Épée Longue +1" → Tu l'ajoutes à l'inventaire du joueur → Notification
+Le joueur peut ensuite l'équiper
+
+
+🎮 PHASE 4 - SESSION DE JEU
+4.1 Système de Chat Multi-Niveaux
+Ce que ça fait :
+
+3 types de canaux de communication :
+
+📢 Chat Public (IC - In Character)
+
+Visible par TOUS (MJ + tous les joueurs)
+Pour roleplay en personnage
+Couleur distinctive (ex: blanc)
+Format : [Strix] : "Je m'approche de la porte..."
+
+🤫 Chat Privé entre Joueurs
+
+Les joueurs peuvent créer des conversations privées entre eux
+Tu (MJ) ne vois PAS ces messages (sauf si tu actives le mode "espionnage" caché)
+Couleur distinctive (ex: bleu)
+Exemple : 2 joueurs préparent un coup en secret
+
+💌 Messages Privés avec le MJ
+
+Chaque joueur a un canal privé avec toi
+Uniquement toi + ce joueur
+Couleur distinctive (ex: violet)
+Pour les actions secrètes, questions, etc.
+
+📋 Chat OOC (Out of Character)
+
+Discussions hors jeu
+"Pause pipi dans 5 min ?"
+Couleur distinctive (ex: gris)
+
+Interface :
+
+Onglets en haut : Public | Privé | MP MJ | OOC
+Badge de notification sur les onglets (nombre de messages non lus)
+Historique scrollable
+Horodatage des messages
+Émojis/réactions possibles
+
+Interface MJ :
+
+Tu vois tous les canaux publics
+Tu as un MP avec chaque joueur
+Dashboard pour voir tous les MPs d'un coup d'œil
+
+
+4.2 Lanceur de Dés Virtuel
+Ce que ça fait :
+
+Bouton "🎲 Lancer les dés"
+Pop-up avec tous les types de dés : d4, d6, d8, d10, d12, d20, d100
+Tu choisis :
+
+Type de dé
+Nombre de dés (ex: 2d6)
+Modificateur (ex: +5)
+Type de jet (Attaque, Sauvegarde, Compétence, Initiative, Dégâts)
+
+
+
+Fonctionnalités avancées :
+
+Avantage/Désavantage : Lance 2d20, garde le meilleur/pire
+Jets groupés : Ex: "3d8+4 de dégâts de feu"
+Animation 3D : Le dé roule à l'écran
+Historique des jets : Tous les jets précédents visibles
+
+Affichage :
+
+Le résultat apparaît dans le chat public
+Format : 🎲 [Strix] lance Initiative : [18] (d20: 15 +3)
+Critique automatique (20 naturel) → Animation spéciale + couleur dorée
+Échec critique (1 naturel) → Animation + couleur rouge
+
+Raccourcis :
+
+Depuis la fiche de perso, clic sur une compétence → Lance automatiquement le bon dé
+Clic sur une attaque → Lance le jet d'attaque
+
+Interface MJ :
+
+Tu peux lancer des dés "invisibles" (pour les jets cachés)
+Résultat visible que pour toi
+Option "Révéler le jet" après coup
+
+
+4.3 Log Automatique d'Histoire
+Ce que ça fait :
+
+Un journal automatique de la session qui compile :
+
+Actions importantes des joueurs
+Jets de dés
+Résultats de combats
+Événements narratifs
+Lieux visités
+
+
+
+Fonctionnalités :
+
+Capture automatique :
+
+  [15:23] Le groupe entre dans la Forêt Maudite
+  [15:25] Strix lance Perception : 18 - Succès
+  [15:26] Combat commence : 3 Gobelins apparaissent
+  [15:28] Strix attaque Gobelin 1 : 23 (touché) - 12 dégâts
+  [15:30] Gobelin 1 est vaincu
+  [15:35] Combat terminé - Victoire
+  [15:36] Le groupe trouve 15 PO et une Potion de Soin
+
+Édition manuelle :
+
+Tu peux ajouter des notes narratives
+Modifier/supprimer des entrées
+Ajouter des points importants
+
+
+
+Interface :
+
+Timeline verticale stylée
+Filtres (combats uniquement, jets de dés, etc.)
+Export en PDF/Markdown pour archiver
+Recherche par mot-clé
+
+Interface MJ :
+
+Bouton "Ajouter événement narratif"
+Tu écris un texte libre qui s'ajoute au log
+Exemple : "La mystérieuse femme en noir disparaît dans l'ombre..."
+
+Cas d'usage :
+
+Résumé de session automatique
+Les joueurs peuvent relire ce qui s'est passé
+Préparation de la session suivante
+
+
+4.4 Player Audio avec Contrôle MJ
+Ce que ça fait :
+
+Lecteur audio intégré à l'interface
+Bibliothèque de sons/musiques :
+
+Musiques d'ambiance (forêt, taverne, donjon, combat, ville, etc.)
+Sons d'effets (épée, sorts, portes, tempête, etc.)
+
+
+
+Interface Joueur :
+
+Mini-player en bas de l'écran
+Affiche ce qui joue actuellement
+Contrôle du volume personnel
+Ne peut PAS changer la musique (c'est toi qui décide)
+
+Interface MJ :
+
+Dashboard audio avec :
+
+Liste de toutes tes musiques/sons (upload depuis ton PC)
+Organisation par catégories (Ambiance, Combat, Événement, etc.)
+Playlists personnalisées
+
+
+
+Contrôles MJ :
+
+Bouton "Play" sur n'importe quelle musique → Tous les joueurs l'entendent instantanément
+Fondu enchaîné entre musiques
+Bouton "Stop"
+Volume global
+Loop on/off
+
+Scénarios d'utilisation :
+
+Les joueurs entrent dans une taverne → Tu lances "Taverne_Ambiance.mp3"
+Combat commence → Tu lances "Epic_Battle.mp3"
+Boss apparaît → Tu lances "Boss_Theme.mp3" + son "Dragon_Roar.wav" en one-shot
+Moment émotionnel → Musique douce
+
+Fonctionnalités avancées :
+
+Triggers automatiques (à voir plus tard) : Si combat commence → Musique de combat auto
+Synchronisation parfaite : Tous les joueurs entendent au même moment
+Upload depuis Suno : Tu peux générer de la musique avec Suno et l'uploader directement
+
+
+🗺️ PHASE 5 - CARTES INTERACTIVES
+5.1 Système de Cartes Multi-Niveaux
+Ce que ça fait :
+
+Architecture hiérarchique de cartes :
+
+  🌍 Carte du Monde (niveau 1)
+    ├─ 🏔️ Région Nord (niveau 2)
+    │   ├─ 🏰 Ville de Glacevale (niveau 3)
+    │   │   └─ 🏛️ Temple de Solarius (niveau 4)
+    │   └─ ⚔️ Champ de Bataille (niveau 3)
+    ├─ 🌳 Région Forêt (niveau 2)
+    │   ├─ 🌲 Forêt Maudite (niveau 3)
+    │   │   └─ 🕳️ Donjon des Ombres (niveau 4)
+    │   └─ 🏘️ Village d'Eryndor (niveau 3)
+    └─ 🏖️ Région Côtière (niveau 2)
+Navigation :
+
+Clic sur une zone de la carte → Zoom vers la carte de cette zone
+Bouton "Retour" pour remonter d'un niveau
+Breadcrumb : Monde > Région Nord > Glacevale > Temple
+
+Interface Joueur :
+
+Visualisation de la carte actuelle
+Peut zoomer/dézoomer
+Voir les markers/points d'intérêt révélés
+Clic sur point d'intérêt → Fiche descriptive (lié à l'encyclopédie)
+
+Interface MJ :
+
+Tout ce que les joueurs ont +
+Voir TOUTE la carte (sans fog of war)
+Voir les markers cachés
+Éditer la carte
+
+
+5.2 Upload et Gestion des Cartes
+Ce que ça fait :
+
+Interface pour uploader tes propres cartes dessinées
+
+Process :
+
+Tu dessines ta carte (Photoshop, Procreate, papier + scan, etc.)
+Tu l'upload dans l'interface MJ
+Tu définis :
+
+Nom de la carte
+Niveau hiérarchique (Monde, Région, Ville, etc.)
+Carte parente (si c'est une sous-carte)
+Taille/résolution
+
+
+Tu places des zones cliquables (polygones) sur la carte
+Chaque zone = lien vers une sous-carte ou un article d'encyclopédie
+
+Exemple concret :
+
+Tu upload "Carte_Monde.png"
+Tu traces un polygone sur la région nord
+Tu configures : "Clic ici → Ouvre Carte_Region_Nord.png"
+Tu traces un polygone sur une ville
+Tu configures : "Clic ici → Ouvre l'article 'Glacevale' dans l'encyclopédie"
+
+Interface :
+
+Éditeur visuel de zones cliquables
+Drag & drop pour uploader
+Prévisualisation
+Gestion des calques (carte de base, fog of war, markers)
+
+
+5.3 Fog of War (Brouillard de Guerre)
+Ce que ça fait :
+
+La carte est initialement couverte d'un brouillard noir
+Tu dévoiles progressivement les zones au fur et à mesure que les joueurs explorent
+
+Mécanisme :
+
+Sur l'interface MJ, tu as un outil "Pinceau de révélation"
+Tu "peins" sur la carte pour révéler des zones
+Les joueurs voient instantanément les zones révélées
+
+Options :
+
+Révélation permanente : Une fois révélé, reste visible
+Révélation temporaire : Si les joueurs partent, le brouillard revient (pour les donjons par exemple)
+Formes prédéfinies : Cercle, carré, polygone
+Gomme : Remettre du brouillard
+
+Cas d'usage :
+
+Les joueurs avancent dans un donjon → Tu révèles salle par salle
+Exploration d'une forêt → Tu révèles autour du groupe
+Effet dramatique : Révélation soudaine d'une grande zone (salle de boss)
+
+Interface :
+
+Slider pour la taille du pinceau
+Modes : Révéler / Cacher
+Calque de fog semi-transparent pour toi (tu vois dessous)
+Preview de ce que les joueurs voient
+
+
+5.4 Système de Markers/Points d'Intérêt
+Ce que ça fait :
+
+Tu peux placer des icônes sur la carte pour marquer :
+
+🏰 Villes
+⚔️ Lieux de combat
+🏛️ Temples
+🕳️ Donjons
+🏕️ Camps
+⚠️ Dangers
+❓ Mystères
+🎯 Objectifs
+
+
+
+Fonctionnalités :
+
+Markers MJ uniquement : Visibles seulement par toi (préparation)
+Markers révélés : Visibles par les joueurs
+Info-bulle : Au survol, affiche nom + courte description
+Lien : Clic sur marker → Ouvre article d'encyclopédie ou fiche de lieu
+
+Interface MJ :
+
+Palette d'icônes
+Clic sur la carte pour placer un marker
+Formulaire : Type, Nom, Description, Visible (oui/non)
+Drag & drop pour repositionner
+
+Interface Joueur :
+
+Voit uniquement les markers révélés
+Peut cliquer dessus pour avoir plus d'infos
+Peut ajouter des markers personnels (notes)
+
+Cas d'usage :
+
+Tu prépares une campagne → Tu places tous les lieux importants (cachés)
+Les joueurs découvrent une rumeur de donjon → Tu révèles le marker "Donjon des Ombres"
+Objectif de quête → Marker spécial qui clignote
+
+
+⚔️ PHASE 6 - SYSTÈME DE COMBAT
+6.1 Map de Combat Tactique
+Ce que ça fait :
+
+Grille carrée (5 pieds par case, comme D&D)
+Tu upload une image de map de combat (ou utilise une map générée)
+Placement des tokens (personnages + ennemis) sur la grille
+
+Fonctionnalités :
+
+Tokens personnalisés : Chaque perso/ennemi a son token (image)
+Drag & drop : Déplacer les tokens en temps réel
+Règles de mouvement : Vitesse du perso (ex: 30 pieds = 6 cases)
+Zone de portée : Affichage visuel de la portée des sorts/attaques
+Zones d'effet : Cône, ligne, sphère pour les sorts AOE
+
+Interface Joueur :
+
+Voit la map complète
+Peut déplacer SON token (si c'est son tour)
+Voit les tokens de tous (alliés + ennemis visibles)
+Ne peut PAS voir les PV des ennemis
+
+Interface MJ :
+
+Contrôle total de tous les tokens
+Peut créer/supprimer des tokens
+Voir les PV de tout le monde au-dessus des tokens
+Outils de dessin (ligne de visée, zones, etc.)
+
+Cas d'usage :
+
+Combat commence → Tu ouvres la map de combat
+Tu places les joueurs d'un côté, ennemis de l'autre
+Initiative → Les joueurs jouent chacun leur tour
+Déplacements tactiques, sortilèges à zone, etc.
+
+
+6.2 Tracker d'Initiative
+Ce que ça fait :
+
+Liste ordonnée de qui joue dans quel ordre
+
+Process au début du combat :
+
+Tu cliques "Démarrer Combat"
+Pop-up "Jets d'Initiative !"
+Chaque joueur lance son d20 + modificateur d'Initiative
+Tu entres l'initiative des ennemis
+Le système trie automatiquement par ordre décroissant
+
+Affichage :
+
+Panneau latéral avec la liste :
+
+  ⚔️ TOUR DE COMBAT - Round 1
+  
+  🎯 [C'est son tour]
+  → Strix (Initiative: 18)
+  
+  👹 Gobelin Chef (Initiative: 15)
+  🧙 Mage Joueur (Initiative: 12)
+  👹 Gobelin 1 (Initiative: 10)
+  🗡️ Guerrier Joueur (Initiative: 8)
+  👹 Gobelin 2 (Initiative: 5)
+Fonctionnalités :
+
+Highlight du personnage actif
+Bouton "Tour suivant" (pour MJ)
+Timer optionnel (ex: 30 secondes par tour)
+Indicateur de qui a déjà joué dans le round
+
+Interface Joueur :
+
+Voit clairement quand c'est son tour (notification sonore + visuelle)
+Peut voir l'ordre complet
+
+Interface MJ :
+
+Contrôle du flux
+Peut retarder/avancer l'initiative de quelqu'un
+Peut ajouter/retirer des créatures en cours de combat
+
+
+6.3 Gestion des Points de Vie
+Ce que ça fait :
+
+Tracker des PV de tous les participants au combat
+
+Affichage MJ :
+
+Au-dessus de chaque token sur la map : Gobelin 1: 15/15 PV
+Dans le tracker d'initiative : Barre de vie colorée
+
+Vert : >50% PV
+Jaune : 25-50% PV
+Rouge : <25% PV
+Noir : 0 PV (mort/inconscient)
+
+
+
+Affichage Joueur :
+
+Voit SES propres PV (exact)
+Voit les PV de ses alliés (exact)
+Ne voit PAS les PV exacts des ennemis
+Voit un indicateur vague :
+
+💚 "Indemne" (100%)
+💛 "Blessé" (50-99%)
+🧡 "Gravement blessé" (25-49%)
+❤️ "Mourant" (<25%)
+
+
+
+Fonctionnalités :
+
+Interface MJ :
+
+Clic sur un token → Modifier PV
+Boutons +/- rapides
+Input direct du nombre
+Bouton "Appliquer dégâts" : Tu entres les dégâts → Calculé automatiquement
+Bouton "Soigner" : Tu entres les PV guéris
+
+
+Dégâts automatiques :
+
+Quand un joueur fait un jet de dégâts → Tu peux cliquer "Appliquer à [Ennemi]"
+Les PV se mettent à jour instantanément
+
+
+PV Temporaires :
+
+Gestion des PV temp (sorts, capacités)
+Affichage séparé : 15/15 PV (+5 temp)
+
+
+
+Mort et Inconscience :
+
+Quand PV = 0 :
+
+Perso tombe inconscient
+Commence les jets de mort (si joueur)
+Token change d'apparence (couché, grisé)
+
+
+
+
+6.4 Système d'Effets et Conditions
+Ce que ça fait :
+
+Gestion des états altérés (conditions D&D 5e) :
+
+🤕 Empoisonné
+😵 Étourdi
+🔥 En feu
+🧊 Ralenti
+😴 Endormi
+🪢 Entravé
+😱 Effrayé
+🙈 Aveuglé
+🔮 Béni
+🛡️ Protection
+Etc.
+
+
+
+Interface :
+
+Sur la map : Icônes au-dessus des tokens affectés
+Dans le tracker d'initiative : Liste des effets actifs
+
+Fonctionnalités :
+
+Application d'effet :
+
+Clic droit sur token → "Appliquer condition"
+Choix de la condition
+Durée (nombre de tours, concentration, permanent)
+
+
+Effets automatiques :
+
+Désavantage aux jets concernés
+Modificateurs appliqués automatiquement
+Rappels (ex: "Strix est empoisonné : désavantage aux jets d'attaque")
+
+
+Gestion de la durée :
+
+À chaque fin de tour, décompte automatique
+Notification quand un effet se termine
+Possibilité de jet de sauvegarde pour en sortir
+
+
+
+Interface MJ :
+
+Dashboard des effets actifs sur tous les personnages
+Application rapide d'effets multiples (ex: sort de zone affecte 3 ennemis)
+
+Cas d'usage :
+
+Le mage lance "Ralentissement" → Tu sélectionnes 3 ennemis → Applique "Ralenti (1 min, concentration)"
+Un gobelin empoisonne Strix → Tu appliques "Empoisonné (jusqu'à fin du combat)"
+Fin du tour de Strix → Le système demande "Jet de sauvegarde pour sortir de l'empoisonnement ?"
+
+
+6.5 Actions de Combat Simplifiées
+Ce que ça fait :
+
+Boutons d'action rapide pendant le combat
+
+Interface pendant ton tour :
+
+Actions principales :
+
+⚔️ Attaquer
+🔮 Lancer un sort
+🏃 Se désengager
+🛡️ Esquiver
+💨 Foncer
+🤝 Aider
+🔍 Chercher
+🎯 Viser
+
+
+Actions bonus :
+
+Selon la classe/capacités
+
+
+Réactions :
+
+Système de notification quand une réaction est possible
+
+
+
+Workflow d'attaque :
+
+Joueur clique "Attaquer"
+Sélectionne l'arme (depuis sa fiche)
+Sélectionne la cible (clic sur token ennemi)
+Lance le jet d'attaque automatiquement
+Si touche → Lance les dégâts automatiquement
+Tu confirmes (ou ajuste) → Les PV de l'ennemi diminuent
+
+Workflow de sort :
+
+Joueur clique "Lancer un sort"
+Liste de ses sorts disponibles
+Sélectionne un sort
+Système vérifie les emplacements de sorts
+Affiche la zone d'effet sur la map (si AOE)
+Joueur positionne la zone
+Lance les jets nécessaires (attaque de sort ou sauvegarde des cibles)
+Application des effets/dégâts
+
+
+🎯 FONCTIONNALITÉS TRANSVERSALES
+7.1 Système de Notifications en Temps Réel
+Ce que ça fait :
+
+Notifications push pour tous les événements importants
+
+Types de notifications :
+
+🎉 "Tu passes niveau 3 !"
+🎁 "Tu as reçu un objet : Épée Longue +1"
+📚 "Nouvel article disponible : Royaume d'Eldoria"
+⚔️ "Le combat commence !"
+🎲 "C'est ton tour !"
+💬 "Nouveau message privé du MJ"
+🎵 "La musique change..."
+
+Affichage :
+
+Toast non-intrusif en haut à droite
+Badge de notification sur les onglets/menus
+Son optionnel
+Historique des notifications
+
+
+7.2 Responsive Design
+Ce que ça fait :
+
+L'interface s'adapte à l'écran (PC, tablette)
+Mise en page optimisée selon la taille
+
+PC (grand écran) :
+
+Multi-colonnes : Map à gauche, Chat à droite, Fiche en overlay
+Tous les détails visibles
+
+Tablette :
+
+Interface simplifiée
+Onglets pour naviguer entre sections
+Touch-friendly (gros boutons)
+
+
+7.3 Système de Sauvegarde et Backup
+Ce que ça fait :
+
+Sauvegarde automatique toutes les 30 secondes
+Backup complet de la campagne
+
+Fonctionnalités :
+
+Export complet (BDD) → ZIP téléchargeable
+Import pour restaurer
+Versioning (retour en arrière possible)
+
+
+7.4 Mode Spectateur
+Ce que ça fait :
+
+Lien spécial "Spectateur" que tu peux partager
+Les spectateurs voient la session en direct (lecture seule)
+Utile pour : amis qui veulent regarder, archivage vidéo, streaming
+
+
+🚀 FONCTIONNALITÉS FUTURES (Phase 7+)
+8.1 Préparation de Scénarios
+
+Outil pour préparer une session en avance
+Créer des rencontres avec stats d'ennemis
+Scènes pré-écrites déclenchables
+Arbres de décisions (si les joueurs font X → Y)
+
+8.2 Générateur de Contenu
+
+Génération procédurale de donjons
+Génération de PNJ avec stats
+Génération de quêtes
+Générateur de butin
+
+8.3 Intégration IA (optionnel)
+
+Assistant MJ : suggestions d'événements
+Génération de descriptions atmosphériques
+PNJ avec dialogue généré par IA
+
+8.4 Mode Vocal
+
+Intégration voix (Discord-like)
+Détection de qui parle → Avatar highlight
+
+8.5 Mobile App
+
+Application mobile (React Native)
+Notifications push natives
+Fiche de perso consultable facilement
+
+
+📊 RÉCAP DES TECHNOLOGIES
+Frontend:
+- React (UI)
+- TailwindCSS (Styling)
+- Socket.io-client (Temps réel)
+- React Router (Navigation)
+- React DnD (Drag & drop)
+- Draft.js ou Quill (Éditeur WYSIWYG)
+- Three.js (Dés 3D)
+
+Backend:
+- Node.js
+- Express.js
+- Socket.io (WebSockets)
+- JWT (Auth)
+- Multer (Upload fichiers)
+
+Database:
+- PostgreSQL
+- Prisma (ORM)
+
+Hosting:
+- Render (backend + BDD)
+- Cloudinary ou AWS S3 (images/sons)
+
+Tools:
+- Git/GitHub (versioning)
+- Postman (test API)

@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      Role     @default(PLAYER)
+  
+  targetedArticles Article[] @relation("ArticleTargets")
+
+  characters Character[]
+  campaigns  Campaign[] @relation("CampaignPlayers")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Character {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  campaignId String?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  
+  // Infos de Base
+  name      String
+  race      String
+  class     String
+  level     Int      @default(1)
+  background String?
+  alignment String?
+  
+  // Statistiques (stockées en JSON String pour SQLite)
+  stats     String   // { str: 10, dex: 12, ... }
+  
+  // Combat
+  hpCurrent Int
+  hpMax     Int
+  tempHp    Int      @default(0)
+  ac        Int      
+  initiative Int
+  speed     Int
+  
+  // Données Complexes (JSON String)
+  skills    String   
+  inventory String   
+  spells    String   
+  features  String   
+  
+  // Meta
+  avatarUrl String?
+  notes     String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  MJ
+  PLAYER
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  icon      String?
+  articles  Article[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Article {
+  id          String     @id @default(uuid())
+  title       String
+  content     String
+  visibility  Visibility @default(DRAFT)
+  
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  
+  tags        Tag[]
+  
+  // New: Targeted visibility
+  targets     User[]     @relation("ArticleTargets")
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  articles  Article[]
+}
+
+enum Visibility {
+  DRAFT
+  PUBLIC
+  PARTIAL
+  SECRET
+  TARGETED
+}
+
+model Campaign {
+  id        String   @id @default(uuid())
+  name      String
+  gmId      String
+  
+  // Relations
+  players   User[]   @relation("CampaignPlayers")
+  characters Character[]
+
+  isSessionOpen Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
