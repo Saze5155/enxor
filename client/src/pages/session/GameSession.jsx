@@ -1,27 +1,35 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../context/SocketContext';
 import ChatSystem from '../../components/chat/ChatSystem';
+import DiceDock from '../../components/dice/DiceDock';
+import DiceOverlay from '../../components/dice/DiceOverlay'; // New Overlay
 import campaignService from '../../services/campaignService';
 
 export default function GameSession() {
     const { id } = useParams(); // Campaign ID
     const { user } = useAuth();
+    const { socket } = useSocket();
     const navigate = useNavigate();
-    const [campaign, setCampaign] = useState(null); // Added missing state for campaign
+    const [campaign, setCampaign] = useState(null);
 
     useEffect(() => {
+        // Explicitly join campaign room for socket events (Dice, etc.)
+        if (socket && id) {
+            socket.emit('join_campaign', id);
+        }
+
         // Load campaign details
         campaignService.getOne(id).then(data => {
             console.log("Campaign Data:", data);
-            console.log("User:", user);
             setCampaign(data);
 
-            // Access Control
+            // Access Control (Check if user is Player or GM)
+            // If user is neither, reject? For now public join allowed so assume player if not GM
             const isGM = data.gmId === user.id;
-            console.log("Is GM?", isGM, "Is Session Open?", data.isSessionOpen);
+
             if (!isGM && !data.isSessionOpen) {
-                console.log("Redirecting player...");
                 alert("La session n'est pas ouverte par le MJ.");
                 navigate('/dashboard');
             }
@@ -35,6 +43,9 @@ export default function GameSession() {
 
     return (
         <div className="relative h-screen bg-stone-900 overflow-hidden flex flex-col">
+            {/* Overlay for Dice Animations */}
+            <DiceOverlay socket={socket} isGM={user.id === campaign.gmId} />
+
             {/* Top Bar */}
             <header className="bg-stone-800 border-b border-stone-700 p-2 flex justify-between items-center shadow-md z-10">
                 <div className="flex items-center gap-4">
@@ -49,7 +60,7 @@ export default function GameSession() {
                         {campaign.players?.map(p => (
                             <div key={p.id} className="w-8 h-8 rounded-full bg-indigo-600 border-2 border-stone-800 flex items-center justify-center text-xs font-bold text-white relative group cursor-help">
                                 {p.username[0].toUpperCase()}
-                                <span className="absolute top-10 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none">
+                                <span className="absolute top-10 bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap pointer-events-none z-50">
                                     {p.username} ({p.role})
                                 </span>
                             </div>
@@ -58,22 +69,22 @@ export default function GameSession() {
                 </div>
             </header>
 
-            {/* Game Area (Map, Handouts, etc.) */}
+            {/* Game Area */}
             <main className="flex-1 relative bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
                 <div className="absolute inset-0 flex items-center justify-center text-stone-700 font-serif text-2xl opacity-20 select-none pointer-events-none">
                     Plateau de Jeu (Phase Suivante)
                 </div>
-
-                {/* Dice Roller Overlay, Character Sheet Quick View could go here */}
             </main>
 
-            {/* Chat System (Integrated specifically for this session) */}
-            {/* Verify we pass correct role logic */}
+            {/* Dice Dock (Fixed Bottom) */}
+            <DiceDock campaignId={id} players={campaign.players} />
+
+            {/* Chat System */}
             <ChatSystem
                 campaignId={id}
                 currentUser={{
                     name: user.username,
-                    role: user.id === campaign.gmId ? 'MJ' : 'PLAYER' // Dynamic Role based on Campaign GM
+                    role: user.id === campaign.gmId ? 'MJ' : 'PLAYER'
                 }}
             />
         </div>

@@ -57,6 +57,20 @@ module.exports = (io) => {
             });
         });
 
+
+
+        // Blind Mode Toggle
+        socket.on('toggle_blind_mode', (data) => {
+            const { campaignId, enabled } = data;
+            io.to(`campaign_${campaignId}`).emit('blind_mode_update', enabled);
+        });
+
+        // Modifier Sync (MJ sets modifier for player)
+        socket.on('force_modifier', (data) => {
+            const { campaignId, targetId, modifier } = data;
+            io.to(`campaign_${campaignId}`).emit('modifier_updated', { targetId, modifier });
+        });
+
         socket.on('disconnect', () => {
             console.log(`[Socket] User disconnected: ${socket.id}`);
         });
