@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
-import DiceBox from '@3d-dice/dice-box';
+import DiceBox from '@3d-dice/dice-box-threejs';
 
 const DiceBoxContainer = forwardRef((props, ref) => {
     const diceBoxRef = useRef(null);
@@ -7,52 +7,107 @@ const DiceBoxContainer = forwardRef((props, ref) => {
     const [isReady, setIsReady] = useState(false);
 
     useImperativeHandle(ref, () => ({
-        roll: (notation, targetResult) => {
+        roll: (notation, targetResult, options = {}) => {
             if (diceBoxRef.current && isReady) {
-                console.log("🎲 DiceBox Rolling:", notation, "Target:", targetResult);
-                diceBoxRef.current.clear();
+                console.log("🎲 DiceBox Rolling:", notation, "Target:", targetResult, "Color:", options.color);
+                diceBoxRef.current.clearDice();
 
-                // Attempt to force result using object notation
-                // Syntax: box.roll([{ type: 'd20', theme: 'default', value: 20 }])
-                if (targetResult) {
-                    // Syntax from docs: "1d20@15"
-                    // We construct the string: notation + "@" + targetResult
-                    // notation is usually '1d20', '1d6', etc.
-                    // Ensure notation is simple (single die) for now as typical usage
+                // 1. CONFIGURE THEME
+                let themeConfig = {
+                    theme_material: 'glass',
+                    theme_customColorset: null
+                };
 
-                    // Handle potential multi-die in future, but for now:
-                    const forceString = `${notation}@${targetResult}`;
-                    console.log("🎲 DiceBox Forcing:", forceString);
-                    return diceBoxRef.current.roll(forceString);
-                } else {
-                    return diceBoxRef.current.roll(notation);
+                if (options.color) {
+                    const isGold = options.color === '#FFD700';
+                    const isRed = options.color === '#880000';
+
+                    if (isGold) {
+                        themeConfig = {
+                            theme_material: 'plastic',
+                            theme_customColorset: {
+                                background: '#FFD700',
+                                foreground: '#000000',
+                                texture: 'none'
+                            }
+                        };
+                    } else if (isRed) {
+                        themeConfig = {
+                            theme_material: 'plastic',
+                            theme_customColorset: {
+                                background: '#880000',
+                                foreground: '#FFFFFF',
+                                texture: 'none'
+                            }
+                        };
+                    } else {
+                        themeConfig = {
+                            theme_material: 'glass',
+                            theme_customColorset: {
+                                background: options.color,
+                                foreground: '#FFFFFF',
+                                texture: 'none'
+                            }
+                        };
+                    }
                 }
+
+                console.log("🎨 Setting Theme:", themeConfig);
+                try {
+                    diceBoxRef.current.updateConfig(themeConfig);
+                } catch (e) { console.warn("Config update error", e); }
+
+                const rollNotation = targetResult
+                    ? `${notation}@${targetResult}`
+                    : notation;
+
+                // 2. DELAYED ROLL (Fix for color lag)
+                // We wait 100ms to ensure the engine applies the material change
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        console.log("🚀 Executing Roll Now:", rollNotation);
+                        diceBoxRef.current.roll(rollNotation)
+                            .then(results => resolve(results))
+                            .catch(err => {
+                                console.error("Roll error:", err);
+                                resolve([]); // Resolve empty on error to prevent crash
+                            });
+                    }, 100);
+                });
+
             } else {
                 console.warn("DiceBox not ready or ref missing");
+                return Promise.resolve([]);
             }
         },
         clear: () => {
-            if (diceBoxRef.current) diceBoxRef.current.clear();
+            if (diceBoxRef.current) diceBoxRef.current.clearDice();
         }
     }));
 
     useEffect(() => {
-        // Initialize DiceBox
-        console.log("Initializing DiceBox...");
+        let cancelled = false;
+        console.log("Initializing DiceBox (threejs)...");
 
-        // NEW API: Single config object
-        const box = new DiceBox({
-            container: "#" + containerId,
-            assetPath: '/assets/dice-box/',
-            theme: 'default',
-            scale: 6, // Safe scale
-            gravity: 1, // Low gravity
-            mass: 1, // Light dice
-            friction: 0.8
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.querySelectorAll('canvas').forEach(c => c.remove());
+        }
+
+        const box = new DiceBox("#" + containerId, {
+            theme_colorset: "white",
+            theme_material: "glass",
+            gravity_multiplier: 400,
+            baseScale: 100,
+            strength: 1,
+            light_intensity: 0.7,
+            shadows: true,
+            sounds: false,
         });
 
-        box.init().then(() => {
-            console.log("DiceBox Ready!");
+        box.initialize().then(() => {
+            if (cancelled) return;
+            console.log("DiceBox (threejs) Ready!");
             diceBoxRef.current = box;
             setIsReady(true);
         }).catch(err => {
@@ -60,24 +115,21 @@ const DiceBoxContainer = forwardRef((props, ref) => {
         });
 
         return () => {
-            // Cleanup if necessary
+            cancelled = true;
+            diceBoxRef.current = null;
+            setIsReady(false);
+            if (container) {
+                container.querySelectorAll('canvas').forEach(c => c.remove());
+            }
         };
     }, []);
 
     return (
         <div
             id={containerId}
-            className="fixed inset-0 pointer-events-none z-[1000]" // MAX Z-INDEX
-            style={{ width: '100vw', height: '100vh' }}
-        >
-            <style>{`
-                #${containerId} canvas {
-                    width: 100vw !important;
-                    height: 100vh !important;
-                    display: block !important;
-                }
-            `}</style>
-        </div>
+            className="fixed inset-0 z-[1000]"
+            style={{ pointerEvents: 'none' }}
+        />
     );
 });
 
