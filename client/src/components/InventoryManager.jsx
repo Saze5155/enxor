@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Format item to ensure data consistency
 const createItem = (name, quantity = 1, weight = 0, value = 0) => ({
@@ -13,10 +13,25 @@ export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 
     const [items, setItems] = useState(inventory || []);
     // Ensure money object has all properties even if prop is missing some
     const [currency, setCurrency] = useState({
-        gp: money.gp || 0,
-        sp: money.sp || 0,
-        cp: money.cp || 0
+        gp: money?.gp || 0,
+        sp: money?.sp || 0,
+        cp: money?.cp || 0
     });
+
+    // Sync with props when they change (e.g. from Socket update)
+    useEffect(() => {
+        if (inventory) setItems(inventory);
+    }, [inventory]);
+
+    useEffect(() => {
+        if (money) {
+            setCurrency({
+                gp: money.gp || 0,
+                sp: money.sp || 0,
+                cp: money.cp || 0
+            });
+        }
+    }, [money]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 

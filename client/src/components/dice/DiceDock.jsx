@@ -2,17 +2,18 @@ import { useState, useEffect } from 'react';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
 
+// Text-based Dice (No Icons as requested)
 const DICE_TYPES = [
-    { type: 'd4', max: 4, icon: '🔺' },
-    { type: 'd6', max: 6, icon: '🎲' },
-    { type: 'd8', max: 8, icon: '🔹' },
-    { type: 'd10', max: 10, icon: '🔻' },
-    { type: 'd12', max: 12, icon: '🛑' },
-    { type: 'd20', max: 20, icon: '🐲' },
-    { type: 'd100', max: 100, icon: '💯' },
+    { type: 'd4', max: 4, label: 'D4' },
+    { type: 'd6', max: 6, label: 'D6' },
+    { type: 'd8', max: 8, label: 'D8' },
+    { type: 'd10', max: 10, label: 'D10' },
+    { type: 'd12', max: 12, label: 'D12' },
+    { type: 'd20', max: 20, label: 'D20' },
+    { type: 'd100', max: 100, label: 'D100' },
 ];
 
-export default function DiceDock({ campaignId, players = [] }) {
+export default function DiceDock({ campaignId, players = [], activeCharacter = null, senderName = null }) {
     const { socket } = useSocket();
     const { user } = useAuth();
     const [rolling, setRolling] = useState(false);
@@ -86,8 +87,11 @@ export default function DiceDock({ campaignId, players = [] }) {
         // Determine Secret Status
         const isSecretRoll = isGM ? isMySecret : blindMode;
 
-        // Determine Roller Name (Simulate rolling AS someone?)
-        let rollerName = user.username;
+        // Determine Roller Name
+        // Default to senderName (Character Name) if provided, else User Username
+        let rollerName = senderName || user.username;
+
+        // If GM rolling for someone else
         if (isGM && targetPlayerId) {
             const target = players.find(p => p.id === targetPlayerId);
             if (target) {
@@ -127,16 +131,19 @@ export default function DiceDock({ campaignId, players = [] }) {
             <div className="flex flex-col gap-2 items-end mb-2 mr-2">
                 {/* MJ Target Selector */}
                 {isGM && (
-                    <select
-                        value={targetPlayerId}
-                        onChange={handleTargetChange}
-                        className="bg-stone-800 border border-stone-600 text-stone-300 text-xs rounded px-2 py-1 outline-none focus:border-yellow-500 w-32"
-                    >
-                        <option value="">👤 Moi-même</option>
-                        {players.filter(p => p.role !== 'MJ').map(p => (
-                            <option key={p.id} value={p.id}>👤 {p.username}</option>
-                        ))}
-                    </select>
+                    <div className="flex items-center bg-stone-800 rounded px-2 border border-stone-600">
+                        <span className="material-symbols-outlined text-stone-400 text-sm mr-1">person</span>
+                        <select
+                            value={targetPlayerId}
+                            onChange={handleTargetChange}
+                            className="bg-transparent text-stone-300 text-xs py-1 outline-none w-24 cursor-pointer"
+                        >
+                            <option value="">Moi-même</option>
+                            {players.filter(p => p.role !== 'MJ').map(p => (
+                                <option key={p.id} value={p.id}>{p.username}</option>
+                            ))}
+                        </select>
+                    </div>
                 )}
 
                 {/* Modifier Input */}
@@ -161,7 +168,9 @@ export default function DiceDock({ campaignId, players = [] }) {
                         className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition shadow-lg ${isMySecret ? 'bg-indigo-900 border-indigo-500 text-indigo-300' : 'bg-stone-800 border-stone-600 text-stone-500'}`}
                         title="Mon Jet Secret (Moi uniquement)"
                     >
-                        {isMySecret ? "🙈" : "👁️"}
+                        <span className="material-symbols-outlined">
+                            {isMySecret ? "visibility_off" : "visibility"}
+                        </span>
                     </button>
                     {/* Global Blind Mode Toggle */}
                     <button
@@ -169,15 +178,18 @@ export default function DiceDock({ campaignId, players = [] }) {
                         className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition shadow-lg ${blindMode ? 'bg-red-900 border-red-500 text-white animate-pulse' : 'bg-stone-800 border-stone-600 text-stone-500'}`}
                         title={blindMode ? "Mode Confidentiel ACTIVÉ (Joueurs cachés)" : "Activer Mode Confidentiel"}
                     >
-                        {blindMode ? "🔒" : "🔓"}
+                        <span className="material-symbols-outlined text-2xl">
+                            {blindMode ? "lock" : "lock_open"}
+                        </span>
                     </button>
                 </div>
             )}
 
             {/* Player Indicator (if Blind Mode is Active) */}
             {!isGM && blindMode && (
-                <div className="bg-red-900/80 text-white text-xs px-2 py-1 rounded border border-red-500 mb-4 animate-pulse flex items-center shadow-lg backdrop-blur">
-                    <span className="mr-1">🔒</span> Jets confidentiels (MJ seul)
+                <div className="bg-red-900/80 text-white text-xs px-3 py-1 rounded border border-red-500 mb-4 animate-pulse flex items-center shadow-lg backdrop-blur">
+                    <span className="material-symbols-outlined text-sm mr-2">lock</span>
+                    Jets confidentiels (MJ seul)
                 </div>
             )}
 
@@ -190,12 +202,11 @@ export default function DiceDock({ campaignId, players = [] }) {
                         className="flex flex-col items-center justify-center group relative transition transform hover:-translate-y-2 hover:scale-110 active:scale-95"
                         disabled={rolling}
                     >
-                        <div className="text-3xl filter drop-shadow-lg group-hover:drop-shadow-[0_0_10px_rgba(234,179,8,0.8)] transition">
-                            {die.icon}
+                        <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-stone-800 border border-stone-600 group-hover:border-yellow-500 group-hover:bg-stone-700/80 transition-all shadow-lg">
+                            <span className="text-xl font-black text-stone-300 group-hover:text-yellow-400 font-serif tracking-wider">
+                                {die.label}
+                            </span>
                         </div>
-                        <span className="text-[10px] font-bold text-stone-400 group-hover:text-yellow-400 uppercase tracking-wider mt-1">
-                            {die.type}
-                        </span>
 
                         {/* Tooltip or Glow */}
                         <div className="absolute inset-0 bg-yellow-500/0 group-hover:bg-yellow-500/10 rounded-full transition blur-md"></div>

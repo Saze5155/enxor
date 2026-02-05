@@ -24,7 +24,19 @@ export default function ChatSystem({ campaignId = '1', currentUser = { name: 'Mo
             };
 
             const handleDiceRoll = (roll) => {
-                setMessages(prev => [...prev, { ...roll, type: 'diceroll', isMe: roll.sender === currentUser.name }]);
+                // Hide secret rolls from non-GM players
+                if (roll.isSecret && currentUser.role !== 'MJ') return;
+
+                // Map DiceDock format to ChatBox expected format
+                const formula = roll.modifier ? `${roll.diceType} (${roll.modifier >= 0 ? '+' : ''}${roll.modifier})` : roll.diceType;
+
+                setMessages(prev => [...prev, {
+                    ...roll,
+                    type: 'diceroll',
+                    isMe: roll.sender === currentUser.name,
+                    rollResult: roll.result, // Map result -> rollResult
+                    formula: formula
+                }]);
             };
 
             socket.on('chat_message', handleMessage);
@@ -119,13 +131,6 @@ export default function ChatSystem({ campaignId = '1', currentUser = { name: 'Mo
     return (
         <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
 
-            {/* Dice Roller */}
-            {showDice && (
-                <div className="mb-2">
-                    <DiceRoller onClose={() => setShowDice(false)} />
-                </div>
-            )}
-
             <div className={`flex flex-col transition-all duration-300 ${isOpen ? 'w-80 h-96' : 'w-64 h-12'}`}>
                 {/* Header */}
                 <div
@@ -140,13 +145,6 @@ export default function ChatSystem({ campaignId = '1', currentUser = { name: 'Mo
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setShowDice(!showDice)}
-                            className={`p-1 rounded hover:bg-stone-600 transition ${showDice ? 'text-indigo-400' : 'text-stone-400'}`}
-                            title="Lancer les dés"
-                        >
-                            🎲
-                        </button>
                         <span className="cursor-pointer px-2" onClick={() => setIsOpen(!isOpen)}>{isOpen ? '▼' : '▲'}</span>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import campaignService from '../services/campaignService';
+import characterService from '../services/characterService';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext'; // Import socket
 
@@ -10,6 +11,12 @@ export default function CampaignDashboard() {
     const [campaigns, setCampaigns] = useState([]);
     const [publicCampaigns, setPublicCampaigns] = useState([]);
     const [newCampaignName, setNewCampaignName] = useState("");
+
+    // Character Selection State
+    const [myCharacters, setMyCharacters] = useState([]);
+    const [showCharModal, setShowCharModal] = useState(false);
+    const [selectedCampaignId, setSelectedCampaignId] = useState(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -92,7 +99,7 @@ export default function CampaignDashboard() {
         }
     };
 
-    const handleJoin = async (id) => {
+    const confirmJoinCampaign = async (id) => {
         if (!confirm("Rejoindre cette campagne ?")) return;
         try {
             await campaignService.join(id);
@@ -103,8 +110,46 @@ export default function CampaignDashboard() {
         }
     };
 
+    const handleJoinSession = async (campaignId, gmId) => {
+        // If user is GM, join immediately
+        if (gmId === user.id) {
+            navigate(`/campaign/${campaignId}/session`);
+            return;
+        }
+
+        // If User is Player, load characters and show modal
+        try {
+            const chars = await characterService.getAll();
+            if (chars.length === 0) {
+                if (confirm("Vous n'avez aucun personnage. Voulez-vous en créer un maintenant ?")) {
+                    navigate('/characters/new');
+                }
+                return;
+            }
+            setMyCharacters(chars);
+            setSelectedCampaignId(campaignId);
+            setShowCharModal(true);
+        } catch (error) {
+            console.error(error);
+            alert("Impossible de charger vos personnages.");
+        }
+    };
+
+    const proceedToSession = async (characterId) => {
+        // Link character to campaign in DB so GM sees them
+        try {
+            await characterService.update(characterId, { campaignId: selectedCampaignId });
+        } catch (error) {
+            console.error("Failed to link character to campaign", error);
+            // Optionally alert user, but we might want to let them proceed anyway to not block game
+            // alert("Attention: Le MJ ne verra peut-être pas votre fiche immédiatement.");
+        }
+
+        navigate(`/campaign/${selectedCampaignId}/session?characterId=${characterId}`);
+    };
+
     return (
-        <div className="p-8">
+        <div className="p-8 relative">
             <h1 className="text-3xl font-bold text-yellow-500 mb-6 font-serif">Mes Campagnes</h1>
 
             {/* Creation - MJ Only */}
@@ -174,7 +219,7 @@ export default function CampaignDashboard() {
                                         </>
                                     ) : (
                                         <button
-                                            onClick={() => navigate(`/campaign/${camp.id}/session`)}
+                                            onClick={() => handleJoinSession(camp.id, camp.gmId)}
                                             disabled={!camp.isSessionOpen}
                                             className={`block w-full text-center font-bold py-2 rounded transition ${camp.isSessionOpen ? 'bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer' : 'bg-stone-700 text-stone-500 cursor-not-allowed'}`}
                                         >
@@ -208,7 +253,7 @@ export default function CampaignDashboard() {
                                 {camp._count?.players} Joueurs inscrits
                             </p>
                             <button
-                                onClick={() => handleJoin(camp.id)}
+                                onClick={() => confirmJoinCampaign(camp.id)}
                                 className="w-full bg-stone-700 hover:bg-stone-600 text-stone-200 py-2 rounded text-sm font-bold"
                             >
                                 Rejoindre cette campagne ➕
@@ -220,6 +265,43 @@ export default function CampaignDashboard() {
             {publicCampaigns.length === 0 && (
                 <div className="text-center text-stone-600 italic mt-8">
                     Aucune autre campagne disponible.
+                </div>
+            )}
+
+            {/* Character Selection Modal */}
+            {showCharModal && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                    <div className="bg-stone-800 border-2 border-yellow-700 rounded-lg p-6 max-w-2xl w-full shadow-2xl">
+                        <h2 className="text-2xl font-bold text-yellow-500 font-serif mb-4 text-center">Choisissez votre Héros</h2>
+                        <p className="text-stone-400 text-center mb-6">Quel personnage incarnera-t-il cette aventure ?</p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2">
+                            {myCharacters.map(char => (
+                                <button
+                                    key={char.id}
+                                    onClick={() => proceedToSession(char.id)}
+                                    className="bg-stone-900 border border-stone-700 hover:border-indigo-500 hover:bg-stone-800 rounded-lg p-4 transition group text-left flex gap-4 items-center"
+                                >
+                                    <div className="w-12 h-12 bg-indigo-900 rounded-full flex items-center justify-center text-2xl border border-indigo-700 group-hover:scale-110 transition">
+                                        👤
+                                    </div>
+                                    <div>
+                                        <div className="font-bold text-lg text-stone-200 group-hover:text-indigo-400">{char.name}</div>
+                                        <div className="text-xs text-stone-500">{char.race} {char.class} (Lv.{char.level})</div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="mt-6 flex justify-center">
+                            <button
+                                onClick={() => setShowCharModal(false)}
+                                className="text-stone-500 hover:text-white underline"
+                            >
+                                Annuler
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -126,6 +126,11 @@ exports.updateCharacter = async (req, res) => {
             data: updateData
         });
 
+        // Real-time update for GM/Campaign
+        if (updated.campaignId && req.io) {
+            req.io.to(`campaign_${updated.campaignId}`).emit('character_updated', updated);
+        }
+
         res.json(updated);
     } catch (error) {
          console.error("Update Char Error", error);
