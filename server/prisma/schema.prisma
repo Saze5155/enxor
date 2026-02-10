@@ -35,35 +35,102 @@ model Character {
   
   // Infos de Base
   name      String
-  race      String
-  class     String
+  race      String?
+  subRace   String?
+  class     String?
+  subClass  String?
   level     Int      @default(1)
   background String?
   alignment String?
+  xp        Int      @default(0)
   
   // Statistiques (stockées en JSON String pour SQLite)
-  stats     String   // { str: 10, dex: 12, ... }
+  stats     String   @default("{\"strength\":10,\"dexterity\":10,\"constitution\":10,\"intelligence\":10,\"wisdom\":10,\"charisma\":10}")
   
   // Combat
-  hpCurrent Int
-  hpMax     Int
+  hpCurrent Int      @default(10)
+  hpMax     Int      @default(10)
   tempHp    Int      @default(0)
-  ac        Int      
-  initiative Int
-  speed     Int
+  ac        Int      @default(10)
+  initiative Int     @default(0)
+  speed     Int      @default(30)
+  
+  hitDiceMax     String? // "1d10"
+  hitDiceUsed    Int      @default(0)
+  
+  deathSavesSuccess Int @default(0)
+  deathSavesFailures Int @default(0)
   
   // Données Complexes (JSON String)
-  skills    String   
-  inventory String   
-  spells    String   
-  features  String   
+  // Stockage JSON pour SQLite : simple et flexible
+  skills    String   @default("[]") // Liste des compétences et expertises
+  proficiencies String @default("{\"armor\":[],\"weapons\":[],\"tools\":[],\"languages\":[]}")
+  
+  // Relations
+  inventory CharacterItem[]
+  spells    CharacterSpell[]
+  features  CharacterFeature[]
   
   // Meta
   avatarUrl String?
   notes     String?
+  backstory String?
+  
+  traits    String? // Personnalité
+  ideals    String?
+  bonds     String?
+  flaws     String?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CharacterItem {
+  id          String    @id @default(uuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  
+  itemId      String?   // Référence optionnelle à un ID d'objet standard
+  name        String
+  quantity    Int       @default(1)
+  isEquipped  Boolean   @default(false)
+  type        String?   // weapon, armor, potion, etc.
+  
+  // Propriétés spécifiques (JSON)
+  properties  String?   // Dégâts, CA, Poids, etc.
+  
+  notes       String?
+}
+
+model CharacterSpell {
+  id          String    @id @default(uuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  
+  spellId     String?   // Référence optionnelle à un ID de sort standard
+  name        String
+  level       Int
+  isPrepared  Boolean   @default(false)
+  
+  // Propriétés spécifiques (JSON)
+  properties  String?   // École, Temps, Portée, Composantes, etc.
+}
+
+model CharacterFeature {
+  id          String    @id @default(uuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  
+  name        String
+  source      String?   // Race, Classe, Don
+  levelObtained Int?
+  
+  description String
+  
+  // Gestion des utilisations
+  usesMax     Int?
+  usesCurrent Int?
+  resetType   String?   // short_rest, long_rest
 }
 
 enum Role {

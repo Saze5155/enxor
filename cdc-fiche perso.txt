@@ -1,0 +1,1672 @@
+📋 CAHIER DES CHARGES COMPLET - SYSTÈME DE PERSONNAGES D&D 5E
+
+🎯 OBJECTIF GÉNÉRAL
+Créer un système de gestion de personnages D&D 5e complet, intelligent et automatisé pour une application web de JDR. Le système doit gérer la création, l'affichage, la modification et l'évolution des personnages de manière fluide et intuitive.
+
+📊 ARCHITECTURE DE DONNÉES
+1. BASE DE DONNÉES DES CLASSES
+Créer une base de données JSON contenant les 12 classes officielles de D&D 5e avec TOUTES leurs sous-classes officielles (Player's Handbook + Xanathar's Guide + Tasha's Cauldron + autres suppléments).
+Structure d'une classe :
+json{
+  "id": "string (identifiant unique, ex: 'fighter')",
+  "nom": "string (nom en français)",
+  "nom_en": "string (nom en anglais)",
+  "description_courte": "string (1-2 phrases)",
+  "description_longue": "string (paragraphe complet)",
+  "de_vie": "string (ex: 'd10')",
+  "caracteristique_principale": "string (ex: 'Force')",
+  
+  "maitrises": {
+    "armures": ["array de strings"],
+    "armes": ["array de strings"],
+    "outils": ["array de strings"],
+    "jets_de_sauvegarde": ["array de 2 strings"],
+    "nombre_competences": "number (combien le joueur peut choisir)",
+    "liste_competences": ["array de strings des compétences disponibles"]
+  },
+  
+  "equipement_depart": {
+    "choix": [
+      {
+        "description": "string expliquant le choix",
+        "options": [
+          ["array de strings pour option A"],
+          ["array de strings pour option B"]
+        ]
+      }
+    ],
+    "fixe": ["array de strings d'équipement automatique"]
+  },
+  
+  "capacites_par_niveau": {
+    "1": [array de capacités],
+    "2": [array de capacités],
+    // ... jusqu'à 20
+  },
+  
+  "lanceur_de_sorts": "boolean",
+  "caracteristique_incantation": "string (si lanceur)",
+  "sorts_par_niveau": {
+    // Si lanceur de sorts
+    "1": {
+      "sorts_mineurs_connus": "number ou null",
+      "sorts_connus": "number ou null",
+      "sorts_prepares": "number ou null (si prépare au lieu de connaître)",
+      "emplacements": {
+        "1": "number",
+        "2": "number",
+        // etc.
+      }
+    }
+    // ... jusqu'à 20
+  },
+  
+  "sous_classes": [
+    {
+      "id": "string",
+      "nom": "string",
+      "nom_en": "string",
+      "description": "string",
+      "niveau_obtention": "number (généralement 3)",
+      "capacites_par_niveau": {
+        // Même structure que capacites_par_niveau
+      },
+      "sorts_bonus": {
+        // Si la sous-classe donne des sorts
+        "3": ["array de sorts"],
+        "5": ["array de sorts"]
+      }
+    }
+  ]
+}
+Structure d'une capacité :
+json{
+  "nom": "string",
+  "type": "string (automatique | choix | choix_multiple | sous_classe | asi | sorts)",
+  "description": "string (description complète de la capacité)",
+  
+  // Si type = "choix"
+  "options": [
+    {
+      "nom": "string",
+      "description": "string",
+      "effets": {
+        // Modifications à appliquer
+        "modificateurs": {
+          "attaque_distance": "+2",
+          "ca": "+1"
+        }
+      }
+    }
+  ],
+  
+  // Si type = "choix_multiple"
+  "nombre_choix": "number",
+  "options": [/* même structure */],
+  
+  // Si type = "automatique"
+  "effets": {
+    "nombre_attaques": "number",
+    "modificateurs": {},
+    "capacites_speciales": []
+  },
+  
+  "utilisation": {
+    "type": "string (repos_court | repos_long | par_tour | permanent)",
+    "nombre": "number"
+  }
+}
+
+2. BASE DE DONNÉES DES RACES
+Créer une base de données des races D&D 5e (Humain, Elfe, Nain, etc.).
+Structure d'une race :
+json{
+  "id": "string",
+  "nom": "string",
+  "description": "string",
+  "vitesse": "number (en pieds)",
+  "taille": "string (Petite, Moyenne, Grande)",
+  "langues": ["array de strings"],
+  
+  "bonus_caracteristiques": {
+    "Force": "number",
+    "Dexterité": "number",
+    // etc.
+  },
+  
+  "traits": [
+    {
+      "nom": "string",
+      "description": "string",
+      "effets": {}
+    }
+  ],
+  
+  "sous_races": [
+    {
+      "id": "string",
+      "nom": "string",
+      "bonus_caracteristiques": {},
+      "traits": []
+    }
+  ]
+}
+
+3. BASE DE DONNÉES DES BACKGROUNDS
+Backgrounds officiels (Acolyte, Criminel, Héros du peuple, etc.).
+Structure :
+json{
+  "id": "string",
+  "nom": "string",
+  "description": "string",
+  "competences": ["array de 2 strings"],
+  "outils": ["array de strings"],
+  "langues": "number (nombre de langues supplémentaires)",
+  "equipement": ["array de strings"],
+  "capacite_speciale": {
+    "nom": "string",
+    "description": "string"
+  },
+  "traits_personnalite": ["array de strings au choix"],
+  "ideaux": ["array de strings au choix"],
+  "liens": ["array de strings au choix"],
+  "defauts": ["array de strings au choix"]
+}
+
+4. BASE DE DONNÉES DES SORTS
+Tous les sorts officiels D&D 5e.
+Structure :
+json{
+  "id": "string",
+  "nom": "string",
+  "niveau": "number (0-9)",
+  "ecole": "string (Abjuration, Évocation, etc.)",
+  "temps_incantation": "string",
+  "portee": "string",
+  "composantes": {
+    "verbale": "boolean",
+    "somatique": "boolean",
+    "materielle": "string ou null"
+  },
+  "duree": "string",
+  "concentration": "boolean",
+  "description": "string",
+  "aux_niveaux_superieurs": "string ou null",
+  "classes": ["array de strings des classes qui ont accès"],
+  "rituel": "boolean"
+}
+
+5. BASE DE DONNÉES DES OBJETS/ÉQUIPEMENT
+Armes :
+json{
+  "id": "string",
+  "nom": "string",
+  "type": "string (arme courante | arme de guerre)",
+  "categorie": "string (corps à corps | distance)",
+  "degats": "string (ex: '1d8')",
+  "type_degats": "string (tranchant, contondant, perforant)",
+  "poids": "number",
+  "prix": {
+    "po": "number",
+    "pa": "number",
+    "pc": "number"
+  },
+  "proprietes": ["array de strings (Polyvalente, Lourde, Légère, etc.)"],
+  "portee": "string ou null (ex: '30/120')",
+  "bonus_magique": "number (0 si non-magique)",
+  "description": "string"
+}
+Armures :
+json{
+  "id": "string",
+  "nom": "string",
+  "type": "string (légère | intermédiaire | lourde)",
+  "ca": "number ou string (ex: '12 + Dex' ou '18')",
+  "force_requise": "number ou null",
+  "discretion": "string (désavantage ou null)",
+  "poids": "number",
+  "prix": {},
+  "bonus_magique": "number",
+  "description": "string"
+}
+Objets génériques :
+json{
+  "id": "string",
+  "nom": "string",
+  "type": "string (Équipement d'aventurier, Potion, Objet magique, etc.)",
+  "description": "string",
+  "poids": "number",
+  "prix": {},
+  "quantite_empilable": "boolean",
+  "effets": {} // Si applicable
+}
+
+6. BASE DE DONNÉES DES DONS (FEATS)
+Tous les dons officiels.
+Structure :
+json{
+  "id": "string",
+  "nom": "string",
+  "prerequis": "string ou null",
+  "description": "string",
+  "effets": {
+    "bonus_caracteristiques": {},
+    "capacites": []
+  }
+}
+
+🗄️ STRUCTURE DE LA BASE DE DONNÉES PERSONNAGE
+Table personnages (PostgreSQL)
+sqlCREATE TABLE personnages (
+  id SERIAL PRIMARY KEY,
+  utilisateur_id INTEGER REFERENCES utilisateurs(id),
+  
+  -- Informations de base
+  nom VARCHAR(255) NOT NULL,
+  race_id VARCHAR(50) REFERENCES races(id),
+  sous_race_id VARCHAR(50),
+  classe_id VARCHAR(50) REFERENCES classes(id),
+  sous_classe_id VARCHAR(50),
+  background_id VARCHAR(50) REFERENCES backgrounds(id),
+  alignement VARCHAR(50),
+  niveau INTEGER DEFAULT 1,
+  xp INTEGER DEFAULT 0,
+  
+  -- Image
+  portrait_url TEXT,
+  
+  -- Caractéristiques
+  force INTEGER DEFAULT 10,
+  dexterite INTEGER DEFAULT 10,
+  constitution INTEGER DEFAULT 10,
+  intelligence INTEGER DEFAULT 10,
+  sagesse INTEGER DEFAULT 10,
+  charisme INTEGER DEFAULT 10,
+  
+  -- Combat
+  pv_max INTEGER,
+  pv_actuels INTEGER,
+  pv_temporaires INTEGER DEFAULT 0,
+  ca INTEGER, -- Calculé automatiquement
+  initiative INTEGER, -- Calculé automatiquement
+  vitesse INTEGER, -- En pieds
+  
+  -- Dés de vie
+  des_de_vie_max INTEGER,
+  des_de_vie_utilises INTEGER DEFAULT 0,
+  
+  -- Jets de mort
+  succes_mort INTEGER DEFAULT 0,
+  echecs_mort INTEGER DEFAULT 0,
+  
+  -- Bonus
+  bonus_maitrise INTEGER, -- Calculé selon niveau
+  
+  -- Inspiration
+  inspiration BOOLEAN DEFAULT FALSE,
+  
+  -- Traits de personnalité
+  traits_personnalite TEXT,
+  ideaux TEXT,
+  liens TEXT,
+  defauts TEXT,
+  
+  -- Notes
+  histoire TEXT,
+  notes TEXT,
+  
+  -- Métadonnées
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+Table personnages_competences
+sqlCREATE TABLE personnages_competences (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  competence VARCHAR(100),
+  maitrise BOOLEAN DEFAULT FALSE,
+  expertise BOOLEAN DEFAULT FALSE
+);
+Liste des compétences :
+
+Acrobaties (Dex)
+Arcanes (Int)
+Athlétisme (For)
+Discrétion (Dex)
+Dressage (Sag)
+Escamotage (Dex)
+Histoire (Int)
+Intimidation (Cha)
+Investigation (Int)
+Médecine (Sag)
+Nature (Int)
+Perception (Sag)
+Représentation (Cha)
+Persuasion (Cha)
+Religion (Int)
+Intuition (Sag)
+Survie (Sag)
+Tromperie (Cha)
+
+
+Table personnages_maitrises
+sqlCREATE TABLE personnages_maitrises (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  type VARCHAR(50), -- armures, armes, outils, langues
+  nom VARCHAR(100)
+);
+
+Table personnages_capacites
+sqlCREATE TABLE personnages_capacites (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  source VARCHAR(50), -- classe, sous_classe, race, don, objet
+  nom VARCHAR(255),
+  description TEXT,
+  niveau_obtention INTEGER,
+  utilisation_type VARCHAR(50), -- repos_court, repos_long, par_tour, permanent
+  utilisation_max INTEGER,
+  utilisation_restante INTEGER
+);
+
+Table personnages_inventaire
+sqlCREATE TABLE personnages_inventaire (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  objet_id VARCHAR(50) REFERENCES objets(id),
+  quantite INTEGER DEFAULT 1,
+  equipe BOOLEAN DEFAULT FALSE,
+  notes TEXT
+);
+
+Table personnages_monnaie
+sqlCREATE TABLE personnages_monnaie (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  pc INTEGER DEFAULT 0, -- Pièces de cuivre
+  pa INTEGER DEFAULT 0, -- Pièces d'argent
+  po INTEGER DEFAULT 0  -- Pièces d'or
+);
+
+Table personnages_sorts
+sqlCREATE TABLE personnages_sorts (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  sort_id VARCHAR(50) REFERENCES sorts(id),
+  niveau_appris INTEGER,
+  toujours_prepare BOOLEAN DEFAULT FALSE, -- Pour sorts de domaine/sous-classe
+  prepare BOOLEAN DEFAULT FALSE -- Pour classes qui préparent
+);
+
+Table personnages_emplacements_sorts
+sqlCREATE TABLE personnages_emplacements_sorts (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  niveau_sort INTEGER, -- 1-9
+  emplacements_max INTEGER,
+  emplacements_utilises INTEGER DEFAULT 0
+);
+
+Table personnages_attaques
+sqlCREATE TABLE personnages_attaques (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  nom VARCHAR(255),
+  bonus_attaque INTEGER, -- Calculé
+  degats VARCHAR(50), -- Ex: "1d8+3"
+  type_degats VARCHAR(50),
+  portee VARCHAR(50),
+  notes TEXT
+);
+
+Table personnages_choix_levelup
+Pour tracer les choix faits à chaque level-up.
+sqlCREATE TABLE personnages_choix_levelup (
+  id SERIAL PRIMARY KEY,
+  personnage_id INTEGER REFERENCES personnages(id),
+  niveau INTEGER,
+  type_choix VARCHAR(50), -- sous_classe, style_combat, sort, manouevre, asi, don
+  choix_fait JSON, -- Stocke le détail du choix
+  date_choix TIMESTAMP DEFAULT NOW()
+);
+
+🎨 DESIGN DE LA FICHE DE PERSONNAGE
+Principes de Design
+Style général :
+
+Thème Dark Fantasy : Fond sombre (noir/gris foncé), accents dorés/cuivrés
+Inspiration parchemin médiéval : Bordures ornementales, textures vieillies
+Lisibilité maximale : Typographie claire, hiérarchie visuelle forte
+Responsive : Adapté PC et tablette
+
+Palette de couleurs :
+css--background-dark: #1a1a1a;
+--background-paper: #2a2520;
+--border-gold: #d4af37;
+--text-primary: #e0e0e0;
+--text-secondary: #a0a0a0;
+--accent-red: #8b0000;
+--accent-green: #228b22;
+--accent-blue: #4169e1;
+```
+
+**Typographie :**
+- **Titres :** Cinzel (serif médiéval) - Bold
+- **Corps de texte :** Lato ou Inter (sans-serif moderne) - Regular/Medium
+- **Chiffres :** Roboto Mono (monospace pour les stats)
+
+---
+
+### Layout de la Fiche
+
+#### Vue d'ensemble (full page)
+```
+┌─────────────────────────────────────────────────────────────┐
+│  [HEADER - Info de base du personnage]                      │
+├──────────────────┬──────────────────────────────────────────┤
+│                  │                                          │
+│  [COLONNE        │  [ZONE CENTRALE]                         │
+│   GAUCHE]        │                                          │
+│                  │  - Onglets : Combat | Sorts | Inventaire │
+│  - Stats         │    | Capacités | Histoire                │
+│  - Compétences   │                                          │
+│  - Sauvegardes   │  Contenu dynamique selon l'onglet        │
+│  - Maîtrises     │                                          │
+│                  │                                          │
+│                  │                                          │
+└──────────────────┴──────────────────────────────────────────┘
+```
+
+---
+
+### HEADER (Haut de page)
+
+**Contenu :**
+```
+┌────────────────────────────────────────────────────────────────┐
+│  [Portrait]  STRIX                                    Niv. 3   │
+│              Aasimar - Fallen                        847 XP    │
+│              Paladin 8 (Serment de la Vengeance)              │
+│              Lawful Evil - Haunted One                         │
+└────────────────────────────────────────────────────────────────┘
+```
+
+**Design :**
+- Portrait circulaire (150x150px) avec bordure dorée
+- Nom en TRÈS GROS (36px, Cinzel Bold)
+- Classe/Race/Background en dessous (16px)
+- Niveau et XP en haut à droite
+- Barre de progression XP visuelle (vers prochain niveau)
+
+**Boutons d'action (MJ uniquement) :**
+- 🎉 Level Up
+- ✏️ Éditer
+- 🗑️ Supprimer
+
+---
+
+### COLONNE GAUCHE (Fixe, scroll indépendant)
+
+#### 1. CARACTÉRISTIQUES (grosses bulles circulaires)
+```
+  ┌───────┐   ┌───────┐   ┌───────┐
+  │  FOR  │   │  DEX  │   │  CON  │
+  │   18  │   │   10  │   │   14  │
+  │  (+4) │   │  (+0) │   │  (+2) │
+  └───────┘   └───────┘   └───────┘
+  
+  ┌───────┐   ┌───────┐   ┌───────┐
+  │  INT  │   │  SAG  │   │  CHA  │
+  │    8  │   │   11  │   │   16  │
+  │  (-1) │   │  (+0) │   │  (+3) │
+  └───────┘   └───────┘   └───────┘
+```
+
+**Design :**
+- Cercles de 80px diamètre
+- Nom de la carac en haut (petit, 10px)
+- Valeur au centre (gros, 28px, Roboto Mono Bold)
+- Modificateur en bas (moyen, 18px, entre parenthèses)
+- Couleur de fond selon modificateur :
+  - Négatif : rouge foncé
+  - 0-2 : gris
+  - 3-4 : vert foncé
+  - 5+ : vert vif
+
+---
+
+#### 2. INSPIRATION & BONUS DE MAÎTRISE
+```
+┌─────────────────────────────────┐
+│  💡 INSPIRATION       [ ]       │
+│  ⭐ BONUS MAÎTRISE    +3        │
+└─────────────────────────────────┘
+```
+
+---
+
+#### 3. JETS DE SAUVEGARDE
+```
+┌─────────────────────────────────┐
+│  JETS DE SAUVEGARDE             │
+├─────────────────────────────────┤
+│  [✓] Force          +7          │
+│  [ ] Dextérité      +0          │
+│  [✓] Constitution   +5          │
+│  [ ] Intelligence   -1          │
+│  [✓] Sagesse        +3          │
+│  [✓] Charisme       +6          │
+└─────────────────────────────────┘
+```
+
+**Design :**
+- Checkbox cochée = Maîtrise
+- Bonus calculé automatiquement
+- Hover : tooltip expliquant le calcul
+
+---
+
+#### 4. COMPÉTENCES
+```
+┌─────────────────────────────────┐
+│  COMPÉTENCES                    │
+├─────────────────────────────────┤
+│  [ ] Acrobaties (Dex)      +0   │
+│  [ ] Arcanes (Int)         -1   │
+│  [✓] Athlétisme (For)      +7   │
+│  [★] Intimidation (Cha)    +9   │  ← Expertise
+│  [✓] Persuasion (Cha)      +6   │
+│  ...                            │
+└─────────────────────────────────┘
+```
+
+**Symboles :**
+- [ ] : Pas de maîtrise
+- [✓] : Maîtrise
+- [★] : Expertise (double bonus)
+
+**Interaction :**
+- Clic sur une compétence → Lance le dé automatiquement
+
+---
+
+#### 5. MAÎTRISES
+```
+┌─────────────────────────────────┐
+│  MAÎTRISES                      │
+├─────────────────────────────────┤
+│  🛡️ ARMURES                     │
+│  Toutes armures, boucliers      │
+│                                 │
+│  ⚔️ ARMES                       │
+│  Armes courantes, de guerre     │
+│                                 │
+│  🔧 OUTILS                      │
+│  Aucun                          │
+│                                 │
+│  🗣️ LANGUES                     │
+│  Commun, Céleste, Infernal      │
+└─────────────────────────────────┘
+```
+
+---
+
+### ZONE CENTRALE (Onglets)
+
+#### ONGLET : COMBAT
+
+##### Section 1 : Stats de Combat (haut de page, toujours visible)
+```
+┌──────────────────────────────────────────────────────────────┐
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐             │
+│  │     CA     │  │ INITIATIVE │  │   VITESSE  │             │
+│  │     18     │  │     +0     │  │   30 ft    │             │
+│  └────────────┘  └────────────┘  └────────────┘             │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  POINTS DE VIE                                      │    │
+│  │  ████████████████████░░░░░░░░   81 / 81            │    │
+│  │                                                     │    │
+│  │  PV Temporaires : [___] (input)                    │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                                                              │
+│  ┌────────────────────────────────────┐                     │
+│  │  DÉS DE VIE    8d10                │                     │
+│  │  Utilisés : 4 / 8                  │                     │
+│  │  [Utiliser un dé de vie]           │                     │
+│  └────────────────────────────────────┘                     │
+│                                                              │
+│  ┌────────────────────────────────────┐                     │
+│  │  JETS DE MORT                      │                     │
+│  │  Succès :  ○ ○ ○                   │                     │
+│  │  Échecs :  ○ ○ ○                   │                     │
+│  └────────────────────────────────────┘                     │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Design PV :**
+- Barre de progression visuelle
+- Couleur changeante selon %:
+  - 100-75% : vert
+  - 74-50% : jaune
+  - 49-25% : orange
+  - 24-0% : rouge
+- Clic sur la barre → Modal pour modifier PV (+ ou -)
+
+---
+
+##### Section 2 : Attaques & Actions
+```
+┌──────────────────────────────────────────────────────────────┐
+│  ATTAQUES                                                    │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  Heavy Crossbow                          [Attaquer] │     │
+│  │  Bonus : +3    Dégâts : 1d10 Perforant            │     │
+│  │  Portée : 100/400 ft                              │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  Javelin                                 [Attaquer] │     │
+│  │  Bonus : +5    Dégâts : 1d6+2 Perforant           │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  [+ Ajouter une attaque]                                    │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Interaction :**
+- Bouton [Attaquer] → Lance automatiquement le jet d'attaque
+- Si touche → Propose de lancer les dégâts
+
+---
+
+#### ONGLET : SORTS (si lanceur)
+
+##### Section 1 : Emplacements de sorts
+```
+┌──────────────────────────────────────────────────────────────┐
+│  EMPLACEMENTS DE SORTS                                       │
+├──────────────────────────────────────────────────────────────┤
+│  Caractéristique d'incantation : CHARISME                   │
+│  DD des jets de sauvegarde : 14                             │
+│  Bonus d'attaque de sort : +6                               │
+│                                                              │
+│  Niveau 1 :  ●●●○   (3/4 utilisés)                          │
+│  Niveau 2 :  ●○○    (1/2 utilisés)                          │
+│                                                              │
+│  [Repos Long] (réinitialise tous les emplacements)          │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+##### Section 2 : Liste des sorts
+
+**Filtres :**
+- Par niveau (0, 1, 2, ...)
+- Par école (Abjuration, Évocation, ...)
+- Préparés uniquement (toggle)
+```
+┌──────────────────────────────────────────────────────────────┐
+│  SORTS MINEURS (0)                                           │
+├──────────────────────────────────────────────────────────────┤
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  [★] Sacred Flame                       [Lancer]   │     │
+│  │  École : Évocation                                │     │
+│  │  Temps : 1 action   Portée : 60 ft               │     │
+│  │  Jet de Sauv. Dextérité DD 14                    │     │
+│  │  Dégâts : 1d8 radiant                            │     │
+│  │  [Voir détails ▼]                                │     │
+│  └────────────────────────────────────────────────────┘     │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│  SORTS NIVEAU 1                                              │
+├──────────────────────────────────────────────────────────────┤
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  [★] Bless                              [Lancer]   │     │  ← Toujours préparé (sort de serment)
+│  │  Concentration, 1 min                             │     │
+│  │  [Voir détails ▼]                                │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  [✓] Cure Wounds                        [Lancer]   │     │  ← Préparé
+│  │  1 action, Toucher                                │     │
+│  │  Soigne 1d8 + mod. Charisme PV                   │     │
+│  │  [Voir détails ▼]                                │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  [ ] Shield of Faith                    [Préparer] │     │  ← Non préparé
+│  │  [Voir détails ▼]                                │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  [+ Apprendre un nouveau sort]                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Symboles :**
+- [★] : Toujours préparé (domaine/serment/etc.)
+- [✓] : Préparé
+- [ ] : Connu mais non préparé
+
+**Interaction :**
+- Bouton [Lancer] → Modal de lancement (choix du niveau si upcasting possible)
+- [Préparer]/[Retirer] pour les classes qui préparent
+
+---
+
+#### ONGLET : INVENTAIRE
+
+##### Section 1 : Monnaie
+```
+┌──────────────────────────────────────────────────────────────┐
+│  💰 MONNAIE                                                  │
+├──────────────────────────────────────────────────────────────┤
+│  🥉 Pièces de Cuivre (PC)    26                             │
+│  🥈 Pièces d'Argent (PA)      1                             │
+│  🥇 Pièces d'Or (PO)        847                             │
+│                                                              │
+│  TOTAL (en PO) : 847.26 po                                  │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+##### Section 2 : Équipement
+
+**Filtres/Catégories :**
+- Tout
+- Armes
+- Armures
+- Équipement d'aventurier
+- Objets magiques
+- Consommables
+```
+┌──────────────────────────────────────────────────────────────┐
+│  🎒 INVENTAIRE                         Poids : 84 / 120 lb   │
+├──────────────────────────────────────────────────────────────┤
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  [E] Chain Mail                                    │     │  ← [E] = Équipé
+│  │  Armure lourde, CA 16                             │     │
+│  │  Poids : 55 lb                                    │     │
+│  │  [Déséquiper] [Voir détails]                      │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  [E] Shield                                        │     │
+│  │  +2 CA   Poids : 6 lb                             │     │
+│  │  [Déséquiper]                                     │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  Potion of Healing   x3                           │     │
+│  │  Restaure 2d4+2 PV                                │     │
+│  │  [Utiliser] [Donner à...]                         │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  Rope, Hempen (50 feet)                           │     │
+│  │  Poids : 10 lb                                    │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  [+ Ajouter un objet]                                       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Interaction :**
+- Drag & drop pour réorganiser
+- [Équiper] calcule automatiquement la CA
+- Indicateur de surcharge (rouge si poids > capacité)
+
+---
+
+#### ONGLET : CAPACITÉS
+
+Liste de TOUTES les capacités du personnage (race, classe, sous-classe, dons).
+```
+┌──────────────────────────────────────────────────────────────┐
+│  CAPACITÉS                                                   │
+├──────────────────────────────────────────────────────────────┤
+│  Filtres : [Tout] [Classe] [Race] [Dons]                    │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  🏹 STYLE DE COMBAT : ARCHERIE                     │     │
+│  │  Source : Guerrier (niveau 1)                     │     │
+│  │  ───────────────────────────────────────────────  │     │
+│  │  Vous gagnez un bonus de +2 aux jets d'attaque   │     │
+│  │  avec des armes à distance.                       │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  💨 SECOND SOUFFLE                  [Utiliser]     │     │
+│  │  Source : Guerrier (niveau 1)                     │     │
+│  │  Utilisations : 0/1 (Repos Court)                 │     │
+│  │  ───────────────────────────────────────────────  │     │
+│  │  Action bonus pour regagner 1d10 + niveau PV.    │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  ⚡ FOUGUE                           [Utiliser]     │     │
+│  │  Source : Guerrier (niveau 2)                     │     │
+│  │  Utilisations : 1/1 (Repos Court)                 │     │
+│  │  ───────────────────────────────────────────────  │     │
+│  │  Action bonus pour Foncer, Se désengager ou       │     │
+│  │  Esquiver.                                        │     │
+│  └────────────────────────────────────────────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐     │
+│  │  ✨ VISION DANS LE NOIR                            │     │
+│  │  Source : Elfe (Racial)                           │     │
+│  │  ───────────────────────────────────────────────  │     │
+│  │  Vous voyez dans l'obscurité à 60 pieds comme    │     │
+│  │  si c'était une lumière faible.                   │     │
+│  └────────────────────────────────────────────────────┘     │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Design :**
+- Cartes avec fond légèrement coloré selon la source
+- Bouton [Utiliser] si capacité à usage limité
+- Compteur d'utilisations
+- Bouton [Repos Court] / [Repos Long] en bas pour réinitialiser
+
+---
+
+#### ONGLET : HISTOIRE
+```
+┌──────────────────────────────────────────────────────────────┐
+│  TRAITS DE PERSONNALITÉ                                      │
+├──────────────────────────────────────────────────────────────┤
+│  "Danger - Danger exists around every corner."              │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│  IDÉAUX                                                      │
+├──────────────────────────────────────────────────────────────┤
+│  "Torment - My curse is my burden to bare, others do not    │
+│   need to know my Torment."                                 │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│  LIENS                                                       │
+├──────────────────────────────────────────────────────────────┤
+│  "Monster - If you stand in my path, I will destroy you     │
+│   like the monster I am. (Evil)"                            │
+│                                                              │
+│  "Rival - I will do anything to prove myself superior to    │
+│   my hated rival."                                          │
+│                                                              │
+│  "Night Mother is my guardian."                             │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│  DÉFAUTS                                                     │
+├──────────────────────────────────────────────────────────────┤
+│  "Rituals - I am a creature of habit, and must follow my    │
+│   rituals everyday. I cannot sleep until I stare at the     │
+│   midnight."                                                │
+│                                                              │
+│  "Hag - A hag raised you after stealing you from your       │
+│   parents. You escaped, however, the hag has a magical      │
+│   hold over you and your mind with dark and evil thoughts." │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│  HISTOIRE & BACKGROUND                                       │
+├──────────────────────────────────────────────────────────────┤
+│  [Zone de texte enrichi éditable]                           │
+│                                                              │
+│  Raconte l'histoire de ton personnage, son passé, ses       │
+│  motivations, ses peurs, etc.                                │
+└──────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────┐
+│  NOTES                                                       │
+├──────────────────────────────────────────────────────────────┤
+│  [Zone de texte libre pour notes du joueur]                 │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚙️ SYSTÈME DE LEVEL-UP
+
+### Workflow complet
+
+Quand le MJ clique sur "Level Up" pour un personnage :
+
+1. **Détection automatique des changements :**
+   - Le système consulte la BDD des classes
+   - Identifie tous les gains au nouveau niveau
+   - Prépare les choix nécessaires
+
+2. **Modal de Level-Up s'ouvre :**
+```
+┌──────────────────────────────────────────────────────────────┐
+│  🎉 MONTÉE DE NIVEAU !   Niveau 2 → 3                       │
+├──────────────────────────────────────────────────────────────┤
+│  Félicitations ! Voici ce que tu gagnes :                   │
+│                                                              │
+│  ✅ AUTOMATIQUE                                             │
+│  ─────────────────────────────────────────────────────────  │
+│  • +8 PV (1d10 + 2)                                         │
+│  • Nouvelles capacités :                                    │
+│    - Attaque Supplémentaire                                 │
+│                                                              │
+│  ⚠️ CHOIX REQUIS                                            │
+│  ─────────────────────────────────────────────────────────  │
+│                                                              │
+│  1️⃣ CHOISIS TON ARCHÉTYPE MARTIAL                           │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  ⚔️ CHAMPION                           [Choisir]   │    │
+│  │  ───────────────────────────────────────────────  │    │
+│  │  Le Champion se concentre sur la puissance       │    │
+│  │  physique brute.                                  │    │
+│  │                                                   │    │
+│  │  Tu gagnes immédiatement :                        │    │
+│  │  • Critique Amélioré (19-20)                      │    │
+│  │  [Voir tous les détails ▼]                        │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  🎯 MAÎTRE DE BATAILLE                 [Choisir]   │    │
+│  │  ───────────────────────────────────────────────  │    │
+│  │  Les Maîtres de Bataille emploient des techniques│    │
+│  │  martiales sophistiquées.                        │    │
+│  │                                                   │    │
+│  │  Tu gagnes immédiatement :                        │    │
+│  │  • Supériorité au Combat (4d8)                    │    │
+│  │  • 3 Manœuvres au choix                           │    │
+│  │  • Étudiant de la Guerre                          │    │
+│  │  [Voir tous les détails ▼]                        │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │  🔮 CHEVALIER OCCULTE                  [Choisir]   │    │
+│  │  ───────────────────────────────────────────────  │    │
+│  │  Les Chevaliers Occultes combinent magie et       │    │
+│  │  combat.                                          │    │
+│  │                                                   │    │
+│  │  Tu gagnes immédiatement :                        │    │
+│  │  • Incantation (2 sorts mineurs, 3 sorts niv. 1) │    │
+│  │  • Lien avec une Arme                             │    │
+│  │  [Voir tous les détails ▼]                        │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                              │
+│  [Annuler]                           [Confirmer le choix]   │
+└──────────────────────────────────────────────────────────────┘
+```
+
+3. **Après le choix de sous-classe :**
+
+Si la sous-classe implique des choix supplémentaires (ex: Manœuvres pour Maître de Bataille) :
+```
+┌──────────────────────────────────────────────────────────────┐
+│  2️⃣ CHOISIS 3 MANŒUVRES                                     │
+│                                                              │
+│  Tu apprends 3 manœuvres de combat parmi les suivantes :    │
+│                                                              │
+│  [✓] Attaque de Précision                                   │
+│  [ ] Attaque Balayante                                      │
+│  [✓] Parade                                                 │
+│  [ ] Riposte                                                │
+│  [✓] Désarmement                                            │
+│  [ ] Feinte                                                 │
+│  ...                                                         │
+│                                                              │
+│  Sélectionné : 3/3                                          │
+│                                                              │
+│  [Retour]                                  [Confirmer]       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+4. **Si lanceur de sorts :**
+```
+┌──────────────────────────────────────────────────────────────┐
+│  3️⃣ CHOISIS TES SORTS                                       │
+│                                                              │
+│  Tu apprends 2 nouveaux sorts de niveau 1 de la liste      │
+│  de Magicien (Abjuration ou Évocation de préférence).      │
+│                                                              │
+│  [Filtres : Niveau 1 | Abjuration, Évocation]              │
+│                                                              │
+│  [ ] Shield (Abjuration)                                    │
+│      1 réaction, Personnel, Jusqu'au début de ton prochain  │
+│      tour. +5 CA.                                           │
+│                                                              │
+│  [✓] Magic Missile (Évocation)                              │
+│      1 action, 120 ft, Instantané. 3 projectiles, 1d4+1    │
+│      dégâts de force chacun.                                │
+│                                                              │
+│  [✓] Burning Hands (Évocation)                              │
+│      1 action, Personnel (cône 15 ft), Instantané.          │
+│      3d6 dégâts de feu, Jet Sauv. Dex.                      │
+│                                                              │
+│  Sélectionné : 2/2                                          │
+│                                                              │
+│  [Retour]                                  [Confirmer]       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+5. **Récapitulatif final :**
+```
+┌──────────────────────────────────────────────────────────────┐
+│  ✅ MONTÉE DE NIVEAU TERMINÉE !                             │
+├──────────────────────────────────────────────────────────────┤
+│  Strix est maintenant niveau 3 !                            │
+│                                                              │
+│  Changements appliqués :                                    │
+│  • PV Max : 73 → 81 (+8)                                    │
+│  • Sous-classe : Chevalier Occulte                          │
+│  • Nouvelles capacités :                                    │
+│    - Incantation                                            │
+│    - Lien avec une Arme                                     │
+│  • Sorts appris :                                           │
+│    - Magic Missile                                          │
+│    - Burning Hands                                          │
+│                                                              │
+│  [Voir la fiche complète]                [Fermer]           │
+└──────────────────────────────────────────────────────────────┘
+
+Calculs automatiques lors du Level-Up
+Le système doit AUTOMATIQUEMENT :
+1. Points de Vie
+javascript// Exemple pour Guerrier (d10)
+const deVie = "d10";
+const modConstituion = Math.floor((constitution - 10) / 2);
+
+// Option 1 : Roll
+const rollResult = rollDice(1, 10); // Lance 1d10
+const pvGagnes = rollResult + modConstitution;
+
+// Option 2 : Moyenne (règle alternative)
+const moyenne = 6; // (d10 = 6)
+const pvGagnes = moyenne + modConstitution;
+
+// Ajout aux PV max
+pvMax += pvGagnes;
+2. Bonus de Maîtrise
+javascriptconst bonusMaitrise = Math.ceil(niveau / 4) + 1;
+// Niveau 1-4 : +2
+// Niveau 5-8 : +3
+// Niveau 9-12 : +4
+// Niveau 13-16 : +5
+// Niveau 17-20 : +6
+```
+
+#### 3. Recalcul de tous les bonus
+- Jets de sauvegarde avec maîtrise
+- Compétences avec maîtrise
+- Bonus d'attaque
+- DD des sorts
+
+#### 4. Emplacements de sorts (si lanceur)
+Consulter la table de progression de la classe et mettre à jour.
+
+---
+
+### Gestion des ASI (Amélioration de Caractéristiques)
+
+Aux niveaux 4, 8, 12, 16, 19 (pour la plupart des classes) :
+```
+┌──────────────────────────────────────────────────────────────┐
+│  AMÉLIORATION DE CARACTÉRISTIQUES                            │
+├──────────────────────────────────────────────────────────────┤
+│  Choisis l'une des options suivantes :                      │
+│                                                              │
+│  ○ Augmenter une caractéristique de +2                      │
+│  ○ Augmenter deux caractéristiques de +1 chacune            │
+│  ○ Prendre un Don                                           │
+│                                                              │
+│  [Sélectionne une option ci-dessus]                         │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Si option 1 :**
+```
+┌──────────────────────────────────────────────────────────────┐
+│  Quelle caractéristique veux-tu augmenter de +2 ?           │
+│                                                              │
+│  ○ Force        (18 → 20) ⚠️ MAXIMUM ATTEINT               │
+│  ○ Dextérité    (10 → 12)                                   │
+│  ○ Constitution (14 → 16)                                   │
+│  ...                                                         │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Si option 3 (Don) :**
+```
+┌──────────────────────────────────────────────────────────────┐
+│  CHOISIS UN DON                                             │
+│                                                              │
+│  [Barre de recherche]                                       │
+│                                                              │
+│  [ ] Great Weapon Master                                    │
+│      Prérequis : Aucun                                      │
+│      • -5 au jet d'attaque pour +10 aux dégâts             │
+│      • Action bonus pour attaquer après un critique ou tuer │
+│                                                              │
+│  [ ] Sharpshooter                                           │
+│      Prérequis : Aucun                                      │
+│      • Pas de désavantage à longue portée                  │
+│      • Ignore couverture partielle (3/4)                   │
+│      • -5 attaque pour +10 dégâts                          │
+│                                                              │
+│  [ ] War Caster                                             │
+│      Prérequis : Capacité à lancer au moins un sort        │
+│      • Avantage aux jets de Concentration                  │
+│      • Incanter avec mains occupées                        │
+│      • Réaction : sort au lieu d'attaque d'opportunité     │
+│                                                              │
+│  ...                                                         │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🖥️ SPÉCIFICATIONS TECHNIQUES
+
+### Frontend (React)
+
+#### Composants principaux
+```
+src/
+├── components/
+│   ├── character/
+│   │   ├── CharacterSheet.jsx (conteneur principal)
+│   │   ├── CharacterHeader.jsx
+│   │   ├── CharacterSidebar.jsx
+│   │   │   ├── AbilityScores.jsx
+│   │   │   ├── SavingThrows.jsx
+│   │   │   ├── Skills.jsx
+│   │   │   └── Proficiencies.jsx
+│   │   ├── CharacterTabs.jsx
+│   │   │   ├── CombatTab.jsx
+│   │   │   ├── SpellsTab.jsx
+│   │   │   ├── InventoryTab.jsx
+│   │   │   ├── FeaturesTab.jsx
+│   │   │   └── BackstoryTab.jsx
+│   │   ├── LevelUpModal.jsx
+│   │   │   ├── SubclassChoice.jsx
+│   │   │   ├── SpellSelection.jsx
+│   │   │   ├── ASIChoice.jsx
+│   │   │   └── FeatSelection.jsx
+│   │   └── CharacterCreator.jsx
+│   └── ...
+├── data/
+│   ├── classes.json (toutes les classes)
+│   ├── races.json
+│   ├── backgrounds.json
+│   ├── spells.json
+│   ├── items.json
+│   └── feats.json
+├── utils/
+│   ├── characterCalculations.js (tous les calculs)
+│   ├── diceRoller.js
+│   └── validators.js
+└── ...
+```
+
+---
+
+### Backend (Node.js + Express)
+
+#### Routes API
+```
+/api/characters
+├── GET    /                    (Liste tous les personnages)
+├── GET    /:id                 (Détails d'un personnage)
+├── POST   /                    (Créer un personnage)
+├── PUT    /:id                 (Modifier un personnage)
+├── DELETE /:id                 (Supprimer un personnage)
+├── POST   /:id/levelup         (Monter de niveau)
+├── POST   /:id/rest/short      (Repos court)
+├── POST   /:id/rest/long       (Repos long)
+├── PUT    /:id/hp              (Modifier PV)
+├── POST   /:id/inventory/add   (Ajouter objet)
+├── DELETE /:id/inventory/:itemId (Retirer objet)
+├── PUT    /:id/inventory/:itemId/equip (Équiper/Déséquiper)
+├── POST   /:id/spells/prepare  (Préparer sort)
+├── POST   /:id/spells/cast     (Lancer sort)
+└── ...
+
+/api/data
+├── GET /classes                (Liste des classes)
+├── GET /classes/:id            (Détails d'une classe)
+├── GET /races                  (Liste des races)
+├── GET /spells                 (Liste des sorts)
+├── GET /items                  (Liste des objets)
+├── GET /feats                  (Liste des dons)
+└── ...
+
+Calculs Automatiques (utils/characterCalculations.js)
+javascript// Modificateur de caractéristique
+function getAbilityModifier(score) {
+  return Math.floor((score - 10) / 2);
+}
+
+// Bonus de maîtrise
+function getProficiencyBonus(level) {
+  return Math.ceil(level / 4) + 1;
+}
+
+// Classe d'Armure
+function calculateAC(character) {
+  let baseAC = 10;
+  const dexMod = getAbilityModifier(character.dexterite);
+  
+  // Si armure équipée
+  const armor = character.inventaire.find(item => 
+    item.equipe && item.type === 'armure'
+  );
+  
+  if (armor) {
+    if (armor.categorie === 'légère') {
+      baseAC = armor.ca + dexMod;
+    } else if (armor.categorie === 'intermédiaire') {
+      baseAC = armor.ca + Math.min(dexMod, 2);
+    } else if (armor.categorie === 'lourde') {
+      baseAC = armor.ca;
+    }
+  } else {
+    baseAC = 10 + dexMod;
+  }
+  
+  // Si bouclier équipé
+  const shield = character.inventaire.find(item =>
+    item.equipe && item.nom.toLowerCase().includes('bouclier')
+  );
+  if (shield) baseAC += 2;
+  
+  // Bonus magiques, capacités, etc.
+  // ...
+  
+  return baseAC;
+}
+
+// Initiative
+function calculateInitiative(character) {
+  const dexMod = getAbilityModifier(character.dexterite);
+  // + bonus éventuels de capacités
+  return dexMod;
+}
+
+// Bonus d'attaque
+function calculateAttackBonus(character, weapon) {
+  const profBonus = getProficiencyBonus(character.niveau);
+  let abilityMod;
+  
+  if (weapon.categorie === 'distance') {
+    abilityMod = getAbilityModifier(character.dexterite);
+  } else {
+    // Corps à corps : Force (sauf si propriété Finesse)
+    if (weapon.proprietes.includes('Finesse')) {
+      const strMod = getAbilityModifier(character.force);
+      const dexMod = getAbilityModifier(character.dexterite);
+      abilityMod = Math.max(strMod, dexMod);
+    } else {
+      abilityMod = getAbilityModifier(character.force);
+    }
+  }
+  
+  // Check maîtrise
+  const hasProficiency = character.maitrises.armes.some(prof =>
+    prof === weapon.type || prof === weapon.nom
+  );
+  
+  let bonus = abilityMod;
+  if (hasProficiency) bonus += profBonus;
+  bonus += weapon.bonus_magique || 0;
+  
+  // + bonus de capacités (ex: Style de Combat : Archerie)
+  // ...
+  
+  return bonus;
+}
+
+// DD des sorts
+function calculateSpellSaveDC(character) {
+  const profBonus = getProficiencyBonus(character.niveau);
+  const spellcastingAbility = character.classe.caracteristique_incantation;
+  const abilityMod = getAbilityModifier(character[spellcastingAbility.toLowerCase()]);
+  
+  return 8 + profBonus + abilityMod;
+}
+
+// Bonus d'attaque de sort
+function calculateSpellAttackBonus(character) {
+  const profBonus = getProficiencyBonus(character.niveau);
+  const spellcastingAbility = character.classe.caracteristique_incantation;
+  const abilityMod = getAbilityModifier(character[spellcastingAbility.toLowerCase()]);
+  
+  return profBonus + abilityMod;
+}
+
+// Bonus de compétence
+function calculateSkillBonus(character, skill) {
+  const ability = SKILL_ABILITIES[skill]; // Ex: 'Acrobaties' -> 'dexterite'
+  const abilityMod = getAbilityModifier(character[ability]);
+  const profBonus = getProficiencyBonus(character.niveau);
+  
+  const skillData = character.competences.find(s => s.competence === skill);
+  
+  let bonus = abilityMod;
+  if (skillData.maitrise) bonus += profBonus;
+  if (skillData.expertise) bonus += profBonus; // Double
+  
+  return bonus;
+}
+
+// Capacité de charge
+function calculateCarryingCapacity(character) {
+  return character.force * 15; // En livres
+}
+
+// Poids total de l'inventaire
+function calculateTotalWeight(character) {
+  return character.inventaire.reduce((total, item) => {
+    return total + (item.poids * item.quantite);
+  }, 0);
+}
+
+// Export
+module.exports = {
+  getAbilityModifier,
+  getProficiencyBonus,
+  calculateAC,
+  calculateInitiative,
+  calculateAttackBonus,
+  calculateSpellSaveDC,
+  calculateSpellAttackBonus,
+  calculateSkillBonus,
+  calculateCarryingCapacity,
+  calculateTotalWeight
+};
+
+🎲 INTERACTIONS SPÉCIFIQUES
+Lancer de Dés depuis la Fiche
+Depuis une compétence :
+javascript// User clique sur "Athlétisme"
+const skillBonus = calculateSkillBonus(character, 'Athlétisme');
+const roll = rollDice(1, 20); // 1d20
+const total = roll + skillBonus;
+
+// Afficher dans le chat + log
+sendToChat({
+  type: 'skill_check',
+  character: character.nom,
+  skill: 'Athlétisme',
+  roll: roll,
+  bonus: skillBonus,
+  total: total
+});
+Depuis une attaque :
+javascript// User clique sur [Attaquer] pour "Épée Longue"
+const attackBonus = calculateAttackBonus(character, weapon);
+const attackRoll = rollDice(1, 20);
+const totalAttack = attackRoll + attackBonus;
+
+// Si critique (20 naturel)
+if (attackRoll === 20) {
+  // Double les dés de dégâts
+  const damageRoll = rollDice(2, 8) + abilityMod; // 2d8 au lieu de 1d8
+  // ...
+} else if (totalAttack >= targetAC) {
+  // Touche normale
+  const damageRoll = rollDice(1, 8) + abilityMod;
+  // ...
+}
+Depuis un sort :
+javascript// User clique sur [Lancer] pour "Fireball"
+// 1. Vérifier emplacements de sorts
+if (character.emplacements_sorts[3].utilises >= character.emplacements_sorts[3].max) {
+  alert("Plus d'emplacements de niveau 3 !");
+  return;
+}
+
+// 2. Modal : Upcast ?
+const castLevel = showUpcastModal(spell, character); // 3, 4, 5, etc.
+
+// 3. Utiliser l'emplacement
+character.emplacements_sorts[castLevel].utilises++;
+
+// 4. Appliquer l'effet
+if (spell.jet_sauvegarde) {
+  // Les cibles font un jet de sauvegarde
+  // ...
+} else if (spell.jet_attaque) {
+  // Jet d'attaque de sort
+  const spellAttackBonus = calculateSpellAttackBonus(character);
+  const attackRoll = rollDice(1, 20) + spellAttackBonus;
+  // ...
+}
+
+// 5. Lancer les dégâts (si applicable)
+const damageDice = spell.degats[castLevel]; // Ex: "8d6" pour Fireball niv. 3
+const damageRoll = rollDiceFormula(damageDice);
+
+Repos Court / Repos Long
+Repos Court (1 heure) :
+
+Réinitialiser capacités "repos court"
+Utiliser des dés de vie pour regagner PV
+
+javascriptfunction shortRest(character) {
+  // Réinitialiser capacités
+  character.capacites.forEach(cap => {
+    if (cap.utilisation_type === 'repos_court') {
+      cap.utilisation_restante = cap.utilisation_max;
+    }
+  });
+  
+  // Proposer d'utiliser des dés de vie
+  showHitDiceModal(character);
+}
+
+function useHitDice(character, numberOfDice) {
+  if (character.des_de_vie_utilises + numberOfDice > character.des_de_vie_max) {
+    alert("Pas assez de dés de vie !");
+    return;
+  }
+  
+  const hitDieType = character.classe.de_vie; // Ex: 'd10'
+  const conMod = getAbilityModifier(character.constitution);
+  
+  let totalHealing = 0;
+  for (let i = 0; i < numberOfDice; i++) {
+    const roll = rollDice(1, parseInt(hitDieType.substring(1)));
+    totalHealing += roll + conMod;
+  }
+  
+  character.pv_actuels = Math.min(
+    character.pv_actuels + totalHealing,
+    character.pv_max
+  );
+  character.des_de_vie_utilises += numberOfDice;
+  
+  // Sauvegarder + notifier
+}
+Repos Long (8 heures) :
+
+Regagner tous les PV
+Regagner la moitié des dés de vie (minimum 1)
+Réinitialiser tous les emplacements de sorts
+Réinitialiser toutes les capacités
+
+javascriptfunction longRest(character) {
+  // PV complets
+  character.pv_actuels = character.pv_max;
+  character.pv_temporaires = 0;
+  
+  // Dés de vie
+  const diceToRecover = Math.max(1, Math.floor(character.des_de_vie_max / 2));
+  character.des_de_vie_utilises = Math.max(
+    0,
+    character.des_de_vie_utilises - diceToRecover
+  );
+  
+  // Emplacements de sorts
+  Object.keys(character.emplacements_sorts).forEach(level => {
+    character.emplacements_sorts[level].utilises = 0;
+  });
+  
+  // Capacités
+  character.capacites.forEach(cap => {
+    cap.utilisation_restante = cap.utilisation_max;
+  });
+  
+  // Jets de mort
+  character.succes_mort = 0;
+  character.echecs_mort = 0;
+  
+  // Sauvegarder + notifier
+}
+
+📝 CHECKLIST DE DÉVELOPPEMENT
+Phase 1 : Données de base
+
+ Créer classes.json avec les 12 classes + toutes sous-classes
+ Créer races.json avec toutes les races + sous-races
+ Créer backgrounds.json
+ Créer spells.json (tous les sorts)
+ Créer items.json (armes, armures, équipement)
+ Créer feats.json
+
+Phase 2 : Base de données
+
+ Créer toutes les tables PostgreSQL
+ Créer les relations entre tables
+ Créer les index pour performance
+ Écrire les migrations
+
+Phase 3 : Backend
+
+ Routes API pour personnages (CRUD)
+ Routes API pour données de référence
+ Endpoint level-up avec logique complète
+ Endpoints repos court/long
+ Système de calculs automatiques
+ Validation des données
+
+Phase 4 : Frontend - Structure
+
+ Composant CharacterSheet principal
+ CharacterHeader
+ CharacterSidebar
+ Système d'onglets
+ Responsive design
+
+Phase 5 : Frontend - Onglets
+
+ Onglet Combat (PV, attaques, etc.)
+ Onglet Sorts (si lanceur)
+ Onglet Inventaire
+ Onglet Capacités
+ Onglet Histoire
+
+Phase 6 : Système de Level-Up
+
+ Modal de level-up
+ Choix de sous-classe
+ Sélection de sorts
+ ASI / Dons
+ Manœuvres / Invocations / etc.
+ Application automatique des changements
+
+Phase 7 : Interactions
+
+ Lancer de dés depuis fiche
+ Équiper/Déséquiper objets
+ Préparer/Lancer sorts
+ Utiliser capacités
+ Repos court/long
+
+Phase 8 : Design & Polish
+
+ Thème dark fantasy
+ Animations (level-up, dés, etc.)
+ Tooltips informatifs
+ Sons (optional)
+ Loading states
+ Error handling
+
+Phase 9 : Tests
+
+ Tests unitaires (calculs)
+ Tests d'intégration (API)
+ Tests E2E (workflows complets)
+ Tests de performance
+
+Phase 10 : Optimisation
+
+ Lazy loading des images
+ Pagination de l'inventaire
+ Cache des données de référence
+ Optimisation des requêtes BDD
+
+
+🚀 PRIORITÉS DE DÉVELOPPEMENT
+MVP (Minimum Viable Product) :
+
+Affichage de fiche de perso complète (lecture seule)
+Calculs automatiques de base (AC, Initiative, Bonus)
+Inventaire fonctionnel
+System de repos
+
+V2 :
+5. Level-up avec sous-classes
+6. Système de sorts complet
+7. Lancer de dés intégré
+V3 :
+8. Créateur de personnage complet
+9. ASI et dons
+10. Toutes les classes/sous-classes
+
+📐 CONTRAINTES TECHNIQUES
+
+Performance : La fiche doit charger en < 1 seconde
+Compatibilité : Chrome, Firefox, Safari (dernières versions)
+Responsive : PC (1920x1080 minimum) + Tablette (1024x768)
+Accessibilité : Contrastes WCAG AA, navigation clavier
+Sécurité : Validation côté serveur de TOUTES les modifications
+
+
+🎨 ASSETS NÉCESSAIRES
+
+Icônes : Font Awesome ou Heroicons
+Images de background : Textures parchemin, bois, cuir
+Portraits par défaut : Silhouettes génériques par classe
+Sons (optionnel) :
+
+Dé qui roule
+Level up (fanfare)
+Sort lancé
+Repos (feu de camp)
+
+
+
+
+📚 RESSOURCES
+
+D&D 5e SRD (System Reference Document) : Contenu open-source officiel
+D&D Beyond : Inspiration pour l'UI/UX
+Roll20 Character Sheet : Référence pour fonctionnalités
+API 5e : https://www.dnd5eapi.co/ (backup si besoin)
+
+
+FIN DU CAHIER DES CHARGES
+Ce document constitue un cahier des charges complet pour le système de personnages. Il couvre :
+
+✅ Architecture de données complète
+✅ Design détaillé de l'interface
+✅ Spécifications techniques
+✅ Calculs automatiques
+✅ Système de level-up
+✅ Interactions utilisateur
+✅ Checklist de développement

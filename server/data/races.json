@@ -1,0 +1,125 @@
+[
+    {
+        "nom": "Humain",
+        "description": "Les humains sont les plus adaptables et les plus ambitieux de toutes les races communes.",
+        "bonus_caracteristiques": {
+            "str": 1,
+            "dex": 1,
+            "con": 1,
+            "int": 1,
+            "wis": 1,
+            "cha": 1
+        },
+        "vitesse": 9,
+        "traits": []
+    },
+    {
+        "nom": "Elfe",
+        "description": "Les elfes sont un peuple magique d'une grâce surnaturelle, vivant au monde mais n'en faisant pas entièrement partie.",
+        "bonus_caracteristiques": {
+            "dex": 2
+        },
+        "vitesse": 9,
+        "traits": [
+            "Vision dans le noir",
+            "Sens aiguisés",
+            "Ascendance féerique",
+            "Transe"
+        ]
+    },
+    {
+        "nom": "Nain",
+        "description": "Audacieux et robustes, les nains sont connus pour leur habileté guerrière, leur résistance physique et leur capacité à boire de la bière.",
+        "bonus_caracteristiques": {
+            "con": 2
+        },
+        "vitesse": 7.5,
+        "traits": [
+            "Vision dans le noir",
+            "Résistance naine",
+            "Formation aux armes naines",
+            "Maîtrise des outils"
+        ]
+    },
+    {
+        "nom": "Halfelin",
+        "description": "Le confort d'un foyer est le but de la vie de la plupart des halfelins : un endroit où s'installer en paix.",
+        "bonus_caracteristiques": {
+            "dex": 2
+        },
+        "vitesse": 7.5,
+        "traits": [
+            "Chanceux",
+            "Brave",
+            "Agilité halfeline"
+        ]
+    },
+    {
+        "nom": "Draconéide",
+        "description": "Nés de dragons, comme leur nom l'indique, les draconéides marchent fièrement dans un monde qui les accueille avec crainte et incompréhension.",
+        "bonus_caracteristiques": {
+            "str": 2,
+            "cha": 1
+        },
+        "vitesse": 9,
+        "traits": [
+            "Ascendance draconique",
+            "Souffle",
+            "Résistance aux dégâts"
+        ]
+    },
+    {
+        "nom": "Gnome",
+        "description": "Un bourdonnement d'activité constant entoure les gnomes et leurs quartiers, un bruit ponctué de grincements d'engrenages et d'explosions.",
+        "bonus_caracteristiques": {
+            "int": 2
+        },
+        "vitesse": 7.5,
+        "traits": [
+            "Vision dans le noir",
+            "Ruse gnome"
+        ]
+    },
+    {
+        "nom": "Demi-Elfe",
+        "description": "Arpentant deux mondes mais n'appartenant vraiment à aucun des deux, les demi-elfes combinent les meilleures qualités de leurs parents.",
+        "bonus_caracteristiques": {
+            "cha": 2
+        },
+        "vitesse": 9,
+        "traits": [
+            "Vision dans le noir",
+            "Ascendance féerique",
+            "Polyvalence"
+        ]
+    },
+    {
+        "nom": "Demi-Orc",
+        "description": "Les demi-orcs ont la force physique, l'endurance et la badasserie de leurs ancêtres orcs.",
+        "bonus_caracteristiques": {
+            "str": 2,
+            "con": 1
+        },
+        "vitesse": 9,
+        "traits": [
+            "Vision dans le noir",
+            "Menaçant",
+            "Endurance implacable",
+            "Attaques sauvages"
+        ]
+    },
+    {
+        "nom": "Tieffelin",
+        "description": "Accueillis par des regards fixes et des chuchotements, souffrant de violences et d'insultes dans la rue, les tieffelins savent que c'est le prix à payer.",
+        "bonus_caracteristiques": {
+            "int": 1,
+            "cha": 2
+        },
+        "vitesse": 9,
+        "traits": [
+            "Vision dans le noir",
+            "Résistance infernale",
+            "Héritage infernal"
+        ]
+    }
+]

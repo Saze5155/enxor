@@ -1,0 +1,3979 @@
+{
+  "version": "1.0",
+  "source": "D&D 5e Player's Handbook",
+  "description": "12 classes officielles avec toutes leurs sous-classes",
+  "nombre_classes": 12,
+  "classes": [
+    {
+      "id": "fighter",
+      "nom": "Guerrier",
+      "nom_en": "Fighter",
+      "de_vie": "d10",
+      "maitrises": {
+        "armures": [
+          "Armures légères",
+          "Armures intermédiaires",
+          "Armures lourdes",
+          "Boucliers"
+        ],
+        "armes": [
+          "Armes courantes",
+          "Armes de guerre"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Force",
+          "Constitution"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Acrobaties",
+          "Athlétisme",
+          "Dressage",
+          "Histoire",
+          "Intimidation",
+          "Intuition",
+          "Perception",
+          "Survie"
+        ]
+      },
+      "equipement_depart": {
+        "choix": [
+          {
+            "description": "Cotte de mailles OU armure de cuir, arc long et 20 flèches",
+            "options": [
+              [
+                "Cotte de mailles"
+              ],
+              [
+                "Armure de cuir",
+                "Arc long",
+                "Flèches (20)"
+              ]
+            ]
+          },
+          {
+            "description": "Une arme de guerre et un bouclier OU deux armes de guerre",
+            "options": [
+              [
+                "Arme de guerre",
+                "Bouclier"
+              ],
+              [
+                "Arme de guerre",
+                "Arme de guerre"
+              ]
+            ]
+          },
+          {
+            "description": "Une arbalète légère et 20 carreaux OU deux hachettes",
+            "options": [
+              [
+                "Arbalète légère",
+                "Carreaux (20)"
+              ],
+              [
+                "Hachette",
+                "Hachette"
+              ]
+            ]
+          },
+          {
+            "description": "Paquetage d'explorateur OU paquetage d'aventurier",
+            "options": [
+              [
+                "Paquetage d'explorateur"
+              ],
+              [
+                "Paquetage d'aventurier"
+              ]
+            ]
+          }
+        ]
+      },
+      "caracteristique_principale": "Force",
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Style de Combat",
+            "type": "choix",
+            "description": "Vous adoptez un style de combat particulier qui sera votre spécialité.",
+            "options": [
+              {
+                "nom": "Archerie",
+                "description": "Vous gagnez un bonus de +2 aux jets d'attaque avec des armes à distance.",
+                "effet": {
+                  "type": "bonus_attaque",
+                  "condition": "arme_distance",
+                  "valeur": 2
+                }
+              },
+              {
+                "nom": "Arme à deux mains",
+                "description": "Quand vous obtenez 1 ou 2 sur un dé de dégâts avec une arme de corps à corps à deux mains, relancez le dé.",
+                "effet": {
+                  "type": "relance_degats",
+                  "condition": "arme_deux_mains",
+                  "seuil": [
+                    1,
+                    2
+                  ]
+                }
+              },
+              {
+                "nom": "Combat à deux armes",
+                "description": "Ajoutez votre modificateur de caractéristique aux dégâts de la seconde attaque.",
+                "effet": {
+                  "type": "bonus_degats",
+                  "condition": "combat_deux_armes"
+                }
+              },
+              {
+                "nom": "Défense",
+                "description": "Vous gagnez un bonus de +1 à la CA si vous portez une armure.",
+                "effet": {
+                  "type": "bonus_ca",
+                  "condition": "porte_armure",
+                  "valeur": 1
+                }
+              },
+              {
+                "nom": "Duel",
+                "description": "+2 aux dégâts si vous maniez une arme de corps à corps à une main dans une main et aucune autre arme.",
+                "effet": {
+                  "type": "bonus_degats",
+                  "condition": "arme_une_main_seule",
+                  "valeur": 2
+                }
+              },
+              {
+                "nom": "Protection",
+                "description": "Imposez un désavantage à une attaque contre un allié à 1,50m si vous portez un bouclier (réaction).",
+                "effet": {
+                  "type": "reaction",
+                  "condition": "porte_bouclier"
+                }
+              }
+            ]
+          },
+          {
+            "nom": "Second Souffle",
+            "type": "automatique",
+            "description": "Action bonus pour regagner 1d10 + niveau de guerrier PV. 1 utilisation par repos court/long.",
+            "utilisation": {
+              "type": "repos_court",
+              "nombre": 1,
+              "recuperation": "1d10 + niveau"
+            }
+          }
+        ],
+        "2": [
+          {
+            "nom": "Fougue",
+            "type": "automatique",
+            "description": "Action bonus pour Foncer, Se désengager ou Esquiver.",
+            "utilisation": {
+              "type": "repos_court",
+              "nombre": 1
+            }
+          }
+        ],
+        "3": [
+          {
+            "nom": "Archétype Martial",
+            "type": "sous_classe",
+            "description": "Choisissez un archétype martial."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi",
+            "description": "Augmentez une caractéristique de 2 ou deux caractéristiques de 1, OU prenez un don."
+          }
+        ],
+        "5": [
+          {
+            "nom": "Attaque Supplémentaire",
+            "type": "automatique",
+            "description": "Vous pouvez attaquer deux fois au lieu d'une.",
+            "effet": {
+              "nombre_attaques": 2
+            }
+          }
+        ],
+        "6": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "9": [
+          {
+            "nom": "Indomptable",
+            "type": "automatique",
+            "description": "Relancez un jet de sauvegarde raté. 1 utilisation par repos long.",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": 1
+            }
+          }
+        ],
+        "11": [
+          {
+            "nom": "Attaque Supplémentaire (2)",
+            "type": "automatique",
+            "description": "Vous pouvez attaquer trois fois.",
+            "effet": {
+              "nombre_attaques": 3
+            }
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "13": [
+          {
+            "nom": "Indomptable (2 utilisations)",
+            "type": "automatique",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": 2
+            }
+          }
+        ],
+        "14": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "17": [
+          {
+            "nom": "Fougue (2 utilisations)",
+            "type": "automatique",
+            "utilisation": {
+              "type": "repos_court",
+              "nombre": 2
+            }
+          },
+          {
+            "nom": "Indomptable (3 utilisations)",
+            "type": "automatique",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": 3
+            }
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Attaque Supplémentaire (3)",
+            "type": "automatique",
+            "description": "Vous pouvez attaquer quatre fois.",
+            "effet": {
+              "nombre_attaques": 4
+            }
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "champion",
+          "nom": "Champion",
+          "description": "Le Champion se concentre sur le développement de la puissance physique brute.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Critique Amélioré",
+                "type": "automatique",
+                "description": "Vos attaques avec armes infligent un coup critique sur un 19-20.",
+                "effet": {
+                  "critique_sur": [
+                    19,
+                    20
+                  ]
+                }
+              }
+            ],
+            "7": [
+              {
+                "nom": "Athlète Remarquable",
+                "type": "automatique",
+                "description": "Ajoutez la moitié de votre bonus de maîtrise aux jets de Force, Dextérité et Constitution qui n'utilisent pas déjà ce bonus."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Style de Combat Supplémentaire",
+                "type": "choix",
+                "description": "Choisissez un deuxième Style de Combat."
+              }
+            ],
+            "15": [
+              {
+                "nom": "Critique Supérieur",
+                "type": "automatique",
+                "description": "Vos attaques avec armes infligent un coup critique sur un 18-20.",
+                "effet": {
+                  "critique_sur": [
+                    18,
+                    19,
+                    20
+                  ]
+                }
+              }
+            ],
+            "18": [
+              {
+                "nom": "Survivant",
+                "type": "automatique",
+                "description": "Au début de chacun de vos tours, récupérez 5 + modificateur de Constitution PV si vous avez moins de la moitié de vos PV max."
+              }
+            ]
+          }
+        },
+        {
+          "id": "battle_master",
+          "nom": "Maître de Bataille",
+          "description": "Les Maîtres de Bataille emploient des techniques martiales transmises de génération en génération.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Supériorité au Combat",
+                "type": "automatique",
+                "description": "Vous avez 4 dés de supériorité (d8).",
+                "des_superiorite": {
+                  "nombre": 4,
+                  "type": "d8"
+                }
+              },
+              {
+                "nom": "Manœuvres",
+                "type": "choix_multiple",
+                "nombre_choix": 3,
+                "description": "Choisissez 3 manœuvres.",
+                "options": [
+                  {
+                    "nom": "Attaque de Précision",
+                    "description": "Ajoutez le dé de supériorité à votre jet d'attaque."
+                  },
+                  {
+                    "nom": "Parade",
+                    "description": "Réduisez les dégâts d'une attaque de corps à corps du résultat du dé + modificateur de Dextérité."
+                  },
+                  {
+                    "nom": "Riposte",
+                    "description": "Attaque de mêlée contre une créature qui vous a raté. Dégâts + dé de supériorité."
+                  },
+                  {
+                    "nom": "Attaque Menaçante",
+                    "description": "Ajoutez le dé aux dégâts. Cible effrayée jusqu'à la fin de votre prochain tour (Jet Sag DD)."
+                  },
+                  {
+                    "nom": "Balayage",
+                    "description": "Touchez une créature à portée, elle subit des dégâts égaux au résultat du dé."
+                  },
+                  {
+                    "nom": "Feinte",
+                    "description": "Action bonus, avantage à votre prochaine attaque. Ajoutez le dé aux dégâts si touché."
+                  },
+                  {
+                    "nom": "Attaque Repoussante",
+                    "description": "Ajoutez le dé aux dégâts. Cible repoussée de 4,50m si Grande ou plus petite."
+                  },
+                  {
+                    "nom": "Ralliement",
+                    "description": "Action bonus. Un allié regagne PV temporaires égaux au dé + modificateur Charisme."
+                  },
+                  {
+                    "nom": "Attaque Déstabilisante",
+                    "description": "Ajoutez le dé aux dégâts. Prochaine attaque contre la cible avant votre prochain tour a l'avantage."
+                  },
+                  {
+                    "nom": "Attaque Désarmante",
+                    "description": "Ajoutez le dé aux dégâts. Cible lâche un objet (Jet Force DD)."
+                  },
+                  {
+                    "nom": "Attaque Déséquilibrante",
+                    "description": "Ajoutez le dé aux dégâts. Cible tombe à terre si Grande ou plus petite (Jet Force DD)."
+                  },
+                  {
+                    "nom": "Évaluation du Commandant",
+                    "description": "Action bonus. Un allié peut utiliser sa réaction pour faire une attaque + dé de supériorité aux dégâts."
+                  },
+                  {
+                    "nom": "Attaque avec Entrave",
+                    "description": "Ajoutez le dé aux dégâts. Vitesse de la cible réduite à 0 jusqu'à la fin de ce tour."
+                  },
+                  {
+                    "nom": "Esquive Évasive",
+                    "description": "Réaction quand touché par une attaque. Réduisez les dégâts du résultat du dé."
+                  },
+                  {
+                    "nom": "Attaque Distractive",
+                    "description": "Ajoutez le dé aux dégâts. Prochain jet d'attaque d'un allié contre la cible a l'avantage."
+                  },
+                  {
+                    "nom": "Manœuvre Tactique",
+                    "description": "Action bonus. Un allié se déplace de la moitié de sa vitesse sans provoquer d'attaque d'opportunité."
+                  }
+                ]
+              },
+              {
+                "nom": "Étudiant de la Guerre",
+                "type": "automatique",
+                "description": "Maîtrise d'un set d'outils d'artisan."
+              }
+            ],
+            "7": [
+              {
+                "nom": "Connais ton Ennemi",
+                "type": "automatique",
+                "description": "1 minute d'observation révèle des infos : niveau comparé, Force, Dextérité, Constitution, CA, PV, classe."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Supériorité Améliorée",
+                "type": "automatique",
+                "description": "Dés deviennent d10. Vous en avez 5.",
+                "des_superiorite": {
+                  "nombre": 5,
+                  "type": "d10"
+                }
+              },
+              {
+                "nom": "Manœuvres Supplémentaires",
+                "type": "choix_multiple",
+                "nombre_choix": 2
+              }
+            ],
+            "15": [
+              {
+                "nom": "Implacable",
+                "type": "automatique",
+                "description": "Si aucun dé de supériorité au début de votre tour, récupérez-en 1."
+              },
+              {
+                "nom": "Manœuvres Supplémentaires",
+                "type": "choix_multiple",
+                "nombre_choix": 2
+              }
+            ],
+            "18": [
+              {
+                "nom": "Supériorité Ultime",
+                "type": "automatique",
+                "description": "Dés deviennent d12. Vous en avez 6.",
+                "des_superiorite": {
+                  "nombre": 6,
+                  "type": "d12"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "eldritch_knight",
+          "nom": "Chevalier Occulte",
+          "description": "Les Chevaliers Occultes combinent la maîtrise martiale avec l'étude de la magie.",
+          "source": "Player's Handbook",
+          "lanceur_de_sorts": true,
+          "caracteristique_incantation": "Intelligence",
+          "sorts_par_niveau": {
+            "3": {
+              "sorts_mineurs_connus": 2,
+              "sorts_connus": 3,
+              "emplacements": {
+                "1": 2
+              }
+            },
+            "4": {
+              "sorts_mineurs_connus": 2,
+              "sorts_connus": 4,
+              "emplacements": {
+                "1": 3
+              }
+            },
+            "7": {
+              "sorts_mineurs_connus": 2,
+              "sorts_connus": 5,
+              "emplacements": {
+                "1": 4,
+                "2": 2
+              }
+            },
+            "8": {
+              "sorts_mineurs_connus": 2,
+              "sorts_connus": 6,
+              "emplacements": {
+                "1": 4,
+                "2": 2
+              }
+            },
+            "10": {
+              "sorts_mineurs_connus": 3,
+              "sorts_connus": 7,
+              "emplacements": {
+                "1": 4,
+                "2": 3
+              }
+            },
+            "11": {
+              "sorts_mineurs_connus": 3,
+              "sorts_connus": 8,
+              "emplacements": {
+                "1": 4,
+                "2": 3
+              }
+            },
+            "13": {
+              "sorts_mineurs_connus": 3,
+              "sorts_connus": 9,
+              "emplacements": {
+                "1": 4,
+                "2": 3,
+                "3": 2
+              }
+            },
+            "14": {
+              "sorts_mineurs_connus": 3,
+              "sorts_connus": 10,
+              "emplacements": {
+                "1": 4,
+                "2": 3,
+                "3": 2
+              }
+            },
+            "16": {
+              "sorts_mineurs_connus": 3,
+              "sorts_connus": 11,
+              "emplacements": {
+                "1": 4,
+                "2": 3,
+                "3": 3
+              }
+            },
+            "19": {
+              "sorts_mineurs_connus": 3,
+              "sorts_connus": 12,
+              "emplacements": {
+                "1": 4,
+                "2": 3,
+                "3": 3,
+                "4": 1
+              }
+            },
+            "20": {
+              "sorts_mineurs_connus": 3,
+              "sorts_connus": 13,
+              "emplacements": {
+                "1": 4,
+                "2": 3,
+                "3": 3,
+                "4": 1
+              }
+            }
+          },
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Incantation",
+                "type": "automatique",
+                "description": "Vous apprenez 2 sorts mineurs et 3 sorts de niveau 1 de magicien (Abjuration ou Évocation principalement)."
+              },
+              {
+                "nom": "Lien avec une Arme",
+                "type": "automatique",
+                "description": "Liez-vous à une arme (rituel 1h). Impossible à désarmer, invoquez-la en action bonus."
+              }
+            ],
+            "7": [
+              {
+                "nom": "Magie de Guerre",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort mineur, attaque bonus avec arme."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Chevalier Mystique",
+                "type": "automatique",
+                "description": "Apprenez un sort de niveau 3 ou moins de n'importe quelle école."
+              }
+            ],
+            "15": [
+              {
+                "nom": "Charge Arcanique",
+                "type": "automatique",
+                "description": "Téléportation jusqu'à 9m avant/après Action Foncer ou Attaquer."
+              }
+            ],
+            "18": [
+              {
+                "nom": "Magie de Guerre Améliorée",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort, attaque bonus avec arme."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "barbarian",
+      "nom": "Barbare",
+      "nom_en": "Barbarian",
+      "de_vie": "d12",
+      "maitrises": {
+        "armures": [
+          "Armures légères",
+          "Armures intermédiaires",
+          "Boucliers"
+        ],
+        "armes": [
+          "Armes courantes",
+          "Armes de guerre"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Force",
+          "Constitution"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Athlétisme",
+          "Dressage",
+          "Intimidation",
+          "Nature",
+          "Perception",
+          "Survie"
+        ]
+      },
+      "caracteristique_principale": "Force",
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Rage",
+            "type": "automatique",
+            "description": "Action bonus. Avantage aux jets et sauvegardes de Force, bonus aux dégâts, résistance contondant/perçant/tranchant. 2 rages/jour.",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": 2
+            },
+            "effet": {
+              "avantage_force": true,
+              "bonus_degats": 2,
+              "resistances": [
+                "contondant",
+                "perçant",
+                "tranchant"
+              ]
+            }
+          },
+          {
+            "nom": "Défense sans Armure",
+            "type": "automatique",
+            "description": "Si vous ne portez pas d'armure, CA = 10 + mod Dex + mod Con."
+          }
+        ],
+        "2": [
+          {
+            "nom": "Attaque Téméraire",
+            "type": "automatique",
+            "description": "Avantage aux attaques de Force ce tour, mais les attaques contre vous ont l'avantage jusqu'à votre prochain tour."
+          },
+          {
+            "nom": "Sens du Danger",
+            "type": "automatique",
+            "description": "Avantage aux jets de sauvegarde de Dextérité contre les effets que vous voyez (pièges, sorts). Vous ne devez pas être aveuglé, assourdi ou incapable d'agir."
+          }
+        ],
+        "3": [
+          {
+            "nom": "Voie Primitive",
+            "type": "sous_classe",
+            "description": "Choisissez votre Voie."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Attaque Supplémentaire",
+            "type": "automatique",
+            "description": "Vous pouvez attaquer deux fois.",
+            "effet": {
+              "nombre_attaques": 2
+            }
+          },
+          {
+            "nom": "Déplacement Rapide",
+            "type": "automatique",
+            "description": "Votre vitesse augmente de 3m si vous ne portez pas d'armure lourde."
+          }
+        ],
+        "6": [
+          {
+            "nom": "Rage (3/jour)",
+            "type": "automatique",
+            "utilisation": {
+              "nombre": 3
+            }
+          }
+        ],
+        "7": [
+          {
+            "nom": "Instinct Sauvage",
+            "type": "automatique",
+            "description": "Avantage aux jets d'initiative. Vous pouvez entrer en rage pour agir normalement si surpris."
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "9": [
+          {
+            "nom": "Critique Brutal (1 dé)",
+            "type": "automatique",
+            "description": "Lancez 1 dé de dégâts d'arme supplémentaire lors d'un coup critique."
+          }
+        ],
+        "11": [
+          {
+            "nom": "Rage Implacable",
+            "type": "automatique",
+            "description": "Si vous tombez à 0 PV en rage et ne mourez pas, jet de Constitution DD 10. Succès = 1 PV. DD +5 à chaque utilisation (reset après repos)."
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          },
+          {
+            "nom": "Rage (4/jour)",
+            "type": "automatique",
+            "utilisation": {
+              "nombre": 4
+            }
+          }
+        ],
+        "13": [
+          {
+            "nom": "Critique Brutal (2 dés)",
+            "type": "automatique"
+          }
+        ],
+        "15": [
+          {
+            "nom": "Rage Persistante",
+            "type": "automatique",
+            "description": "Votre rage ne prend fin prématurément que si vous êtes inconscient ou si vous la terminez."
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "17": [
+          {
+            "nom": "Critique Brutal (3 dés)",
+            "type": "automatique"
+          },
+          {
+            "nom": "Rage (5/jour)",
+            "type": "automatique",
+            "utilisation": {
+              "nombre": 5
+            }
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Champion Primitif",
+            "type": "automatique",
+            "description": "Force et Constitution +4 (maximum 24)."
+          },
+          {
+            "nom": "Rage (6/jour)",
+            "type": "automatique",
+            "utilisation": {
+              "nombre": 6
+            }
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "berserker",
+          "nom": "Voie du Berserker",
+          "description": "La fureur destructrice est votre essence.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Frénésie",
+                "type": "automatique",
+                "description": "En rage, action bonus pour faire une attaque de corps à corps supplémentaire. Fin de rage = 1 niveau d'épuisement."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Rage Aveugle",
+                "type": "automatique",
+                "description": "En rage, vous ne pouvez pas être charmé ou effrayé. Si déjà charmé/effrayé, l'effet est suspendu."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Présence Intimidante",
+                "type": "automatique",
+                "description": "Action pour effrayer une créature à 9m (jet Sagesse DD). Dure jusqu'à la fin de votre prochain tour."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Représailles",
+                "type": "automatique",
+                "description": "Quand vous subissez des dégâts d'une créature à 1,50m, réaction pour faire une attaque de corps à corps contre elle."
+              }
+            ]
+          }
+        },
+        {
+          "id": "totem_warrior",
+          "nom": "Voie du Guerrier Totem",
+          "description": "Vous adoptez un esprit animal comme guide, protecteur et inspiration.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Chercheur de Totem",
+                "type": "automatique",
+                "description": "Rituel pour lancer Sens Bestial. Sort mineur Parler avec les Animaux."
+              },
+              {
+                "nom": "Esprit Totem",
+                "type": "choix",
+                "description": "Choisissez un esprit totem (Aigle, Loup ou Ours).",
+                "options": [
+                  {
+                    "nom": "Aigle",
+                    "description": "En rage, les autres créatures ont désavantage aux attaques d'opportunité contre vous. Vous pouvez Foncer en action bonus."
+                  },
+                  {
+                    "nom": "Loup",
+                    "description": "En rage, vos alliés ont avantage aux jets d'attaque de corps à corps contre les créatures à 1,50m de vous."
+                  },
+                  {
+                    "nom": "Ours",
+                    "description": "En rage, résistance à TOUS les types de dégâts sauf psychiques."
+                  }
+                ]
+              }
+            ],
+            "6": [
+              {
+                "nom": "Aspect du Totem",
+                "type": "choix",
+                "description": "Choisissez un aspect totem.",
+                "options": [
+                  {
+                    "nom": "Aigle",
+                    "description": "Vous voyez jusqu'à 1,5 km sans difficulté. Lumière faible = pas désavantage en Perception."
+                  },
+                  {
+                    "nom": "Loup",
+                    "description": "Déplacement furtif en rythme rapide. Vous pouvez voyager seul en rythme rapide."
+                  },
+                  {
+                    "nom": "Ours",
+                    "description": "Capacité de charge x2. Avantage aux jets de Force pour pousser, tirer, soulever ou casser."
+                  }
+                ]
+              }
+            ],
+            "10": [
+              {
+                "nom": "Marcheur Spirituel",
+                "type": "automatique",
+                "description": "Rituel pour lancer Communication avec la Nature."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Lien Totémique",
+                "type": "choix",
+                "description": "Choisissez un lien totem.",
+                "options": [
+                  {
+                    "nom": "Aigle",
+                    "description": "En rage, vous avez une vitesse de vol égale à votre vitesse de marche."
+                  },
+                  {
+                    "nom": "Loup",
+                    "description": "En rage, action bonus pour mettre une créature Grande ou plus petite à terre (jet Force DD)."
+                  },
+                  {
+                    "nom": "Ours",
+                    "description": "En rage, créatures hostiles à 1,50m ont désavantage aux jets d'attaque contre vos alliés (pas vous). Elles doivent vous voir."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bard",
+      "nom": "Barde",
+      "nom_en": "Bard",
+      "de_vie": "d8",
+      "maitrises": {
+        "armures": [
+          "Armures légères"
+        ],
+        "armes": [
+          "Armes courantes",
+          "Arbalète de poing",
+          "Épée courte",
+          "Épée longue",
+          "Rapière"
+        ],
+        "outils": [
+          "Trois instruments de musique de votre choix"
+        ],
+        "jets_de_sauvegarde": [
+          "Dextérité",
+          "Charisme"
+        ],
+        "nombre_competences": 3,
+        "liste_competences": [
+          "Acrobaties",
+          "Arcanes",
+          "Athlétisme",
+          "Discrétion",
+          "Dressage",
+          "Escamotage",
+          "Histoire",
+          "Intimidation",
+          "Investigation",
+          "Médecine",
+          "Nature",
+          "Perception",
+          "Perspicacité",
+          "Persuasion",
+          "Religion",
+          "Représentation",
+          "Survie",
+          "Tromperie"
+        ]
+      },
+      "caracteristique_principale": "Charisme",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Charisme",
+      "sorts_prepares": false,
+      "rituel": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Incantation",
+            "type": "automatique",
+            "description": "Vous connaissez 2 sorts mineurs et 4 sorts de niveau 1 de barde.",
+            "sorts_mineurs_connus": 2,
+            "sorts_connus": 4,
+            "emplacements": {
+              "1": 2
+            }
+          },
+          {
+            "nom": "Inspiration Bardique (d6)",
+            "type": "automatique",
+            "description": "Action bonus. Un allié dans les 18m ajoute 1d6 à un jet d'attaque, de sauvegarde ou de compétence dans les 10 minutes. Nombre d'utilisations = mod Charisme (min 1).",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": "modificateur_charisme"
+            }
+          }
+        ],
+        "2": [
+          {
+            "nom": "Touche-à-Tout",
+            "type": "automatique",
+            "description": "Ajoutez la moitié de votre bonus de maîtrise aux jets de compétence qui n'utilisent pas déjà ce bonus."
+          },
+          {
+            "nom": "Chant de Repos",
+            "type": "automatique",
+            "description": "Vous et vos alliés récupérez 1d6 PV supplémentaires par Dé de Vie dépensé lors d'un repos court si vous jouez durant le repos."
+          }
+        ],
+        "3": [
+          {
+            "nom": "Collège de Barde",
+            "type": "sous_classe",
+            "description": "Choisissez votre Collège."
+          },
+          {
+            "nom": "Expertise",
+            "type": "choix_multiple",
+            "description": "Choisissez 2 compétences maîtrisées. Votre bonus de maîtrise est doublé pour ces compétences.",
+            "nombre_choix": 2
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Inspiration Bardique (d8)",
+            "type": "automatique",
+            "description": "Le dé devient d8."
+          },
+          {
+            "nom": "Source d'Inspiration",
+            "type": "automatique",
+            "description": "Vous récupérez vos utilisations d'Inspiration Bardique après un repos court ou long."
+          }
+        ],
+        "6": [
+          {
+            "nom": "Contre-Charme",
+            "type": "automatique",
+            "description": "Action. Vous et vos alliés dans les 9m ont avantage aux jets de sauvegarde contre charme et terreur."
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "10": [
+          {
+            "nom": "Inspiration Bardique (d10)",
+            "type": "automatique",
+            "description": "Le dé devient d10."
+          },
+          {
+            "nom": "Expertise",
+            "type": "choix_multiple",
+            "description": "Choisissez 2 compétences maîtrisées supplémentaires pour Expertise.",
+            "nombre_choix": 2
+          },
+          {
+            "nom": "Secrets Magiques",
+            "type": "choix_multiple",
+            "description": "Apprenez 2 sorts de n'importe quelle classe.",
+            "nombre_choix": 2
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "14": [
+          {
+            "nom": "Secrets Magiques",
+            "type": "choix_multiple",
+            "description": "Apprenez 2 sorts supplémentaires de n'importe quelle classe.",
+            "nombre_choix": 2
+          }
+        ],
+        "15": [
+          {
+            "nom": "Inspiration Bardique (d12)",
+            "type": "automatique",
+            "description": "Le dé devient d12."
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "18": [
+          {
+            "nom": "Secrets Magiques",
+            "type": "choix_multiple",
+            "description": "Apprenez 2 sorts supplémentaires de n'importe quelle classe.",
+            "nombre_choix": 2
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Inspiration Supérieure",
+            "type": "automatique",
+            "description": "Si vous n'avez plus d'Inspiration Bardique au début de votre tour, vous en récupérez 1."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "lore",
+          "nom": "Collège du Savoir",
+          "description": "Vous collectez les connaissances et secrets du multivers.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Maîtrises Supplémentaires",
+                "type": "choix_multiple",
+                "description": "Maîtrise de 3 compétences de votre choix.",
+                "nombre_choix": 3
+              },
+              {
+                "nom": "Mots Cinglants",
+                "type": "automatique",
+                "description": "Réaction. Une créature dans les 18m soustrait un dé d'Inspiration Bardique de son jet d'attaque, de sauvegarde ou de compétence."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Secrets Magiques Supplémentaires",
+                "type": "choix_multiple",
+                "description": "Apprenez 2 sorts de n'importe quelle classe (niveau 3 maximum).",
+                "nombre_choix": 2
+              }
+            ],
+            "14": [
+              {
+                "nom": "Compétence Inégalée",
+                "type": "automatique",
+                "description": "Quand vous ratez un jet de compétence, vous pouvez dépenser une Inspiration Bardique pour ajouter le résultat au jet."
+              }
+            ]
+          }
+        },
+        {
+          "id": "valor",
+          "nom": "Collège de la Vaillance",
+          "description": "Vous inspirez par la bravoure et les actes héroïques.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Maîtrises Supplémentaires",
+                "type": "automatique",
+                "description": "Maîtrise des armures intermédiaires, boucliers et armes de guerre."
+              },
+              {
+                "nom": "Inspiration au Combat",
+                "type": "automatique",
+                "description": "Une créature qui reçoit votre Inspiration Bardique peut ajouter le dé à ses jets de dégâts d'arme ou à sa CA contre une attaque."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Attaque Supplémentaire",
+                "type": "automatique",
+                "description": "Vous pouvez attaquer deux fois avec l'action Attaquer.",
+                "effet": {
+                  "nombre_attaques": 2
+                }
+              }
+            ],
+            "14": [
+              {
+                "nom": "Magie de Combat",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort avec votre action, vous pouvez faire une attaque avec arme en action bonus."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cleric",
+      "nom": "Clerc",
+      "nom_en": "Cleric",
+      "de_vie": "d8",
+      "maitrises": {
+        "armures": [
+          "Armures légères",
+          "Armures intermédiaires",
+          "Boucliers"
+        ],
+        "armes": [
+          "Armes courantes"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Sagesse",
+          "Charisme"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Histoire",
+          "Intuition",
+          "Médecine",
+          "Persuasion",
+          "Religion"
+        ]
+      },
+      "caracteristique_principale": "Sagesse",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Sagesse",
+      "sorts_prepares": true,
+      "rituel": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Incantation",
+            "type": "automatique",
+            "description": "Vous connaissez 3 sorts mineurs. Vous préparez un nombre de sorts = mod Sagesse + niveau de clerc (min 1).",
+            "sorts_mineurs_connus": 3,
+            "emplacements": {
+              "1": 2
+            }
+          },
+          {
+            "nom": "Domaine Divin",
+            "type": "sous_classe",
+            "description": "Choisissez votre Domaine. Vous gagnez des sorts de domaine automatiquement."
+          }
+        ],
+        "2": [
+          {
+            "nom": "Canalisation d'Énergie Divine (1/repos)",
+            "type": "automatique",
+            "description": "Vous canalisez l'énergie divine. Chasse-Mort (Renvoi des Morts-Vivants) ou effet de domaine.",
+            "utilisation": {
+              "type": "repos_court",
+              "nombre": 1
+            }
+          },
+          {
+            "nom": "Canalisation : Renvoi des Morts-Vivants",
+            "type": "automatique",
+            "description": "Action. Morts-vivants à 9m font jet Sagesse DD ou sont renvoyés 1 minute."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Destruction des Morts-Vivants (FP 1/2)",
+            "type": "automatique",
+            "description": "Morts-vivants de FP 1/2 ou moins sont détruits par Renvoi au lieu d'être renvoyés."
+          }
+        ],
+        "6": [
+          {
+            "nom": "Canalisation d'Énergie Divine (2/repos)",
+            "type": "automatique",
+            "utilisation": {
+              "nombre": 2
+            }
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          },
+          {
+            "nom": "Destruction des Morts-Vivants (FP 1)",
+            "type": "automatique"
+          }
+        ],
+        "10": [
+          {
+            "nom": "Intervention Divine",
+            "type": "automatique",
+            "description": "Action. Jet d100. Si ≤ niveau de clerc, votre divinité intervient. 1 semaine avant réutilisation si succès.",
+            "utilisation": {
+              "type": "special",
+              "cooldown": "7_jours"
+            }
+          }
+        ],
+        "11": [
+          {
+            "nom": "Destruction des Morts-Vivants (FP 2)",
+            "type": "automatique"
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "14": [
+          {
+            "nom": "Destruction des Morts-Vivants (FP 3)",
+            "type": "automatique"
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "17": [
+          {
+            "nom": "Destruction des Morts-Vivants (FP 4)",
+            "type": "automatique"
+          }
+        ],
+        "18": [
+          {
+            "nom": "Canalisation d'Énergie Divine (3/repos)",
+            "type": "automatique",
+            "utilisation": {
+              "nombre": 3
+            }
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Intervention Divine Améliorée",
+            "type": "automatique",
+            "description": "Votre Intervention Divine réussit automatiquement."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "life",
+          "nom": "Domaine de la Vie",
+          "description": "Vous focalisez sur la guérison et la préservation de la vie.",
+          "source": "Player's Handbook",
+          "sorts_domaine": {
+            "1": [
+              "Bénédiction",
+              "Soin des Blessures"
+            ],
+            "3": [
+              "Arme Spirituelle",
+              "Restauration Partielle"
+            ],
+            "5": [
+              "Lueur d'Espoir",
+              "Retour à la Vie"
+            ],
+            "7": [
+              "Gardien de la Foi",
+              "Mort Simulée"
+            ],
+            "9": [
+              "Rappel à la Vie",
+              "Soin des Blessures de Groupe"
+            ]
+          },
+          "capacites_par_niveau": {
+            "1": [
+              {
+                "nom": "Maîtrise Supplémentaire",
+                "type": "automatique",
+                "description": "Maîtrise des armures lourdes."
+              },
+              {
+                "nom": "Disciple de la Vie",
+                "type": "automatique",
+                "description": "Sorts de soin restaurent 2 + niveau du sort PV supplémentaires."
+              }
+            ],
+            "2": [
+              {
+                "nom": "Canalisation : Préserver la Vie",
+                "type": "automatique",
+                "description": "Action. Restaurez 5 × niveau de clerc PV répartis entre créatures à 9m (max = moitié PV max par créature)."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Guérisseur Béni",
+                "type": "automatique",
+                "description": "Sorts de soin vous soignent aussi de 2 + niveau du sort PV."
+              }
+            ],
+            "8": [
+              {
+                "nom": "Frappe Divine",
+                "type": "automatique",
+                "description": "1/tour, attaque d'arme inflige 1d8 dégâts radiants supplémentaires (2d8 au niv 14)."
+              }
+            ],
+            "17": [
+              {
+                "nom": "Guérison Suprême",
+                "type": "automatique",
+                "description": "Vos sorts de soin lancent le maximum au lieu de lancer les dés."
+              }
+            ]
+          }
+        },
+        {
+          "id": "war",
+          "nom": "Domaine de la Guerre",
+          "description": "Vous servez un dieu de guerre et de bataille.",
+          "source": "Player's Handbook",
+          "sorts_domaine": {
+            "1": [
+              "Bouclier de la Foi",
+              "Faveur Divine"
+            ],
+            "3": [
+              "Arme Magique",
+              "Arme Spirituelle"
+            ],
+            "5": [
+              "Chevauchée Fantôme",
+              "Esprits Gardiens"
+            ],
+            "7": [
+              "Liberté de Mouvement",
+              "Peau de Pierre"
+            ],
+            "9": [
+              "Colonne de Flamme",
+              "Immobiliser un Monstre"
+            ]
+          },
+          "capacites_par_niveau": {
+            "1": [
+              {
+                "nom": "Maîtrise Supplémentaire",
+                "type": "automatique",
+                "description": "Maîtrise des armures lourdes et armes de guerre."
+              },
+              {
+                "nom": "Prêtre de Guerre",
+                "type": "automatique",
+                "description": "Action bonus pour faire une attaque d'arme. Nombre d'utilisations = mod Sagesse (min 1).",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": "modificateur_sagesse"
+                }
+              }
+            ],
+            "2": [
+              {
+                "nom": "Canalisation : Frappes Guidées",
+                "type": "automatique",
+                "description": "Vous ou une créature à 9m gagne +10 à un jet d'attaque."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Canalisation : Bénédiction du Dieu de la Guerre",
+                "type": "automatique",
+                "description": "Réaction. Une créature à 9m fait une attaque d'arme en réaction après avoir touché."
+              }
+            ],
+            "8": [
+              {
+                "nom": "Frappe Divine",
+                "type": "automatique",
+                "description": "1/tour, attaque d'arme inflige 1d8 dégâts supplémentaires (type selon domaine). 2d8 au niv 14."
+              }
+            ],
+            "17": [
+              {
+                "nom": "Avatar de la Bataille",
+                "type": "automatique",
+                "description": "Résistance aux dégâts contondants, perforants et tranchants d'armes non-magiques."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "druid",
+      "nom": "Druide",
+      "nom_en": "Druid",
+      "de_vie": "d8",
+      "maitrises": {
+        "armures": [
+          "Armures légères (non-métalliques)",
+          "Armures intermédiaires (non-métalliques)",
+          "Boucliers (non-métalliques)"
+        ],
+        "armes": [
+          "Gourdin",
+          "Dague",
+          "Dard",
+          "Javeline",
+          "Masse d'armes",
+          "Bâton",
+          "Cimeterre",
+          "Serpe",
+          "Fronde",
+          "Lance"
+        ],
+        "outils": [
+          "Kit d'herboriste"
+        ],
+        "jets_de_sauvegarde": [
+          "Intelligence",
+          "Sagesse"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Arcanes",
+          "Dressage",
+          "Intuition",
+          "Médecine",
+          "Nature",
+          "Perception",
+          "Religion",
+          "Survie"
+        ]
+      },
+      "caracteristique_principale": "Sagesse",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Sagesse",
+      "sorts_prepares": true,
+      "rituel": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Druidique",
+            "type": "automatique",
+            "description": "Vous connaissez le Druidique, langage secret des druides."
+          },
+          {
+            "nom": "Incantation",
+            "type": "automatique",
+            "description": "Vous connaissez 2 sorts mineurs. Vous préparez un nombre de sorts = mod Sagesse + niveau de druide (min 1).",
+            "sorts_mineurs_connus": 2,
+            "emplacements": {
+              "1": 2
+            }
+          }
+        ],
+        "2": [
+          {
+            "nom": "Forme Sauvage",
+            "type": "automatique",
+            "description": "Action pour se transformer en bête de FP 1/4 max (pas de vitesse de vol/nage). 2 utilisations/repos court.",
+            "utilisation": {
+              "type": "repos_court",
+              "nombre": 2
+            }
+          },
+          {
+            "nom": "Cercle Druidique",
+            "type": "sous_classe",
+            "description": "Choisissez votre Cercle."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Forme Sauvage Améliorée",
+            "type": "automatique",
+            "description": "Bêtes de FP 1/2 max. Vitesse de nage autorisée."
+          },
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "8": [
+          {
+            "nom": "Forme Sauvage Améliorée",
+            "type": "automatique",
+            "description": "Bêtes de FP 1 max. Vitesse de vol autorisée."
+          },
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "18": [
+          {
+            "nom": "Jeunesse Éternelle",
+            "type": "automatique",
+            "description": "Vous vieillissez 10 fois moins vite."
+          },
+          {
+            "nom": "Incantation de Bête",
+            "type": "automatique",
+            "description": "Vous pouvez lancer des sorts en Forme Sauvage (composantes verbales et somatiques)."
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Archidruide",
+            "type": "automatique",
+            "description": "Forme Sauvage illimitée. Ignore composantes verbales et somatiques des sorts de druide."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "land",
+          "nom": "Cercle de la Terre",
+          "description": "Vous tirez votre pouvoir de la terre elle-même.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "2": [
+              {
+                "nom": "Sort Mineur Supplémentaire",
+                "type": "automatique",
+                "description": "Vous apprenez 1 sort mineur de druide supplémentaire."
+              },
+              {
+                "nom": "Récupération Naturelle",
+                "type": "automatique",
+                "description": "Lors d'un repos court, récupérez des emplacements de sorts (total niveau ≤ moitié niveau druide arrondi au supérieur).",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ],
+            "3": [
+              {
+                "nom": "Sorts de Cercle",
+                "type": "choix",
+                "description": "Choisissez un terrain (Arctique, Côte, Désert, Forêt, Marais, Montagne, Plaine, Sous-Terre). Vous gagnez des sorts selon le terrain choisi (toujours préparés).",
+                "options": [
+                  {
+                    "nom": "Arctique",
+                    "sorts": {
+                      "3": [
+                        "Croissance d'Épines",
+                        "Immobiliser une Personne"
+                      ],
+                      "5": [
+                        "Tempête de Neige",
+                        "Lenteur"
+                      ],
+                      "7": [
+                        "Liberté de Mouvement",
+                        "Tempête de Grêle"
+                      ],
+                      "9": [
+                        "Communication avec la Nature",
+                        "Cône de Froid"
+                      ]
+                    }
+                  },
+                  {
+                    "nom": "Forêt",
+                    "sorts": {
+                      "3": [
+                        "Pattes d'Araignée",
+                        "Peau d'Écorce"
+                      ],
+                      "5": [
+                        "Appel de la Foudre",
+                        "Croissance Végétale"
+                      ],
+                      "7": [
+                        "Divination",
+                        "Liberté de Mouvement"
+                      ],
+                      "9": [
+                        "Communication avec la Nature",
+                        "Passage par les Arbres"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "6": [
+              {
+                "nom": "Traversée des Terres",
+                "type": "automatique",
+                "description": "Déplacement en terrain difficile non-magique sans ralentissement. Passage à travers plantes non-magiques sans dégâts/ralentissement. Avantage aux jets de sauvegarde contre plantes magiques."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Protection de la Nature",
+                "type": "automatique",
+                "description": "Immunité au poison et aux maladies. Immunité au charme et à la terreur par élémentaires et fées."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Sanctuaire de la Nature",
+                "type": "automatique",
+                "description": "Créatures de votre choix dans les 9m ont désavantage à leurs jets de sauvegarde contre vos sorts et capacités de druide."
+              }
+            ]
+          }
+        },
+        {
+          "id": "moon",
+          "nom": "Cercle de la Lune",
+          "description": "Vous embrassez la férocité de la nature.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "2": [
+              {
+                "nom": "Forme Sauvage de Combat",
+                "type": "automatique",
+                "description": "Action bonus pour Forme Sauvage. Bêtes de FP = niveau druide ÷ 3 (arrondi inf)."
+              },
+              {
+                "nom": "Formes du Cercle",
+                "type": "automatique",
+                "description": "Niveau 2 : FP 1 max (pas de vol). Niveau 4 : Vitesse de nage. Niveau 6 : FP = niveau druide ÷ 3. Niveau 8 : Vitesse de vol."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Frappe Primitive",
+                "type": "automatique",
+                "description": "Attaques en Forme Sauvage comptent comme magiques."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Forme Élémentaire",
+                "type": "automatique",
+                "description": "Dépensez 2 utilisations de Forme Sauvage pour vous transformer en élémentaire d'air, d'eau, de feu ou de terre.",
+                "utilisation": {
+                  "cout": 2
+                }
+              }
+            ],
+            "14": [
+              {
+                "nom": "Mille Formes",
+                "type": "automatique",
+                "description": "Sort Modification d'Apparence à volonté."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "monk",
+      "nom": "Moine",
+      "nom_en": "Monk",
+      "de_vie": "d8",
+      "maitrises": {
+        "armures": [],
+        "armes": [
+          "Armes courantes",
+          "Épée courte"
+        ],
+        "outils": [
+          "Un type d'outils d'artisan OU un instrument de musique"
+        ],
+        "jets_de_sauvegarde": [
+          "Force",
+          "Dextérité"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Acrobaties",
+          "Athlétisme",
+          "Discrétion",
+          "Histoire",
+          "Intuition",
+          "Religion"
+        ]
+      },
+      "caracteristique_principale": "Dextérité et Sagesse",
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Défense sans Armure",
+            "type": "automatique",
+            "description": "Si vous ne portez ni armure ni bouclier, CA = 10 + mod Dex + mod Sagesse."
+          },
+          {
+            "nom": "Arts Martiaux",
+            "type": "automatique",
+            "description": "Attaques à mains nues et armes de moine utilisent Dex ou Force. Dégâts = 1d4 (augmente avec le niveau). Action bonus pour attaque à mains nues après action Attaquer.",
+            "degats_arts_martiaux": {
+              "1": "1d4",
+              "5": "1d6",
+              "11": "1d8",
+              "17": "1d10"
+            }
+          }
+        ],
+        "2": [
+          {
+            "nom": "Ki",
+            "type": "automatique",
+            "description": "Vous avez des points de ki = niveau de moine. Récupération après repos court.",
+            "points_ki": "niveau",
+            "utilisation": {
+              "type": "repos_court"
+            }
+          },
+          {
+            "nom": "Déluge de Coups",
+            "type": "automatique",
+            "description": "1 point de ki. Après action Attaquer, action bonus pour 2 attaques à mains nues."
+          },
+          {
+            "nom": "Défense Patiente",
+            "type": "automatique",
+            "description": "1 point de ki. Action bonus pour Esquiver."
+          },
+          {
+            "nom": "Déplacement Agile",
+            "type": "automatique",
+            "description": "1 point de ki. Action bonus pour Se Désengager ou Foncer. Votre saut est doublé ce tour."
+          },
+          {
+            "nom": "Déplacement sans Armure",
+            "type": "automatique",
+            "description": "+3m de vitesse si vous ne portez ni armure ni bouclier. Augmente avec le niveau.",
+            "bonus_vitesse": {
+              "2": 3,
+              "6": 4.5,
+              "10": 6,
+              "14": 7.5,
+              "18": 9
+            }
+          }
+        ],
+        "3": [
+          {
+            "nom": "Tradition Monastique",
+            "type": "sous_classe",
+            "description": "Choisissez votre Tradition."
+          },
+          {
+            "nom": "Déflexion de Projectiles",
+            "type": "automatique",
+            "description": "Réaction quand touché par attaque à distance. Réduisez dégâts de 1d10 + mod Dex + niveau moine. Si réduit à 0, dépensez 1 ki pour renvoyer (attaque à distance, portée 6/18m)."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Chute Lente",
+            "type": "automatique",
+            "description": "Réaction. Réduisez dégâts de chute de 5 × niveau de moine."
+          },
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Attaque Supplémentaire",
+            "type": "automatique",
+            "description": "Vous pouvez attaquer deux fois.",
+            "effet": {
+              "nombre_attaques": 2
+            }
+          },
+          {
+            "nom": "Frappe Étourdissante",
+            "type": "automatique",
+            "description": "1 point de ki. Après avoir touché, cible fait jet Con DD ou est étourdie jusqu'à la fin de votre prochain tour."
+          }
+        ],
+        "6": [
+          {
+            "nom": "Frappes de Ki",
+            "type": "automatique",
+            "description": "Vos attaques à mains nues comptent comme magiques."
+          }
+        ],
+        "7": [
+          {
+            "nom": "Esquive Instinctive",
+            "type": "automatique",
+            "description": "Jet de sauvegarde Dex pour demi-dégâts = aucun dégât si réussi, demi si raté."
+          },
+          {
+            "nom": "Sérénité",
+            "type": "automatique",
+            "description": "Avantage aux jets de sauvegarde contre charme et terreur."
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "10": [
+          {
+            "nom": "Pureté Physique",
+            "type": "automatique",
+            "description": "Immunité aux maladies et au poison."
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "13": [
+          {
+            "nom": "Langue du Soleil et de la Lune",
+            "type": "automatique",
+            "description": "Vous comprenez toutes les langues parlées. Toute créature qui comprend une langue vous comprend."
+          }
+        ],
+        "14": [
+          {
+            "nom": "Âme de Diamant",
+            "type": "automatique",
+            "description": "Maîtrise de tous les jets de sauvegarde. 1 point de ki pour relancer un jet de sauvegarde raté."
+          }
+        ],
+        "15": [
+          {
+            "nom": "Jeunesse Éternelle",
+            "type": "automatique",
+            "description": "Vous ne subissez pas les effets du vieillissement. Vous ne pouvez pas être vieilli magiquement."
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "18": [
+          {
+            "nom": "Corps Vide",
+            "type": "automatique",
+            "description": "4 points de ki. Action pour devenir invisible 1 minute. Résistance à tous les dégâts sauf force."
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Perfection du Moi",
+            "type": "automatique",
+            "description": "Si vous n'avez plus de ki au début de votre tour, récupérez 4 points de ki."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "open_hand",
+          "nom": "Voie de la Paume Ouverte",
+          "description": "Vous maîtrisez les techniques de combat à mains nues.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Technique de la Paume Ouverte",
+                "type": "automatique",
+                "description": "Quand vous utilisez Déluge de Coups, imposez un effet à chaque cible touchée : tomber à terre (jet Dex DD), repoussée de 4,50m (jet Force DD), ou ne peut pas prendre de réaction jusqu'à la fin de votre prochain tour."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Intégrité du Corps",
+                "type": "automatique",
+                "description": "Action pour regagner PV = 3 × niveau de moine. 1/repos long.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ],
+            "11": [
+              {
+                "nom": "Tranquillité",
+                "type": "automatique",
+                "description": "Fin de repos long, sort Sanctuaire (DD = 8 + mod Sagesse + bonus maîtrise). Dure jusqu'au prochain repos long. Prend fin si vous attaquez ou lancez un sort offensif."
+              }
+            ],
+            "17": [
+              {
+                "nom": "Paume Tremblante",
+                "type": "automatique",
+                "description": "Toucher une créature avec attaque à mains nues = vibrations mortelles. 3 points de ki. Aucun effet immédiat. Action pour terminer vibrations (0 PV ou jet Con DD pour 10d10 dégâts nécrotiques)."
+              }
+            ]
+          }
+        },
+        {
+          "id": "shadow",
+          "nom": "Voie de l'Ombre",
+          "description": "Vous suivez une tradition d'arts martiaux furtifs.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Arts de l'Ombre",
+                "type": "automatique",
+                "description": "2 points de ki pour lancer Ténèbres, Passage sans Trace, Silence ou Invisibilité Majeure (sur vous)."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Pas de l'Ombre",
+                "type": "automatique",
+                "description": "Action bonus. Téléportation de 18m vers un espace de lumière faible/ténèbres que vous voyez. Avantage à votre prochaine attaque de corps à corps avant la fin du tour."
+              }
+            ],
+            "11": [
+              {
+                "nom": "Manteau d'Ombre",
+                "type": "automatique",
+                "description": "Vous êtes invisible dans une zone de lumière faible ou de ténèbres."
+              }
+            ],
+            "17": [
+              {
+                "nom": "Opportuniste",
+                "type": "automatique",
+                "description": "Réaction. Quand une créature à 1,50m est touchée par une attaque d'un autre que vous, faites une attaque de corps à corps contre cette créature."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "paladin",
+      "nom": "Paladin",
+      "nom_en": "Paladin",
+      "de_vie": "d10",
+      "maitrises": {
+        "armures": [
+          "Armures légères",
+          "Armures intermédiaires",
+          "Armures lourdes",
+          "Boucliers"
+        ],
+        "armes": [
+          "Armes courantes",
+          "Armes de guerre"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Sagesse",
+          "Charisme"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Athlétisme",
+          "Intimidation",
+          "Intuition",
+          "Médecine",
+          "Persuasion",
+          "Religion"
+        ]
+      },
+      "caracteristique_principale": "Force et Charisme",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Charisme",
+      "sorts_prepares": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Sens Divin",
+            "type": "automatique",
+            "description": "Action. Détectez célestes/fiélons/morts-vivants dans 18m (1 min). 1 + mod Charisme utilisations/repos long.",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": "1_plus_charisme"
+            }
+          },
+          {
+            "nom": "Imposition des Mains",
+            "type": "automatique",
+            "description": "Action. Toucher une créature pour restaurer PV (réserve = 5 × niveau paladin). 5 PV de la réserve pour soigner maladie ou poison.",
+            "utilisation": {
+              "type": "repos_long",
+              "pool": "5_fois_niveau"
+            }
+          }
+        ],
+        "2": [
+          {
+            "nom": "Incantation",
+            "type": "automatique",
+            "description": "Vous préparez un nombre de sorts = mod Charisme + niveau paladin ÷ 2 (arrondi inf, min 1).",
+            "emplacements": {
+              "1": 2
+            }
+          },
+          {
+            "nom": "Châtiment Divin",
+            "type": "automatique",
+            "description": "Quand vous touchez avec une attaque d'arme de corps à corps, dépensez un emplacement de sort pour infliger 2d8 dégâts radiants (+1d8 par niveau au-dessus du 1er, max 5d8). +1d8 si cible est mort-vivant ou fiélon."
+          },
+          {
+            "nom": "Style de Combat",
+            "type": "choix",
+            "description": "Choisissez un Style de Combat.",
+            "options": [
+              {
+                "nom": "Défense",
+                "description": "+1 CA si vous portez une armure."
+              },
+              {
+                "nom": "Duel",
+                "description": "+2 dégâts avec arme de corps à corps à une main si aucune autre arme."
+              },
+              {
+                "nom": "Arme à Deux Mains",
+                "description": "Relancez 1 ou 2 sur dés de dégâts avec arme de corps à corps à deux mains."
+              },
+              {
+                "nom": "Protection",
+                "description": "Réaction. Imposez désavantage à une attaque contre un allié à 1,50m si vous avez un bouclier."
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "nom": "Serment Sacré",
+            "type": "sous_classe",
+            "description": "Choisissez votre Serment."
+          },
+          {
+            "nom": "Santé Divine",
+            "type": "automatique",
+            "description": "Immunité aux maladies."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Attaque Supplémentaire",
+            "type": "automatique",
+            "description": "Vous pouvez attaquer deux fois.",
+            "effet": {
+              "nombre_attaques": 2
+            }
+          }
+        ],
+        "6": [
+          {
+            "nom": "Aura de Protection",
+            "type": "automatique",
+            "description": "Vous et alliés à 3m ajoutez votre mod Charisme aux jets de sauvegarde. Portée 9m au niveau 18."
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "10": [
+          {
+            "nom": "Aura de Courage",
+            "type": "automatique",
+            "description": "Vous et alliés à 3m êtes immunisés à la terreur. Portée 9m au niveau 18."
+          }
+        ],
+        "11": [
+          {
+            "nom": "Châtiment Divin Amélioré",
+            "type": "automatique",
+            "description": "Vos attaques d'arme de corps à corps infligent 1d8 dégâts radiants supplémentaires."
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "14": [
+          {
+            "nom": "Toucher Purificateur",
+            "type": "automatique",
+            "description": "Action. Terminez un sort sur vous ou une créature consentante que vous touchez. Nombre d'utilisations = mod Charisme (min 1).",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": "modificateur_charisme"
+            }
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "devotion",
+          "nom": "Serment de Dévotion",
+          "description": "Vous vous engagez aux idéaux les plus élevés de justice, de vertu et d'ordre.",
+          "source": "Player's Handbook",
+          "sorts_serment": {
+            "3": [
+              "Protection contre le Mal et le Bien",
+              "Sanctuaire"
+            ],
+            "5": [
+              "Restauration Partielle",
+              "Zone de Vérité"
+            ],
+            "9": [
+              "Lueur d'Espoir",
+              "Dissipation de la Magie"
+            ],
+            "13": [
+              "Liberté de Mouvement",
+              "Gardien de la Foi"
+            ],
+            "17": [
+              "Communication avec la Nature",
+              "Colonne de Flamme"
+            ]
+          },
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Canalisation : Arme Sacrée",
+                "type": "automatique",
+                "description": "Action. Arme émet lumière vive 6m, faible 6m. Ajoutez mod Charisme aux jets d'attaque avec cette arme. 1 minute.",
+                "utilisation": {
+                  "type": "repos_court"
+                }
+              },
+              {
+                "nom": "Canalisation : Renvoi des Impies",
+                "type": "automatique",
+                "description": "Action. Fiélons et morts-vivants à 9m font jet Sagesse DD ou sont renvoyés 1 minute."
+              }
+            ],
+            "7": [
+              {
+                "nom": "Aura de Dévotion",
+                "type": "automatique",
+                "description": "Vous et alliés à 3m ne pouvez pas être charmés. Portée 9m au niveau 18."
+              }
+            ],
+            "15": [
+              {
+                "nom": "Pureté d'Esprit",
+                "type": "automatique",
+                "description": "Vous êtes toujours sous l'effet de Protection contre le Mal et le Bien."
+              }
+            ],
+            "20": [
+              {
+                "nom": "Nimbe Sacré",
+                "type": "automatique",
+                "description": "Action. 1 minute. Lumière vive 9m. Créatures hostiles qui commencent leur tour dans 3m font jet Con DD ou sont aveuglées. Avantage aux jets de sauvegarde contre sorts de fiélons et morts-vivants. 1/repos long.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "vengeance",
+          "nom": "Serment de Vengeance",
+          "description": "Vous punissez ceux qui commettent de grands péchés.",
+          "source": "Player's Handbook",
+          "sorts_serment": {
+            "3": [
+              "Injonction",
+              "Marque du Chasseur"
+            ],
+            "5": [
+              "Immobiliser une Personne",
+              "Pas Brumeux"
+            ],
+            "9": [
+              "Hâte",
+              "Protection contre l'Énergie"
+            ],
+            "13": [
+              "Bannissement",
+              "Localisation de Créature"
+            ],
+            "17": [
+              "Immobiliser un Monstre",
+              "Scrutation"
+            ]
+          },
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Canalisation : Vœu d'Inimitié",
+                "type": "automatique",
+                "description": "Action bonus. Désignez une créature à 3m. Avantage aux jets d'attaque contre elle pendant 1 minute.",
+                "utilisation": {
+                  "type": "repos_court"
+                }
+              },
+              {
+                "nom": "Canalisation : Abjurer l'Ennemi",
+                "type": "automatique",
+                "description": "Action. Une créature à 18m fait jet Sagesse DD ou est effrayée 1 minute. Vitesse 0 si raté de 5+."
+              }
+            ],
+            "7": [
+              {
+                "nom": "Vengeur Implacable",
+                "type": "automatique",
+                "description": "Réaction quand une créature à 1,50m touche un allié. Attaque de corps à corps contre cette créature."
+              }
+            ],
+            "15": [
+              {
+                "nom": "Âme de Vengeance",
+                "type": "automatique",
+                "description": "Réaction quand créature sous Vœu d'Inimitié attaque. Vous faites une attaque de corps à corps contre elle."
+              }
+            ],
+            "20": [
+              {
+                "nom": "Avatar Vengeur",
+                "type": "automatique",
+                "description": "Action. 1 heure. Ailes (18m vol). Aura 9m : créatures hostiles ont désavantage aux jets d'attaque contre vous et vos alliés. 1/repos long.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ranger",
+      "nom": "Rôdeur",
+      "nom_en": "Ranger",
+      "de_vie": "d10",
+      "maitrises": {
+        "armures": [
+          "Armures légères",
+          "Armures intermédiaires",
+          "Boucliers"
+        ],
+        "armes": [
+          "Armes courantes",
+          "Armes de guerre"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Force",
+          "Dextérité"
+        ],
+        "nombre_competences": 3,
+        "liste_competences": [
+          "Athlétisme",
+          "Discrétion",
+          "Dressage",
+          "Intuition",
+          "Investigation",
+          "Nature",
+          "Perception",
+          "Survie"
+        ]
+      },
+      "caracteristique_principale": "Dextérité et Sagesse",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Sagesse",
+      "sorts_connus": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Ennemi Juré",
+            "type": "choix",
+            "description": "Choisissez un type de créature (Aberrations, Bêtes, Célestes, Constructions, Dragons, Élémentaires, Fées, Fiélons, Géants, Humanoïdes, Monstruosités, Morts-vivants, Plantes, Vases). Avantage aux jets Survie pour les traquer et Intelligence pour se rappeler info à leur sujet. Ennemi juré supplémentaire aux niveaux 6 et 14.",
+            "options": [
+              "Aberrations",
+              "Bêtes",
+              "Célestes",
+              "Constructions",
+              "Dragons",
+              "Élémentaires",
+              "Fées",
+              "Fiélons",
+              "Géants",
+              "Humanoïdes",
+              "Monstruosités",
+              "Morts-vivants",
+              "Plantes",
+              "Vases"
+            ]
+          },
+          {
+            "nom": "Explorateur-né",
+            "type": "choix",
+            "description": "Choisissez un type de terrain favori (Arctique, Côte, Désert, Forêt, Marais, Montagne, Plaine, Sous-Terre). Avantage aux jets Intelligence et Sagesse liés à ce terrain. Terrain favori supplémentaire aux niveaux 6 et 10.",
+            "options": [
+              "Arctique",
+              "Côte",
+              "Désert",
+              "Forêt",
+              "Marais",
+              "Montagne",
+              "Plaine",
+              "Sous-Terre"
+            ]
+          }
+        ],
+        "2": [
+          {
+            "nom": "Incantation",
+            "type": "automatique",
+            "description": "Vous connaissez 2 sorts de niveau 1.",
+            "sorts_connus": 2,
+            "emplacements": {
+              "1": 2
+            }
+          },
+          {
+            "nom": "Style de Combat",
+            "type": "choix",
+            "description": "Choisissez un Style de Combat.",
+            "options": [
+              {
+                "nom": "Archerie",
+                "description": "+2 aux jets d'attaque avec armes à distance."
+              },
+              {
+                "nom": "Défense",
+                "description": "+1 CA si vous portez une armure."
+              },
+              {
+                "nom": "Duel",
+                "description": "+2 dégâts avec arme de corps à corps à une main si aucune autre arme."
+              },
+              {
+                "nom": "Combat à Deux Armes",
+                "description": "Ajoutez votre mod de caractéristique aux dégâts de la seconde attaque."
+              }
+            ]
+          }
+        ],
+        "3": [
+          {
+            "nom": "Archétype de Rôdeur",
+            "type": "sous_classe",
+            "description": "Choisissez votre Archétype."
+          },
+          {
+            "nom": "Vigilance Primitive",
+            "type": "automatique",
+            "description": "Vous et vos compagnons dans 1,5 km ne pouvez pas être surpris (sauf si inconscients). Vous ne pouvez pas être pris par surprise au début du combat."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Attaque Supplémentaire",
+            "type": "automatique",
+            "description": "Vous pouvez attaquer deux fois.",
+            "effet": {
+              "nombre_attaques": 2
+            }
+          }
+        ],
+        "8": [
+          {
+            "nom": "Foulée des Terres",
+            "type": "automatique",
+            "description": "Déplacement en terrain difficile non-magique ne coûte pas de mouvement supplémentaire. Avantage aux jets de sauvegarde contre plantes magiques qui entravent."
+          },
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "10": [
+          {
+            "nom": "Camouflage Naturel",
+            "type": "automatique",
+            "description": "1 minute pour vous camoufler. Avantage aux jets Discrétion tant que vous restez immobile et silencieux."
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "14": [
+          {
+            "nom": "Disparition",
+            "type": "automatique",
+            "description": "Action bonus pour Se Cacher. Vous ne pouvez pas être traqué par moyens non-magiques (sauf si vous le voulez)."
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "18": [
+          {
+            "nom": "Sens Sauvages",
+            "type": "automatique",
+            "description": "Vous ne pouvez pas être surpris. Vous savez où se trouvent les créatures invisibles à 9m (si vous pouvez les entendre et qu'elles ne sont pas cachées)."
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Tueur d'Ennemis",
+            "type": "automatique",
+            "description": "1/tour, ajoutez mod Sagesse aux dégâts d'une attaque contre un ennemi juré. Si vous réduisez un ennemi juré à 0 PV, avantage aux jets d'attaque contre un autre ennemi juré jusqu'à la fin de votre prochain tour."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "hunter",
+          "nom": "Chasseur",
+          "description": "Vous vous spécialisez dans la traque et l'élimination de menaces.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Proie du Chasseur",
+                "type": "choix",
+                "description": "Choisissez une capacité.",
+                "options": [
+                  {
+                    "nom": "Tueur de Colosses",
+                    "description": "Quand vous touchez une créature avec une attaque d'arme, elle subit 1d8 dégâts supplémentaires si elle a moins de son maximum de PV."
+                  },
+                  {
+                    "nom": "Tueur de Géants",
+                    "description": "Quand une créature Grande ou plus grande à 1,50m vous touche, réaction pour attaquer cette créature après son attaque."
+                  },
+                  {
+                    "nom": "Tueur de Hordes",
+                    "description": "1/tour, attaque supplémentaire contre créature différente à 1,50m de la cible originale."
+                  }
+                ]
+              }
+            ],
+            "7": [
+              {
+                "nom": "Tactiques Défensives",
+                "type": "choix",
+                "description": "Choisissez une capacité.",
+                "options": [
+                  {
+                    "nom": "Échapper à la Horde",
+                    "description": "Attaques d'opportunité contre vous ont désavantage."
+                  },
+                  {
+                    "nom": "Défense contre les Attaques Multiples",
+                    "description": "Quand une créature vous touche, vous gagnez +4 CA contre les attaques suivantes de cette créature ce tour."
+                  },
+                  {
+                    "nom": "Volonté d'Acier",
+                    "description": "Avantage aux jets de sauvegarde contre charme."
+                  }
+                ]
+              }
+            ],
+            "11": [
+              {
+                "nom": "Attaques Multiples",
+                "type": "choix",
+                "description": "Choisissez une capacité.",
+                "options": [
+                  {
+                    "nom": "Salve",
+                    "description": "Action pour attaquer à distance contre un nombre de créatures = mod Sagesse (min 1) à 1,50m l'une de l'autre."
+                  },
+                  {
+                    "nom": "Attaque Tourbillonnante",
+                    "description": "Action pour attaque de corps à corps contre toutes les créatures à 1,50m."
+                  }
+                ]
+              }
+            ],
+            "15": [
+              {
+                "nom": "Défense Supérieure du Chasseur",
+                "type": "choix",
+                "description": "Choisissez une capacité.",
+                "options": [
+                  {
+                    "nom": "Esquive Instinctive",
+                    "description": "Attaquant visible à 9m a désavantage."
+                  },
+                  {
+                    "nom": "Résistance",
+                    "description": "Réaction quand vous subissez des dégâts. Réduisez les dégâts de la moitié."
+                  },
+                  {
+                    "nom": "Parade",
+                    "description": "Réaction. +4 CA contre une attaque de corps à corps. Si l'attaque rate, réaction pour contre-attaquer."
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "beast_master",
+          "nom": "Maître des Bêtes",
+          "description": "Vous formez un lien magique avec une bête.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Compagnon du Rôdeur",
+                "type": "automatique",
+                "description": "Vous liez une bête de taille M ou plus petite de FP 1/4 max. Elle obéit à vos ordres et partage votre initiative. Vous pouvez dépenser votre attaque pour la faire attaquer."
+              }
+            ],
+            "7": [
+              {
+                "nom": "Lien Exceptionnel",
+                "type": "automatique",
+                "description": "Action bonus pour commander votre compagnon. Il peut Foncer, Se Désengager, Esquiver ou Aider en action bonus."
+              }
+            ],
+            "11": [
+              {
+                "nom": "Fureur Bestiale",
+                "type": "automatique",
+                "description": "Quand vous ordonnez à votre compagnon d'attaquer, il peut faire deux attaques."
+              }
+            ],
+            "15": [
+              {
+                "nom": "Défense Partagée",
+                "type": "automatique",
+                "description": "Votre compagnon a avantage aux jets de sauvegarde quand vous êtes à 1,50m."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rogue",
+      "nom": "Roublard",
+      "nom_en": "Rogue",
+      "de_vie": "d8",
+      "maitrises": {
+        "armures": [
+          "Armures légères"
+        ],
+        "armes": [
+          "Armes courantes",
+          "Arbalète de poing",
+          "Épée courte",
+          "Épée longue",
+          "Rapière"
+        ],
+        "outils": [
+          "Outils de voleur"
+        ],
+        "jets_de_sauvegarde": [
+          "Dextérité",
+          "Intelligence"
+        ],
+        "nombre_competences": 4,
+        "liste_competences": [
+          "Acrobaties",
+          "Athlétisme",
+          "Discrétion",
+          "Escamotage",
+          "Intimidation",
+          "Intuition",
+          "Investigation",
+          "Perception",
+          "Persuasion",
+          "Représentation",
+          "Tromperie"
+        ]
+      },
+      "caracteristique_principale": "Dextérité",
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Expertise",
+            "type": "choix_multiple",
+            "description": "Choisissez 2 compétences ou outils maîtrisés. Bonus de maîtrise doublé.",
+            "nombre_choix": 2
+          },
+          {
+            "nom": "Attaque Sournoise",
+            "type": "automatique",
+            "description": "1/tour, +1d6 dégâts si vous avez avantage OU si un allié à 1,50m de la cible (pas de désavantage). Augmente avec le niveau.",
+            "degats_attaque_sournoise": {
+              "1": "1d6",
+              "3": "2d6",
+              "5": "3d6",
+              "7": "4d6",
+              "9": "5d6",
+              "11": "6d6",
+              "13": "7d6",
+              "15": "8d6",
+              "17": "9d6",
+              "19": "10d6"
+            }
+          },
+          {
+            "nom": "Argot des Voleurs",
+            "type": "automatique",
+            "description": "Vous connaissez l'Argot des Voleurs, un mélange de dialecte, jargon et codes secrets."
+          }
+        ],
+        "2": [
+          {
+            "nom": "Ruse",
+            "type": "automatique",
+            "description": "Action bonus pour Foncer, Se Désengager ou Se Cacher."
+          }
+        ],
+        "3": [
+          {
+            "nom": "Archétype de Roublard",
+            "type": "sous_classe",
+            "description": "Choisissez votre Archétype."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Esquive Instinctive",
+            "type": "automatique",
+            "description": "Quand un attaquant que vous voyez vous touche, réaction pour réduire les dégâts de moitié."
+          }
+        ],
+        "6": [
+          {
+            "nom": "Expertise",
+            "type": "choix_multiple",
+            "description": "Choisissez 2 compétences ou outils maîtrisés supplémentaires pour Expertise.",
+            "nombre_choix": 2
+          }
+        ],
+        "7": [
+          {
+            "nom": "Esquive Totale",
+            "type": "automatique",
+            "description": "Jet de sauvegarde Dex pour demi-dégâts = aucun dégât si réussi, demi si raté."
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "10": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "11": [
+          {
+            "nom": "Talent Fiable",
+            "type": "automatique",
+            "description": "Si vous obtenez 9 ou moins sur un jet de compétence maîtrisée, le résultat devient 10."
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "14": [
+          {
+            "nom": "Perception Aveugle",
+            "type": "automatique",
+            "description": "Vous détectez les créatures cachées ou invisibles dans un rayon de 3m (sauf derrière couverture totale)."
+          }
+        ],
+        "15": [
+          {
+            "nom": "Esprit Fuyant",
+            "type": "automatique",
+            "description": "Maîtrise des jets de sauvegarde de Sagesse."
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "18": [
+          {
+            "nom": "Insaisissable",
+            "type": "automatique",
+            "description": "Aucun jet d'attaque n'a avantage contre vous tant que vous n'êtes pas incapable d'agir."
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Coup de Chance",
+            "type": "automatique",
+            "description": "Si vous ratez une attaque avec avantage, transformez le raté en touche. 1/tour."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "thief",
+          "nom": "Voleur",
+          "description": "Vous perfectionnez les compétences de cambriolage et de larcin.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Mains Agiles",
+                "type": "automatique",
+                "description": "Action bonus pour Escamotage, outils de voleur ou Utiliser un Objet."
+              },
+              {
+                "nom": "Travail au Monte-en-l'Air",
+                "type": "automatique",
+                "description": "Escalade = vitesse normale. Distance de saut +1,50m."
+              }
+            ],
+            "9": [
+              {
+                "nom": "Furtivité Suprême",
+                "type": "automatique",
+                "description": "Avantage aux jets de Discrétion si vous vous déplacez de moitié de votre vitesse ou moins ce tour."
+              }
+            ],
+            "13": [
+              {
+                "nom": "Utilisation d'Objets Magiques",
+                "type": "automatique",
+                "description": "Vous ignorez les prérequis de classe, race et niveau pour objets magiques."
+              }
+            ],
+            "17": [
+              {
+                "nom": "Réflexes de Voleur",
+                "type": "automatique",
+                "description": "Vous avez deux tours lors du premier round de combat (initiative normale et initiative -10)."
+              }
+            ]
+          }
+        },
+        {
+          "id": "assassin",
+          "nom": "Assassin",
+          "description": "Vous focalisez sur l'art de la mort soudaine.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Maîtrises Supplémentaires",
+                "type": "automatique",
+                "description": "Maîtrise du kit d'empoisonneur et du kit de déguisement."
+              },
+              {
+                "nom": "Assassinat",
+                "type": "automatique",
+                "description": "Avantage aux jets d'attaque contre créatures qui n'ont pas encore agi. Touches contre créatures surprises = critiques automatiques."
+              }
+            ],
+            "9": [
+              {
+                "nom": "Expert en Infiltration",
+                "type": "automatique",
+                "description": "Vous pouvez créer une fausse identité de manière infaillible (7 jours, 25 po)."
+              }
+            ],
+            "13": [
+              {
+                "nom": "Imposteur",
+                "type": "automatique",
+                "description": "Action pour imiter parfaitement la voix, l'écriture et le comportement d'une personne (3h d'observation, kit de déguisement)."
+              }
+            ],
+            "17": [
+              {
+                "nom": "Frappe Mortelle",
+                "type": "automatique",
+                "description": "Quand vous touchez une créature surprise, elle fait jet Con DD ou double les dégâts."
+              }
+            ]
+          }
+        },
+        {
+          "id": "arcane_trickster",
+          "nom": "Escroc Arcanique",
+          "description": "Vous mélangez ruse et magie.",
+          "source": "Player's Handbook",
+          "lanceur_de_sorts": true,
+          "caracteristique_incantation": "Intelligence",
+          "sorts_connus": true,
+          "capacites_par_niveau": {
+            "3": [
+              {
+                "nom": "Incantation",
+                "type": "automatique",
+                "description": "Vous connaissez 3 sorts mineurs et 3 sorts de niveau 1 de magicien (Illusion/Enchantement principalement).",
+                "sorts_mineurs_connus": 3,
+                "sorts_connus": 3,
+                "emplacements": {
+                  "1": 2
+                }
+              },
+              {
+                "nom": "Main de Mage",
+                "type": "automatique",
+                "description": "Vous connaissez le sort Main de Mage. Main invisible. Utiliser Outils de Voleur à distance. Action bonus pour contrôler."
+              }
+            ],
+            "9": [
+              {
+                "nom": "Embuscade Magique",
+                "type": "automatique",
+                "description": "Vous pouvez cibler une créature avec Attaque Sournoise et un sort (sort mineur) dans le même tour."
+              }
+            ],
+            "13": [
+              {
+                "nom": "Voleur Polyvalent",
+                "type": "automatique",
+                "description": "Avantage aux jets contre sorts et autres effets magiques. Résistance aux dégâts de sorts."
+              }
+            ],
+            "17": [
+              {
+                "nom": "Voleur de Sorts",
+                "type": "automatique",
+                "description": "Réaction quand créature à 18m lance un sort. Jet Arcanes DD = 10 + niveau du sort. Succès = sort raté + vous le connaissez 8h. 1/repos long.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "sorcerer",
+      "nom": "Ensorceleur",
+      "nom_en": "Sorcerer",
+      "de_vie": "d6",
+      "maitrises": {
+        "armures": [],
+        "armes": [
+          "Dague",
+          "Fléchette",
+          "Fronde",
+          "Bâton",
+          "Arbalète légère"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Constitution",
+          "Charisme"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Arcanes",
+          "Intimidation",
+          "Intuition",
+          "Persuasion",
+          "Religion",
+          "Tromperie"
+        ]
+      },
+      "caracteristique_principale": "Charisme",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Charisme",
+      "sorts_connus": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Incantation",
+            "type": "automatique",
+            "description": "Vous connaissez 4 sorts mineurs et 2 sorts de niveau 1.",
+            "sorts_mineurs_connus": 4,
+            "sorts_connus": 2,
+            "emplacements": {
+              "1": 2
+            }
+          },
+          {
+            "nom": "Origine Magique",
+            "type": "sous_classe",
+            "description": "Choisissez votre Origine."
+          }
+        ],
+        "2": [
+          {
+            "nom": "Source de Magie",
+            "type": "automatique",
+            "description": "Vous avez 2 points de sorcellerie. Récupération après repos long. Créer emplacements de sorts ou convertir emplacements en points.",
+            "points_sorcellerie": {
+              "2": 2,
+              "3": 3,
+              "4": 4,
+              "5": 5,
+              "6": 6,
+              "7": 7,
+              "8": 8,
+              "9": 9,
+              "10": 10,
+              "11": 11,
+              "12": 12,
+              "13": 13,
+              "14": 14,
+              "15": 15,
+              "16": 16,
+              "17": 17,
+              "18": 18,
+              "19": 19,
+              "20": 20
+            }
+          }
+        ],
+        "3": [
+          {
+            "nom": "Métamagie",
+            "type": "choix_multiple",
+            "description": "Choisissez 2 options de Métamagie.",
+            "nombre_choix": 2,
+            "options": [
+              {
+                "nom": "Sort Prudent",
+                "cout": 1,
+                "description": "Nombre de créatures = mod Charisme réussissent automatiquement leur jet de sauvegarde contre votre sort."
+              },
+              {
+                "nom": "Sort à Distance",
+                "cout": 1,
+                "description": "Doublez la portée d'un sort (portée 1,50m devient 9m)."
+              },
+              {
+                "nom": "Sort Puissant",
+                "cout": 1,
+                "description": "Relancez un nombre de dés de dégâts = mod Charisme (min 1). Utilisez nouveaux résultats."
+              },
+              {
+                "nom": "Sort Accéléré",
+                "cout": 2,
+                "description": "Lancez un sort (action) en action bonus."
+              },
+              {
+                "nom": "Sort Subtil",
+                "cout": 1,
+                "description": "Lancez un sort sans composantes verbales ou somatiques."
+              },
+              {
+                "nom": "Sort Jumeau",
+                "cout": "niveau_sort",
+                "description": "Ciblez une créature supplémentaire avec un sort à cible unique (coût = niveau du sort, min 1)."
+              },
+              {
+                "nom": "Sort Renforcé",
+                "cout": 1,
+                "description": "Quand vous lancez les dégâts, relancez les 1 (utilisez nouveaux résultats)."
+              },
+              {
+                "nom": "Sort Étendu",
+                "cout": 1,
+                "description": "Doublez la durée d'un sort (max 24h)."
+              }
+            ]
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "10": [
+          {
+            "nom": "Métamagie",
+            "type": "choix_multiple",
+            "description": "Choisissez 1 option de Métamagie supplémentaire.",
+            "nombre_choix": 1
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "17": [
+          {
+            "nom": "Métamagie",
+            "type": "choix_multiple",
+            "description": "Choisissez 1 option de Métamagie supplémentaire.",
+            "nombre_choix": 1
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Restauration de Sorcellerie",
+            "type": "automatique",
+            "description": "Si vous n'avez plus de points de sorcellerie, récupérez 4 points après repos court."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "draconic",
+          "nom": "Lignée Draconique",
+          "description": "Votre magie vient d'un ancêtre dragon.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "1": [
+              {
+                "nom": "Ancêtre Dragon",
+                "type": "choix",
+                "description": "Choisissez un type de dragon.",
+                "options": [
+                  "Airain (Feu)",
+                  "Argent (Froid)",
+                  "Blanc (Froid)",
+                  "Bleu (Foudre)",
+                  "Bronze (Foudre)",
+                  "Cuivre (Acide)",
+                  "Noir (Acide)",
+                  "Or (Feu)",
+                  "Rouge (Feu)",
+                  "Vert (Poison)"
+                ]
+              },
+              {
+                "nom": "Résistance Draconique",
+                "type": "automatique",
+                "description": "PV max +1 par niveau. Résistance au type de dégâts de votre ancêtre."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Affinité Élémentaire",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort qui inflige des dégâts du type de votre ancêtre, ajoutez mod Charisme aux dégâts (1 cible). Dépensez 1 point de sorcellerie pour résistance à ce type 1h."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Ailes de Dragon",
+                "type": "automatique",
+                "description": "Action bonus. Ailes apparaissent. Vitesse de vol = vitesse actuelle. Durent jusqu'à ce que vous les rétractiez (action bonus)."
+              }
+            ],
+            "18": [
+              {
+                "nom": "Présence Draconique",
+                "type": "automatique",
+                "description": "5 points de sorcellerie. Action. Créatures à 18m font jet Sagesse DD ou charmées/effrayées 1h (concentration).",
+                "utilisation": {
+                  "cout_sorcellerie": 5
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "wild_magic",
+          "nom": "Magie Sauvage",
+          "description": "Votre magie est chaotique et imprévisible.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "1": [
+              {
+                "nom": "Vague de Magie Sauvage",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort de niveau 1+, le MJ peut demander un jet d20. 1 = effet aléatoire (table de Magie Sauvage)."
+              },
+              {
+                "nom": "Marées du Chaos",
+                "type": "automatique",
+                "description": "Avantage sur un jet d'attaque, de sauvegarde ou de compétence. Prochain sort lancé déclenche Vague de Magie Sauvage. Récupération après repos long.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ],
+            "6": [
+              {
+                "nom": "Courbure de la Chance",
+                "type": "automatique",
+                "description": "2 points de sorcellerie. Réaction. Un jet d'attaque, de sauvegarde ou de compétence dans 9m gagne/perd 1d4."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Chance Contrôlée",
+                "type": "automatique",
+                "description": "Après effet de Magie Sauvage, relancez sur la table et choisissez lequel des deux effets se produit."
+              }
+            ],
+            "18": [
+              {
+                "nom": "Bombardement de Sorts",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort de niveau 1+ qui inflige des dégâts, lancez 1d6. Si résultat ≤ niveau du sort, choisissez une créature dans 1,50m de la cible : elle subit dégâts de force = mod Charisme."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "warlock",
+      "nom": "Occultiste",
+      "nom_en": "Warlock",
+      "de_vie": "d8",
+      "maitrises": {
+        "armures": [
+          "Armures légères"
+        ],
+        "armes": [
+          "Armes courantes"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Sagesse",
+          "Charisme"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Arcanes",
+          "Intimidation",
+          "Investigation",
+          "Nature",
+          "Religion",
+          "Tromperie"
+        ]
+      },
+      "caracteristique_principale": "Charisme",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Charisme",
+      "sorts_connus": true,
+      "system_pact_magic": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Protecteur d'Outre-Monde",
+            "type": "sous_classe",
+            "description": "Choisissez votre Protecteur (Archifée, Fiélon, Grand Ancien)."
+          },
+          {
+            "nom": "Magie de Pacte",
+            "type": "automatique",
+            "description": "Vous connaissez 2 sorts mineurs et 2 sorts de niveau 1. Emplacements = niveau max de sort. Récupération après repos court.",
+            "sorts_mineurs_connus": 2,
+            "sorts_connus": 2,
+            "emplacements_pacte": {
+              "1": {
+                "niveau": 1,
+                "nombre": 1
+              },
+              "2": {
+                "niveau": 1,
+                "nombre": 2
+              },
+              "3": {
+                "niveau": 2,
+                "nombre": 2
+              },
+              "5": {
+                "niveau": 3,
+                "nombre": 2
+              },
+              "7": {
+                "niveau": 4,
+                "nombre": 2
+              },
+              "9": {
+                "niveau": 5,
+                "nombre": 2
+              },
+              "11": {
+                "niveau": 5,
+                "nombre": 3
+              },
+              "17": {
+                "niveau": 5,
+                "nombre": 4
+              }
+            }
+          }
+        ],
+        "2": [
+          {
+            "nom": "Invocations Occultes",
+            "type": "choix_multiple",
+            "description": "Choisissez 2 invocations. Certaines ont des prérequis.",
+            "nombre_choix": 2,
+            "options": [
+              "Vision du Diable",
+              "Vision de l'Éther",
+              "Armure d'Ombre",
+              "Parole Ensorcelante",
+              "Souffle Infernal",
+              "Regard aux Deux Pensées"
+            ]
+          }
+        ],
+        "3": [
+          {
+            "nom": "Faveur de Pacte",
+            "type": "choix",
+            "description": "Choisissez votre faveur.",
+            "options": [
+              {
+                "nom": "Pacte de la Chaîne",
+                "description": "Sort Appel de Familier. Familier peut être imp/quasit/pseudodragon/esprit."
+              },
+              {
+                "nom": "Pacte de la Lame",
+                "description": "Action pour créer une arme de pacte. Vous êtes maîtrisé avec. Disparaît si >1,50m ou si recréée."
+              },
+              {
+                "nom": "Pacte du Grimoire",
+                "description": "Votre protecteur vous donne un grimoire. Apprenez 2 sorts mineurs de n'importe quelle classe. Rituels dans le grimoire (rituels uniquement)."
+              }
+            ]
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "5": [
+          {
+            "nom": "Invocation Occulte Supplémentaire",
+            "type": "choix_multiple",
+            "nombre_choix": 1
+          }
+        ],
+        "7": [
+          {
+            "nom": "Invocation Occulte Supplémentaire",
+            "type": "choix_multiple",
+            "nombre_choix": 1
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "9": [
+          {
+            "nom": "Invocation Occulte Supplémentaire",
+            "type": "choix_multiple",
+            "nombre_choix": 1
+          }
+        ],
+        "11": [
+          {
+            "nom": "Arcanum Mystique (6e niveau)",
+            "type": "automatique",
+            "description": "Apprenez 1 sort de niveau 6. Lancez-le 1/repos long sans emplacement."
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          },
+          {
+            "nom": "Invocation Occulte Supplémentaire",
+            "type": "choix_multiple",
+            "nombre_choix": 1
+          }
+        ],
+        "13": [
+          {
+            "nom": "Arcanum Mystique (7e niveau)",
+            "type": "automatique",
+            "description": "Apprenez 1 sort de niveau 7. Lancez-le 1/repos long sans emplacement."
+          }
+        ],
+        "15": [
+          {
+            "nom": "Arcanum Mystique (8e niveau)",
+            "type": "automatique",
+            "description": "Apprenez 1 sort de niveau 8. Lancez-le 1/repos long sans emplacement."
+          },
+          {
+            "nom": "Invocation Occulte Supplémentaire",
+            "type": "choix_multiple",
+            "nombre_choix": 1
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "17": [
+          {
+            "nom": "Arcanum Mystique (9e niveau)",
+            "type": "automatique",
+            "description": "Apprenez 1 sort de niveau 9. Lancez-le 1/repos long sans emplacement."
+          }
+        ],
+        "18": [
+          {
+            "nom": "Invocation Occulte Supplémentaire",
+            "type": "choix_multiple",
+            "nombre_choix": 1
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Maître Occulte",
+            "type": "automatique",
+            "description": "Récupérez 1 emplacement de pacte dépensé après 1 minute de repos."
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "fiend",
+          "nom": "Le Fiélon",
+          "description": "Votre protecteur est un seigneur des Enfers ou des Abysses.",
+          "source": "Player's Handbook",
+          "sorts_developpes": {
+            "1": [
+              "Mains Brûlantes",
+              "Injonction"
+            ],
+            "3": [
+              "Rayon Ardent",
+              "Cécité/Surdité"
+            ],
+            "5": [
+              "Boule de Feu",
+              "Nuage Puant"
+            ],
+            "7": [
+              "Bouclier de Feu",
+              "Mur de Feu"
+            ],
+            "9": [
+              "Colonne de Flamme",
+              "Sanctification"
+            ]
+          },
+          "capacites_par_niveau": {
+            "1": [
+              {
+                "nom": "Bénédiction du Sombre",
+                "type": "automatique",
+                "description": "Quand vous réduisez une créature hostile à 0 PV, récupérez PV temporaires = mod Charisme + niveau occultiste (min 1)."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Chance du Sombre",
+                "type": "automatique",
+                "description": "Réaction. Ajoutez 1d10 à un jet de compétence ou de sauvegarde. Nombre d'utilisations = mod Charisme (min 1).",
+                "utilisation": {
+                  "type": "repos_court",
+                  "nombre": "modificateur_charisme"
+                }
+              }
+            ],
+            "10": [
+              {
+                "nom": "Résistance Fiélone",
+                "type": "automatique",
+                "description": "Résistance aux dégâts de feu et poison. Avantage aux jets de sauvegarde contre poison."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Se Frayer un Chemin à travers les Enfers",
+                "type": "automatique",
+                "description": "Réaction quand vous subissez des dégâts. Créatures à 3m font jet Dex DD ou 10 + mod Charisme + niveau occultiste dégâts de feu. 1/repos long.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "archfey",
+          "nom": "L'Archifée",
+          "description": "Votre protecteur est un seigneur ou dame des Terres Féeriques.",
+          "source": "Player's Handbook",
+          "sorts_developpes": {
+            "1": [
+              "Lueurs Féeriques",
+              "Sommeil"
+            ],
+            "3": [
+              "Apaisement des Émotions",
+              "Flou"
+            ],
+            "5": [
+              "Clignotement",
+              "Croissance Végétale"
+            ],
+            "7": [
+              "Domination de Bête",
+              "Grande Invisibilité"
+            ],
+            "9": [
+              "Domination de Personne",
+              "Semblance"
+            ]
+          },
+          "capacites_par_niveau": {
+            "1": [
+              {
+                "nom": "Présence Féerique",
+                "type": "automatique",
+                "description": "Action. Créatures à 3m font jet Sagesse DD ou charmées/effrayées jusqu'à la fin de votre prochain tour. 1/repos court.",
+                "utilisation": {
+                  "type": "repos_court",
+                  "nombre": 1
+                }
+              }
+            ],
+            "6": [
+              {
+                "nom": "Brume de Fuite",
+                "type": "automatique",
+                "description": "Réaction quand vous subissez des dégâts. Devenez invisible jusqu'au début de votre prochain tour ou jusqu'à action/réaction. Téléportation jusqu'à 18m. 1/repos court.",
+                "utilisation": {
+                  "type": "repos_court",
+                  "nombre": 1
+                }
+              }
+            ],
+            "10": [
+              {
+                "nom": "Défenses Ensorcelantes",
+                "type": "automatique",
+                "description": "Quand créature vous touche, réaction pour qu'elle fasse un jet Charisme DD ou subisse un effet : charmée (attaque autre créature, avantage au jet) ou effrayée (vitesse 0, désavantage)."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Délire Ténébreux",
+                "type": "automatique",
+                "description": "Action. Créature à 18m fait jet Sagesse DD ou charmée/effrayée 1 minute (concentration). Jet de sauvegarde à chaque tour. 1/repos court.",
+                "utilisation": {
+                  "type": "repos_court",
+                  "nombre": 1
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "wizard",
+      "nom": "Magicien",
+      "nom_en": "Wizard",
+      "de_vie": "d6",
+      "maitrises": {
+        "armures": [],
+        "armes": [
+          "Dague",
+          "Fléchette",
+          "Fronde",
+          "Bâton",
+          "Arbalète légère"
+        ],
+        "outils": [],
+        "jets_de_sauvegarde": [
+          "Intelligence",
+          "Sagesse"
+        ],
+        "nombre_competences": 2,
+        "liste_competences": [
+          "Arcanes",
+          "Histoire",
+          "Intuition",
+          "Investigation",
+          "Médecine",
+          "Religion"
+        ]
+      },
+      "caracteristique_principale": "Intelligence",
+      "lanceur_de_sorts": true,
+      "caracteristique_incantation": "Intelligence",
+      "sorts_prepares": true,
+      "grimoire": true,
+      "rituel": true,
+      "capacites_par_niveau": {
+        "1": [
+          {
+            "nom": "Incantation",
+            "type": "automatique",
+            "description": "Vous connaissez 3 sorts mineurs. Grimoire avec 6 sorts de niveau 1. Préparez mod Intelligence + niveau magicien sorts (min 1).",
+            "sorts_mineurs_connus": 3,
+            "sorts_grimoire": 6,
+            "emplacements": {
+              "1": 2
+            }
+          },
+          {
+            "nom": "Récupération Arcanique",
+            "type": "automatique",
+            "description": "1/jour après repos court, récupérez emplacements de sorts (total niveau ≤ moitié niveau magicien arrondi au supérieur, aucun emplacement de niveau 6+).",
+            "utilisation": {
+              "type": "repos_long",
+              "nombre": 1
+            }
+          }
+        ],
+        "2": [
+          {
+            "nom": "Tradition Arcanique",
+            "type": "sous_classe",
+            "description": "Choisissez votre École de Magie."
+          }
+        ],
+        "4": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "8": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "12": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "16": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "18": [
+          {
+            "nom": "Maîtrise des Sorts",
+            "type": "choix_multiple",
+            "description": "Choisissez 1 sort de niveau 1 et 1 sort de niveau 2 de votre grimoire. Lancez-les à volonté sans emplacement.",
+            "nombre_choix": 2
+          }
+        ],
+        "19": [
+          {
+            "nom": "Amélioration de Caractéristiques",
+            "type": "asi"
+          }
+        ],
+        "20": [
+          {
+            "nom": "Signature Magique",
+            "type": "choix_multiple",
+            "description": "Choisissez 2 sorts de niveau 3 de votre grimoire. Toujours préparés. Lancez chacun 1/repos court sans emplacement.",
+            "nombre_choix": 2
+          }
+        ]
+      },
+      "sous_classes": [
+        {
+          "id": "evocation",
+          "nom": "École d'Évocation",
+          "description": "Vous focalisez sur la magie qui crée de puissants effets élémentaires.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "2": [
+              {
+                "nom": "Érudit en Évocation",
+                "type": "automatique",
+                "description": "Or et temps pour copier un sort d'Évocation dans votre grimoire sont réduits de moitié."
+              },
+              {
+                "nom": "Façonneur de Sorts",
+                "type": "automatique",
+                "description": "Sorts d'Évocation : nombre de créatures = 1 + niveau du sort réussissent automatiquement leur jet de sauvegarde et ne subissent aucun dégât."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Sort Puissant",
+                "type": "automatique",
+                "description": "Sorts mineurs d'Évocation ignorent la résistance. Si jet de sauvegarde réussi = aucun dégât, cible subit demi-dégâts du sort mineur."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Évocation Renforcée",
+                "type": "automatique",
+                "description": "Ajoutez mod Intelligence aux dégâts d'un sort mineur ou sort d'Évocation."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Surcharge",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort d'Évocation de niveau 5 ou moins, augmentez un dé de dégâts au maximum. 1/repos long.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "abjuration",
+          "nom": "École d'Abjuration",
+          "description": "Vous vous spécialisez dans la magie qui bloque, bannit et protège.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "2": [
+              {
+                "nom": "Érudit en Abjuration",
+                "type": "automatique",
+                "description": "Or et temps pour copier un sort d'Abjuration dans votre grimoire sont réduits de moitié."
+              },
+              {
+                "nom": "Barrière Arcanique",
+                "type": "automatique",
+                "description": "Quand vous lancez un sort d'Abjuration de niveau 1+, créez une barrière magique = 2 × niveau du sort + mod Intelligence PV. Dure jusqu'à repos long. Absorbe les dégâts pour vous."
+              }
+            ],
+            "6": [
+              {
+                "nom": "Barrière Projetée",
+                "type": "automatique",
+                "description": "Réaction quand créature à 9m subit des dégâts. Votre Barrière Arcanique absorbe les dégâts pour elle. Si barrière réduite à 0, dégâts restants pour la créature."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Abjuration Améliorée",
+                "type": "automatique",
+                "description": "Ajoutez bonus de maîtrise aux jets de compétence Arcanes pour dissiper la magie. Quand vous réussissez Dissipation de la Magie/Contresort, récupérez PV = 5 × niveau du sort."
+              }
+            ],
+            "14": [
+              {
+                "nom": "Résistance aux Sorts",
+                "type": "automatique",
+                "description": "Avantage aux jets de sauvegarde contre sorts. Résistance aux dégâts de sorts."
+              }
+            ]
+          }
+        },
+        {
+          "id": "divination",
+          "nom": "École de Divination",
+          "description": "Vous percevez le passé, le présent et l'avenir.",
+          "source": "Player's Handbook",
+          "capacites_par_niveau": {
+            "2": [
+              {
+                "nom": "Érudit en Divination",
+                "type": "automatique",
+                "description": "Or et temps pour copier un sort de Divination dans votre grimoire sont réduits de moitié."
+              },
+              {
+                "nom": "Présage",
+                "type": "automatique",
+                "description": "Après repos long, lancez 2d20. Remplacez n'importe quel jet d'attaque, de sauvegarde ou de compétence (vous ou créature visible) par un de ces dés avant de le lancer. 1 utilisation par dé.",
+                "utilisation": {
+                  "type": "repos_long",
+                  "nombre": 2
+                }
+              }
+            ],
+            "6": [
+              {
+                "nom": "Divination Experte",
+                "type": "automatique",
+                "description": "Sorts de Divination de niveau 2+ = récupérez un emplacement de sort (niveau = niveau du sort -1)."
+              }
+            ],
+            "10": [
+              {
+                "nom": "Le Troisième Œil",
+                "type": "automatique",
+                "description": "Action. Choisissez : Vision du Diable, Vision de l'Éther, Grande Invisibilité, Compréhension des Langages. Dure jusqu'au repos. 1/repos court.",
+                "utilisation": {
+                  "type": "repos_court",
+                  "nombre": 1
+                }
+              }
+            ],
+            "14": [
+              {
+                "nom": "Présage Supérieur",
+                "type": "automatique",
+                "description": "Lancez 3d20 pour Présage au lieu de 2d20."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

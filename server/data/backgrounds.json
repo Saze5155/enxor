@@ -1,0 +1,165 @@
+[
+    {
+        "nom": "Acolyte",
+        "competences": [
+            "Intuition",
+            "Religion"
+        ],
+        "outils": [],
+        "equipement": [
+            "Symbole sacré",
+            "Livre de prières",
+            "Bâtonnes d'encens (5)",
+            "Habits de cérémonie",
+            "15 po"
+        ],
+        "feature": {
+            "nom": "Abri du Fidèle",
+            "description": "Vous commandez le respect de ceux qui partagent votre foi et pouvez accomplir les cérémonies religieuses."
+        }
+    },
+    {
+        "nom": "Criminel",
+        "competences": [
+            "Discrétion",
+            "Supercherie"
+        ],
+        "outils": [
+            "Jeu de cartes",
+            "Outils de voleur"
+        ],
+        "equipement": [
+            "Pied-de-biche",
+            "Vêtements sombres à capuche",
+            "15 po"
+        ],
+        "feature": {
+            "nom": "Contact Criminel",
+            "description": "Vous avez un contact fiable et digne de confiance qui agit comme votre agent de liaison avec un réseau criminel."
+        }
+    },
+    {
+        "nom": "Artisan de Guilde",
+        "competences": [
+            "Intuition",
+            "Persuasion"
+        ],
+        "outils": [
+            "Un type d'outils d'artisan"
+        ],
+        "equipement": [
+            "Outils d'artisan",
+            "Lettre d'introduction de la guilde",
+            "Vêtements de voyage",
+            "15 po"
+        ],
+        "feature": {
+            "nom": "Membre de Guilde",
+            "description": "Vous avez le soutien de votre guilde, ce qui vous offre hébergement et nourriture si nécessaire."
+        }
+    },
+    {
+        "nom": "Ermite",
+        "competences": [
+            "Médecine",
+            "Religion"
+        ],
+        "outils": [
+            "Kit d'herboriste"
+        ],
+        "equipement": [
+            "Étui à parchemins plein de notes",
+            "Couverture d'hiver",
+            "Vêtements communs",
+            "Kit d'herboriste",
+            "5 po"
+        ],
+        "feature": {
+            "nom": "Découverte",
+            "description": "La réclusion vous a offert une découverte unique et puissante. La nature de cette révélation dépend de vous et votre MJ."
+        }
+    },
+    {
+        "nom": "Noble",
+        "competences": [
+            "Histoire",
+            "Persuasion"
+        ],
+        "outils": [
+            "Jeu de cartes"
+        ],
+        "equipement": [
+            "Vêtements fins",
+            "Chevaliere",
+            "Parchemin d'arbre généalogique",
+            "25 po"
+        ],
+        "feature": {
+            "nom": "Privilège",
+            "description": "Grâce à votre titre, les gens sont enclins à penser le meilleur de vous. Vous êtes bienvenu dans la haute société."
+        }
+    },
+    {
+        "nom": "Sauvageon",
+        "competences": [
+            "Athlétisme",
+            "Survie"
+        ],
+        "outils": [
+            "Un type d'instrument de musique"
+        ],
+        "equipement": [
+            "Bâton",
+            "Piège à mâchoires",
+            "Trophée d'animal",
+            "Vêtements de voyage",
+            "10 po"
+        ],
+        "feature": {
+            "nom": "Vagabond",
+            "description": "Vous avez une excellente mémoire pour les cartes et la géographie, et vous pouvez toujours vous souvenir de la configuration générale du terrain."
+        }
+    },
+    {
+        "nom": "Sage",
+        "competences": [
+            "Arcanes",
+            "Histoire"
+        ],
+        "outils": [],
+        "equipement": [
+            "Bouteille d'encre noire",
+            "Plume",
+            "Petit couteau",
+            "Lettre d'un collègue mort",
+            "Vêtements communs",
+            "10 po"
+        ],
+        "feature": {
+            "nom": "Chercheur",
+            "description": "Quand vous tentez d'apprendre ou de vous remémorer une information, si vous ne la connaissez pas, vous savez souvent d'où et de qui vous pouvez l'obtenir."
+        }
+    },
+    {
+        "nom": "Soldat",
+        "competences": [
+            "Athlétisme",
+            "Intimidation"
+        ],
+        "outils": [
+            "Jeu de dés",
+            "Véhicules (terrestres)"
+        ],
+        "equipement": [
+            "Insigne de rang",
+            "Trophée pris sur un ennemi",
+            "Jeu d'osselets",
+            "Vêtements communs",
+            "10 po"
+        ],
+        "feature": {
+            "nom": "Grade Militaire",
+            "description": "Vous avez un grade militaire de votre carrière de soldat. Les soldats fidèles à votre ancienne organisation militaire reconnaissent toujours votre autorité."
+        }
+    }
+]

@@ -35,12 +35,14 @@ const wikiRoutes = require('./routes/wikiRoute');
 const userRoutes = require('./routes/userRoute');
 const characterRoutes = require('./routes/characterRoute');
 const campaignRoutes = require('./routes/campaignRoute');
+const dataRoutes = require('./routes/dataRoute');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/wiki', wikiRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/campaigns', campaignRoutes);
+app.use('/api/data', dataRoutes);
 
 // Routes Placeholder
 app.get('/', (req, res) => {
