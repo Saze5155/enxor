@@ -1,9 +1,16 @@
 import React from 'react';
+import { calculateAC, calculateInitiative } from '../../utils/characterCalculations';
 
 export default function CharacterHeader({ character, onLevelUp, isGM }) {
     if (!character) return null;
 
+    // Safety parse
+    const stats = typeof character.stats === 'string' ? JSON.parse(character.stats) : character.stats || {};
     const proficiencyBonus = 2 + Math.floor((character.level - 1) / 4);
+
+    // Dynamic calculations
+    const ac = calculateAC(character);
+    const initiative = calculateInitiative(character);
 
     return (
         <div className="p-4 border-b-2 border-stone-400 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10 bg-[#fdf6e3]/90">
@@ -73,7 +80,7 @@ export default function CharacterHeader({ character, onLevelUp, isGM }) {
                 <div className="flex flex-col items-center">
                     <span className="text-[10px] uppercase text-stone-500 font-bold tracking-widest">Initiative</span>
                     <div className="w-10 h-10 border-2 border-stone-400 rounded-lg flex items-center justify-center bg-white shadow-inner mt-1 font-bold text-lg">
-                        {character.initiative >= 0 ? '+' : ''}{character.initiative}
+                        {initiative >= 0 ? '+' : ''}{initiative}
                     </div>
                 </div>
 
@@ -88,7 +95,7 @@ export default function CharacterHeader({ character, onLevelUp, isGM }) {
                 <div className="flex flex-col items-center relative group">
                     <span className="text-[10px] uppercase text-red-800/70 font-bold tracking-widest">CA</span>
                     <div className="w-12 h-12 bg-stone-800 border-2 border-stone-600 rounded-shield flex items-center justify-center text-white font-bold text-xl shadow-md mt-0 transform rotate-45 overflow-hidden">
-                        <div className="transform -rotate-45">{character.ac}</div>
+                        <div className="transform -rotate-45">{ac}</div>
                     </div>
                 </div>
 

@@ -1,1 +1,288 @@
-[]
+[
+    {
+        "nom": "Projectile magique",
+        "niveau": 1,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "36 mètres",
+        "composantes": "V, S",
+        "duree": "Instantanée",
+        "description": "Vous créez trois projectiles magiques lumineux. Chaque projectile touche une créature de votre choix que vous pouvez voir à portée. Un projectile inflige 1d4 + 1 dégâts de force à sa cible. Les projectiles frappent tous en même temps.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, le sort crée un projectile de plus pour chaque niveau d'emplacement au-delà du niveau 1.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Bouclier",
+        "niveau": 1,
+        "ecole": "Abjuration",
+        "temps_incantation": "1 réaction",
+        "portee": "Personnelle",
+        "composantes": "V, S",
+        "duree": "1 round",
+        "description": "Une barrière invisible de force magique apparaît et vous protège. Jusqu'au début de votre prochain tour, vous avez un bonus de +5 à la CA, y compris contre l'attaque déclencheuse, et vous ne subissez aucun dégât de projectile magique.",
+        "aux_niveaux_superieurs": null,
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Soins",
+        "niveau": 1,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "Contact",
+        "composantes": "V, S",
+        "duree": "Instantanée",
+        "description": "Une créature que vous touchez regagne un nombre de points de vie égal à 1d8 + votre modificateur de caractéristique d'incantation. Ce sort n'a aucun effet sur les morts-vivants et les créatures artificielles.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, les soins augmentent de 1d8 pour chaque niveau d'emplacement au-delà du niveau 1.",
+        "classes": [
+            "Barde",
+            "Clerc",
+            "Druide",
+            "Paladin",
+            "Rôdeur"
+        ]
+    },
+    {
+        "nom": "Mains brûlantes",
+        "niveau": 1,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "Personnelle (cône de 4,50 mètres)",
+        "composantes": "V, S",
+        "duree": "Instantanée",
+        "description": "Vous tendez vos mains, les pouces se touchant et les doigts écartés, et une mince nappe de flammes jaillit de vos doigts tendus. Chaque créature dans un cône de 4,50 mètres doit faire un jet de sauvegarde de Dextérité. Une créature subit 3d6 dégâts de feu en cas d'échec, ou la moitié en cas de réussite.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, les dégâts augmentent de 1d6 pour chaque niveau d'emplacement au-delà du niveau 1.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Détection de la magie",
+        "niveau": 1,
+        "ecole": "Divination (rituel)",
+        "temps_incantation": "1 action",
+        "portee": "Personnelle",
+        "composantes": "V, S",
+        "duree": "Concentration, jusqu'à 10 minutes",
+        "description": "Pendant la durée, vous percevez la présence de magie dans un rayon de 9 mètres autour de vous. Si vous percevez de la magie de cette manière, vous pouvez utiliser votre action pour voir une aura faible autour de toute créature ou objet visible dans la zone qui porte de la magie, et vous apprenez son école de magie, s'il y en a une.",
+        "aux_niveaux_superieurs": null,
+        "classes": [
+            "Barde",
+            "Clerc",
+            "Druide",
+            "Ensorceleur",
+            "Magicien",
+            "Paladin",
+            "Rôdeur"
+        ]
+    },
+    {
+        "nom": "Flèche acide",
+        "niveau": 2,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "27 mètres",
+        "composantes": "V, S, M (poudre de feuille de rhubarbe et estomac de vipère)",
+        "duree": "Instantanée",
+        "description": "Une flèche verte chatoyante file vers une cible à portée et explose en une gerbe d'acide. Faites une attaque de sort à distance contre la cible. En cas de réussite, la cible subit 4d4 dégâts d'acide immédiatement et 2d4 dégâts d'acide à la fin de son prochain tour. En cas d'échec, l'acide éclabousse la cible et elle subit la moitié des dégâts initiaux et aucun dégât à la fin de son prochain tour.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 3 ou supérieur, les dégâts (initiaux et ultérieurs) augmentent de 1d4 pour chaque niveau d'emplacement au-delà du niveau 2.",
+        "classes": [
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Invisibilité",
+        "niveau": 2,
+        "ecole": "Illusion",
+        "temps_incantation": "1 action",
+        "portee": "Contact",
+        "composantes": "V, S, M (cil enrobé de gomme arabique)",
+        "duree": "Concentration, jusqu'à 1 heure",
+        "description": "Une créature que vous touchez devient invisible jusqu'à la fin du sort. Tout ce que la cible porte ou transporte est invisible tant que c'est sur sa personne. Le sort se termine pour une cible qui attaque ou lance un sort.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 3 ou supérieur, vous pouvez cibler une créature supplémentaire pour chaque niveau d'emplacement au-delà du niveau 2.",
+        "classes": [
+            "Barde",
+            "Ensorceleur",
+            "Magicien",
+            "Occultiste"
+        ]
+    },
+    {
+        "nom": "Suggestion",
+        "niveau": 2,
+        "ecole": "Enchantement",
+        "temps_incantation": "1 action",
+        "portee": "9 mètres",
+        "composantes": "V, M (langue de serpent et soit un rayon de miel, soit une goutte d'huile douce)",
+        "duree": "Concentration, jusqu'à 8 heures",
+        "description": "Vous suggérez un cours d'action (limité à une phrase ou deux) et influencez magiquement une créature que vous pouvez voir à portée et qui peut vous entendre et vous comprendre. Les créatures qui ne peuvent pas être charmées sont immunisées contre cet effet. La suggestion doit être formulée de manière à ce que le cours d'action semble raisonnable.",
+        "aux_niveaux_superieurs": null,
+        "classes": [
+            "Barde",
+            "Ensorceleur",
+            "Magicien",
+            "Occultiste"
+        ]
+    },
+    {
+        "nom": "Boule de feu",
+        "niveau": 3,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "45 mètres",
+        "composantes": "V, S, M (une petite boule de guano de chauve-souris et du soufre)",
+        "duree": "Instantanée",
+        "description": "Une traînée lumineuse file de votre doigt pointé vers un point que vous choisissez à portée puis explose en une gerbe de flammes rugissantes. Chaque créature dans une sphère de 6 mètres de rayon centrée sur ce point doit faire un jet de sauvegarde de Dextérité. Une cible subit 8d6 dégâts de feu en cas d'échec, ou la moitié en cas de réussite.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 4 ou supérieur, les dégâts augmentent de 1d6 pour chaque niveau d'emplacement au-delà du niveau 3.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Éclair",
+        "niveau": 3,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "Personnelle (ligne de 30 mètres)",
+        "composantes": "V, S, M (un peu de fourrure et une tige d'ambre, de cristal ou de verre)",
+        "duree": "Instantanée",
+        "description": "Un éclair forme une ligne de 30 mètres de long et 1,50 mètre de large jaillissant de vous dans une direction de votre choix. Chaque créature dans la ligne doit faire un jet de sauvegarde de Dextérité. Une créature subit 8d6 dégâts de foudre en cas d'échec, ou la moitié en cas de réussite.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 4 ou supérieur, les dégâts augmentent de 1d6 pour chaque niveau d'emplacement au-delà du niveau 3.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Vol",
+        "niveau": 3,
+        "ecole": "Transmutation",
+        "temps_incantation": "1 action",
+        "portee": "Contact",
+        "composantes": "V, S, M (une plume d'aile de n'importe quel oiseau)",
+        "duree": "Concentration, jusqu'à 10 minutes",
+        "description": "Vous touchez une créature consentante. La cible gagne une vitesse de vol de 18 mètres pour la durée. Quand le sort se termine, la cible tombe si elle est toujours en l'air, à moins qu'elle ne puisse arrêter la chute.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 4 ou supérieur, vous pouvez cibler une créature supplémentaire pour chaque niveau d'emplacement au-delà du niveau 3.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien",
+            "Occultiste"
+        ]
+    },
+    {
+        "nom": "Hâte",
+        "niveau": 3,
+        "ecole": "Transmutation",
+        "temps_incantation": "1 action",
+        "portee": "9 mètres",
+        "composantes": "V, S, M (un copeau de racine de réglisse)",
+        "duree": "Concentration, jusqu'à 1 minute",
+        "description": "Choisissez une créature consentante que vous pouvez voir à portée. Jusqu'à la fin du sort, la vitesse de la cible est doublée, elle gagne un bonus de +2 à la CA, elle a l'avantage aux jets de sauvegarde de Dextérité, et elle gagne une action supplémentaire à chacun de ses tours. Cette action peut être utilisée uniquement pour effectuer l'action Attaquer (une attaque d'arme uniquement), Se précipiter, Se désengager, Se cacher ou Utiliser un objet.",
+        "aux_niveaux_superieurs": null,
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Contre-sort",
+        "niveau": 3,
+        "ecole": "Abjuration",
+        "temps_incantation": "1 réaction",
+        "portee": "18 mètres",
+        "composantes": "S",
+        "duree": "Instantanée",
+        "description": "Vous tentez d'interrompre une créature en train de lancer un sort. Si la créature lance un sort de niveau 3 ou inférieur, son sort échoue et n'a aucun effet. Si elle lance un sort de niveau 4 ou supérieur, faites un jet de caractéristique d'incantation. Le DD est égal à 10 + le niveau du sort. En cas de réussite, le sort de la créature échoue et n'a aucun effet.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 4 ou supérieur, le sort interrompu n'a aucun effet si son niveau est inférieur ou égal au niveau de l'emplacement de sort que vous avez utilisé.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien",
+            "Occultiste"
+        ]
+    },
+    {
+        "nom": "Peau de pierre",
+        "niveau": 4,
+        "ecole": "Abjuration",
+        "temps_incantation": "1 action",
+        "portee": "Contact",
+        "composantes": "V, S, M (poussière de diamant d'une valeur de 100 po, que le sort consomme)",
+        "duree": "Concentration, jusqu'à 1 heure",
+        "description": "Ce sort transforme la chair d'une créature consentante que vous touchez pour qu'elle soit aussi dure que la pierre. Jusqu'à la fin du sort, la cible a la résistance aux dégâts non magiques contondants, perforants et tranchants.",
+        "aux_niveaux_superieurs": null,
+        "classes": [
+            "Druide",
+            "Ensorceleur",
+            "Magicien",
+            "Rôdeur"
+        ]
+    },
+    {
+        "nom": "Porte dimensionnelle",
+        "niveau": 4,
+        "ecole": "Invocation",
+        "temps_incantation": "1 action",
+        "portee": "150 mètres",
+        "composantes": "V",
+        "duree": "Instantanée",
+        "description": "Vous vous téléportez depuis votre position actuelle vers n'importe quel autre endroit à portée. Vous arrivez exactement à l'endroit désiré. Vous pouvez également amener des objets tant que leur poids ne dépasse pas ce que vous pouvez porter. Vous pouvez aussi amener une créature consentante de votre taille ou plus petite qui porte des équipements jusqu'à sa capacité de charge.",
+        "aux_niveaux_superieurs": null,
+        "classes": [
+            "Barde",
+            "Ensorceleur",
+            "Magicien",
+            "Occultiste"
+        ]
+    },
+    {
+        "nom": "Cône de froid",
+        "niveau": 5,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "Personnelle (cône de 18 mètres)",
+        "composantes": "V, S, M (un petit cône de cristal ou de verre)",
+        "duree": "Instantanée",
+        "description": "Une explosion d'air froid jaillit de vos mains. Chaque créature dans un cône de 18 mètres doit faire un jet de sauvegarde de Constitution. Une créature subit 8d8 dégâts de froid en cas d'échec, ou la moitié en cas de réussite.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 6 ou supérieur, les dégâts augmentent de 1d8 pour chaque niveau d'emplacement au-delà du niveau 5.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Mur de force",
+        "niveau": 5,
+        "ecole": "Évocation",
+        "temps_incantation": "1 action",
+        "portee": "36 mètres",
+        "composantes": "V, S, M (une pincée de poudre faite en broyant une gemme transparente)",
+        "duree": "Concentration, jusqu'à 10 minutes",
+        "description": "Un mur invisible de force pure jaillit à un point que vous choisissez à portée. Le mur apparaît dans n'importe quelle orientation de votre choix, comme une barrière horizontale ou verticale ou à un angle. Il peut être libre ou reposer sur une surface solide. Rien ne peut physiquement passer à travers le mur. Il est immunisé contre tous les dégâts et ne peut pas être dissipé par dissipation de la magie.",
+        "aux_niveaux_superieurs": null,
+        "classes": [
+            "Magicien"
+        ]
+    },
+    {
+        "nom": "Désintégration",
+        "niveau": 6,
+        "ecole": "Transmutation",
+        "temps_incantation": "1 action",
+        "portee": "18 mètres",
+        "composantes": "V, S, M (un aimant et une pincée de poussière)",
+        "duree": "Instantanée",
+        "description": "Un mince rayon vert jaillit de votre doigt pointé vers une cible que vous pouvez voir à portée. La cible peut être une créature, un objet ou une création de force magique. Une créature ciblée par ce sort doit faire un jet de sauvegarde de Dextérité. En cas d'échec, la cible subit 10d6 + 40 dégâts de force. Si ces dégâts réduisent la cible à 0 point de vie, elle est désintégrée.",
+        "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 7 ou supérieur, les dégâts augmentent de 3d6 pour chaque niveau d'emplacement au-delà du niveau 6.",
+        "classes": [
+            "Ensorceleur",
+            "Magicien"
+        ]
+    }
+]

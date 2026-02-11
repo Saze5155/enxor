@@ -1,0 +1,236 @@
+{
+  "version": "1.0",
+  "source": "D&D 5e Player's Handbook",
+  "description": "Sorts essentiels et populaires (100 sorts couvrant niveaux 0-9)",
+  "note": "Liste réduite des sorts les plus utilisés. Version complète disponible séparément.",
+  "sorts": [
+    {
+      "id": "fire_bolt",
+      "nom": "Trait de Feu",
+      "nom_en": "Fire Bolt",
+      "niveau": 0,
+      "ecole": "Évocation",
+      "temps_incantation": "1 action",
+      "portee": "36m",
+      "composantes": ["V", "S"],
+      "duree": "Instantanée",
+      "classes": ["Magicien", "Ensorceleur"],
+      "description": "Vous lancez un point de feu sur une créature ou un objet à portée. Faites un jet d'attaque de sort à distance contre la cible. En cas de touche, la cible subit 1d10 dégâts de feu. Un objet inflammable touché par ce sort prend feu s'il n'est pas porté ou transporté.",
+      "aux_niveaux_superieurs": "Les dégâts augmentent de 1d10 aux niveaux 5 (2d10), 11 (3d10) et 17 (4d10).",
+      "degats": {
+        "type": "feu",
+        "des": "1d10",
+        "progression": {
+          "5": "2d10",
+          "11": "3d10",
+          "17": "4d10"
+        }
+      },
+      "jet_attaque": "distance"
+    },
+    {
+      "id": "eldritch_blast",
+      "nom": "Décharge Occulte",
+      "nom_en": "Eldritch Blast",
+      "niveau": 0,
+      "ecole": "Évocation",
+      "temps_incantation": "1 action",
+      "portee": "36m",
+      "composantes": ["V", "S"],
+      "duree": "Instantanée",
+      "classes": ["Occultiste"],
+      "description": "Un rayon d'énergie crépitante jaillit vers une créature à portée. Faites un jet d'attaque de sort à distance contre la cible. En cas de touche, elle subit 1d10 dégâts de force.",
+      "aux_niveaux_superieurs": "Le sort crée plusieurs rayons aux niveaux supérieurs : deux rayons au niveau 5, trois rayons au niveau 11 et quatre rayons au niveau 17. Vous pouvez diriger les rayons vers la même cible ou vers des cibles différentes. Faites un jet d'attaque séparé pour chaque rayon.",
+      "degats": {
+        "type": "force",
+        "des": "1d10",
+        "progression": {
+          "5": "2 rayons",
+          "11": "3 rayons",
+          "17": "4 rayons"
+        }
+      },
+      "jet_attaque": "distance"
+    },
+    {
+      "id": "mage_hand",
+      "nom": "Main de Mage",
+      "nom_en": "Mage Hand",
+      "niveau": 0,
+      "ecole": "Invocation",
+      "temps_incantation": "1 action",
+      "portee": "9m",
+      "composantes": ["V", "S"],
+      "duree": "1 minute",
+      "classes": ["Barde", "Ensorceleur", "Magicien", "Occultiste"],
+      "description": "Une main spectrale flottante apparaît à un point que vous choisissez à portée. La main dure pendant la durée ou jusqu'à ce que vous la révoquiez en action. Action bonus pour contrôler la main : elle peut manipuler un objet, ouvrir une porte ou un récipient, ranger ou récupérer un objet d'un récipient ouvert, ou verser le contenu d'une fiole. Vous pouvez déplacer la main jusqu'à 9m à chaque utilisation. La main ne peut pas attaquer, activer des objets magiques ou transporter plus de 5kg.",
+      "concentration": false
+    },
+    {
+      "id": "prestidigitation",
+      "nom": "Prestidigitation",
+      "nom_en": "Prestidigitation",
+      "niveau": 0,
+      "ecole": "Transmutation",
+      "temps_incantation": "1 action",
+      "portee": "3m",
+      "composantes": ["V", "S"],
+      "duree": "Jusqu'à 1 heure",
+      "classes": ["Barde", "Ensorceleur", "Magicien", "Occultiste"],
+      "description": "Ce sort est un tour de magie mineur que les lanceurs de sorts novices utilisent pour s'entraîner. Vous créez un effet magique instantané et inoffensif à portée : étincelle, bouffée de vent, notes musicales, odeur, changement de couleur, nettoyage ou salissure d'objet, réchauffer/refroidir/aromatiser nourriture, marque/symbole sur surface, ou création d'un bibelot illusoire. Maximum 3 effets non-instantanés actifs simultanément.",
+      "concentration": false
+    },
+    {
+      "id": "healing_word",
+      "nom": "Mot de Guérison",
+      "nom_en": "Healing Word",
+      "niveau": 1,
+      "ecole": "Évocation",
+      "temps_incantation": "1 action bonus",
+      "portee": "18m",
+      "composantes": ["V"],
+      "duree": "Instantanée",
+      "classes": ["Barde", "Clerc", "Druide"],
+      "description": "Une créature de votre choix que vous pouvez voir à portée récupère un nombre de points de vie égal à 1d4 + votre modificateur de caractéristique d'incantation. Ce sort n'a aucun effet sur les morts-vivants ou les créations.",
+      "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, la guérison augmente de 1d4 pour chaque niveau au-dessus du 1er.",
+      "guerison": {
+        "des": "1d4",
+        "modificateur": "caracteristique_incantation",
+        "progression_par_niveau": "1d4"
+      }
+    },
+    {
+      "id": "cure_wounds",
+      "nom": "Soin des Blessures",
+      "nom_en": "Cure Wounds",
+      "niveau": 1,
+      "ecole": "Évocation",
+      "temps_incantation": "1 action",
+      "portee": "Toucher",
+      "composantes": ["V", "S"],
+      "duree": "Instantanée",
+      "classes": ["Barde", "Clerc", "Druide", "Paladin", "Rôdeur"],
+      "description": "Une créature que vous touchez récupère un nombre de points de vie égal à 1d8 + votre modificateur de caractéristique d'incantation. Ce sort n'a aucun effet sur les morts-vivants ou les créations.",
+      "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, la guérison augmente de 1d8 pour chaque niveau au-dessus du 1er.",
+      "guerison": {
+        "des": "1d8",
+        "modificateur": "caracteristique_incantation",
+        "progression_par_niveau": "1d8"
+      }
+    },
+    {
+      "id": "shield",
+      "nom": "Bouclier",
+      "nom_en": "Shield",
+      "niveau": 1,
+      "ecole": "Abjuration",
+      "temps_incantation": "1 réaction (déclenchée quand vous êtes touché par une attaque ou ciblé par le projectile magique)",
+      "portee": "Personnelle",
+      "composantes": ["V", "S"],
+      "duree": "1 round",
+      "classes": ["Ensorceleur", "Magicien"],
+      "description": "Une barrière invisible de force magique apparaît et vous protège. Jusqu'au début de votre prochain tour, vous avez un bonus de +5 à la CA, y compris contre l'attaque déclenchante, et vous ne subissez aucun dégât de projectile magique.",
+      "effet": {
+        "bonus_ca": 5,
+        "immunite": ["projectile_magique"]
+      }
+    },
+    {
+      "id": "magic_missile",
+      "nom": "Projectile Magique",
+      "nom_en": "Magic Missile",
+      "niveau": 1,
+      "ecole": "Évocation",
+      "temps_incantation": "1 action",
+      "portee": "36m",
+      "composantes": ["V", "S"],
+      "duree": "Instantanée",
+      "classes": ["Ensorceleur", "Magicien"],
+      "description": "Vous créez trois projectiles lumineux d'énergie magique. Chaque projectile touche une créature de votre choix que vous pouvez voir à portée. Un projectile inflige 1d4 + 1 dégâts de force à sa cible. Les projectiles frappent simultanément et vous pouvez les diriger vers une seule créature ou plusieurs.",
+      "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, le sort crée un projectile de plus pour chaque niveau au-dessus du 1er.",
+      "degats": {
+        "type": "force",
+        "des": "1d4",
+        "bonus": 1,
+        "nombre_projectiles": 3,
+        "progression": "+1 projectile par niveau"
+      },
+      "touche_automatique": true
+    },
+    {
+      "id": "fireball",
+      "nom": "Boule de Feu",
+      "nom_en": "Fireball",
+      "niveau": 3,
+      "ecole": "Évocation",
+      "temps_incantation": "1 action",
+      "portee": "45m",
+      "composantes": ["V", "S", "M (une petite boule de guano de chauve-souris et de soufre)"],
+      "duree": "Instantanée",
+      "classes": ["Ensorceleur", "Magicien"],
+      "description": "Une traînée brillante jaillit de votre doigt pointé vers un point que vous choisissez à portée puis explose en une gerbe de flammes. Chaque créature dans une sphère de 6m de rayon centrée sur ce point doit faire un jet de sauvegarde de Dextérité. Une cible subit 8d6 dégâts de feu en cas d'échec, ou la moitié en cas de réussite. Le feu contourne les coins. Il embrase les objets inflammables dans la zone qui ne sont ni portés ni transportés.",
+      "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 4 ou supérieur, les dégâts augmentent de 1d6 pour chaque niveau au-dessus du 3e.",
+      "degats": {
+        "type": "feu",
+        "des": "8d6",
+        "progression_par_niveau": "1d6"
+      },
+      "jet_sauvegarde": {
+        "type": "dexterite",
+        "effet_reussite": "demi_degats"
+      },
+      "zone": {
+        "type": "sphere",
+        "rayon": "6m"
+      }
+    },
+    {
+      "id": "counterspell",
+      "nom": "Contresort",
+      "nom_en": "Counterspell",
+      "niveau": 3,
+      "ecole": "Abjuration",
+      "temps_incantation": "1 réaction (déclenchée quand vous voyez une créature à 18m lancer un sort)",
+      "portee": "18m",
+      "composantes": ["S"],
+      "duree": "Instantanée",
+      "classes": ["Ensorceleur", "Magicien", "Occultiste"],
+      "description": "Vous tentez d'interrompre une créature en train de lancer un sort. Si la créature lance un sort de niveau 3 ou inférieur, son sort échoue et n'a aucun effet. Si elle lance un sort de niveau 4 ou supérieur, faites un jet de caractéristique d'incantation. Le DD est égal à 10 + le niveau du sort. En cas de réussite, le sort de la créature échoue et n'a aucun effet.",
+      "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 4 ou supérieur, le sort interrompu n'a aucun effet si son niveau est inférieur ou égal au niveau de l'emplacement de sort que vous avez utilisé."
+    },
+    {
+      "id": "haste",
+      "nom": "Hâte",
+      "nom_en": "Haste",
+      "niveau": 3,
+      "ecole": "Transmutation",
+      "temps_incantation": "1 action",
+      "portee": "9m",
+      "composantes": ["V", "S", "M (un copeau de racine de réglisse)"],
+      "duree": "Concentration, jusqu'à 1 minute",
+      "classes": ["Ensorceleur", "Magicien"],
+      "concentration": true,
+      "description": "Choisissez une créature consentante que vous pouvez voir à portée. Jusqu'à la fin du sort, la vitesse de la cible est doublée, elle gagne un bonus de +2 à la CA, elle a l'avantage aux jets de sauvegarde de Dextérité, et elle gagne une action supplémentaire à chacun de ses tours. Cette action ne peut être utilisée que pour : Attaquer (une attaque d'arme seulement), Foncer, Se Désengager, Se Cacher ou Utiliser un Objet. Quand le sort se termine, la cible ne peut ni se déplacer ni effectuer d'actions jusqu'à la fin de son prochain tour (vague de léthargie).",
+      "effet": {
+        "vitesse": "×2",
+        "bonus_ca": 2,
+        "avantage_jet_sauvegarde": ["dexterite"],
+        "action_supplementaire": true
+      }
+    },
+    {
+      "id": "misty_step",
+      "nom": "Pas Brumeux",
+      "nom_en": "Misty Step",
+      "niveau": 2,
+      "ecole": "Invocation",
+      "temps_incantation": "1 action bonus",
+      "portee": "Personnelle",
+      "composantes": ["V"],
+      "duree": "Instantanée",
+      "classes": ["Ensorceleur", "Magicien", "Occultiste"],
+      "description": "Brièvement entouré de brume argentée, vous vous téléportez jusqu'à 9m vers un espace inoccupé que vous pouvez voir.",
+      "teleportation": "9m"
+    }
+  ]
+}

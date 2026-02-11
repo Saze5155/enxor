@@ -36,5 +36,10 @@ export default {
     getSpells,
     getItems,
     getFeats,
-    getBackgrounds
+    getBackgrounds,
+    updateRace: async (data) => (await api.put(`/data/races/${data.nom}`, data)).data,
+    updateClass: async (data) => (await api.put(`/data/classes/${data.nom}`, data)).data,
+    updateItem: async (data) => (await api.put(`/data/items/${data.name}`, data)).data,
+    updateSpell: async (data) => (await api.put(`/data/spells/${data.nom}`, data)).data,
+    updateFeat: async (data) => (await api.put(`/data/feats/${data.nom}`, data)).data
 };

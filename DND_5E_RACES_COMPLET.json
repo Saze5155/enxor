@@ -1,0 +1,626 @@
+{
+  "version": "1.0",
+  "source": "D&D 5e Player's Handbook",
+  "description": "9 races officielles avec toutes leurs sous-races et traits raciaux",
+  "races": [
+    {
+      "id": "human",
+      "nom": "Humain",
+      "nom_en": "Human",
+      "description": "Les humains sont la race la plus adaptable et ambitieuse. Ils ont des durées de vie courtes mais s'efforcent d'accomplir autant que possible.",
+      "taille": "Moyenne",
+      "vitesse": 9,
+      "langues": ["Commun", "1 langue au choix"],
+      "source": "Player's Handbook",
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Toutes vos caractéristiques augmentent de 1.",
+          "bonus_caracteristiques": {
+            "force": 1,
+            "dexterite": 1,
+            "constitution": 1,
+            "intelligence": 1,
+            "sagesse": 1,
+            "charisme": 1
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les humains atteignent l'âge adulte vers 18 ans et vivent moins d'un siècle."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les humains mesurent entre 1,50m et 1,80m. Votre taille est Moyenne."
+        }
+      ],
+      "sous_races": [
+        {
+          "id": "human_variant",
+          "nom": "Humain Variante",
+          "description": "Variante optionnelle offrant plus de personnalisation.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Deux caractéristiques de votre choix augmentent de 1.",
+              "bonus_caracteristiques": {
+                "choix": 2,
+                "valeur": 1
+              }
+            },
+            {
+              "nom": "Compétence",
+              "description": "Vous maîtrisez une compétence de votre choix.",
+              "competence_bonus": 1
+            },
+            {
+              "nom": "Don",
+              "description": "Vous gagnez un don de votre choix.",
+              "don_gratuit": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "elf",
+      "nom": "Elfe",
+      "nom_en": "Elf",
+      "description": "Les elfes sont un peuple magique d'une grâce surnaturelle, vivant dans le monde sans en faire totalement partie.",
+      "taille": "Moyenne",
+      "vitesse": 9,
+      "langues": ["Commun", "Elfique"],
+      "source": "Player's Handbook",
+      "vision": {
+        "type": "Vision dans le Noir",
+        "portee": 18
+      },
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Dextérité augmente de 2.",
+          "bonus_caracteristiques": {
+            "dexterite": 2
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les elfes atteignent la maturité physique vers 20 ans mais ne sont considérés adultes que vers 100 ans. Ils vivent jusqu'à 750 ans."
+        },
+        {
+          "nom": "Sens Aiguisés",
+          "description": "Vous maîtrisez la compétence Perception."
+        },
+        {
+          "nom": "Ascendance Féerique",
+          "description": "Vous avez l'avantage aux jets de sauvegarde contre charme et la magie ne peut pas vous endormir."
+        },
+        {
+          "nom": "Transe",
+          "description": "Les elfes n'ont pas besoin de dormir. Ils méditent profondément 4 heures par jour (équivalent à 8h de sommeil pour les autres races)."
+        }
+      ],
+      "sous_races": [
+        {
+          "id": "high_elf",
+          "nom": "Haut-Elfe",
+          "description": "Les hauts-elfes possèdent un esprit vif et maîtrisent au moins les bases de la magie.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Intelligence augmente de 1.",
+              "bonus_caracteristiques": {
+                "intelligence": 1
+              }
+            },
+            {
+              "nom": "Entraînement Martial Elfique",
+              "description": "Maîtrise de l'épée longue, épée courte, arc long et arc court."
+            },
+            {
+              "nom": "Sort Mineur",
+              "description": "Vous connaissez un sort mineur de magicien de votre choix. Intelligence est votre caractéristique d'incantation."
+            },
+            {
+              "nom": "Langue Supplémentaire",
+              "description": "Vous parlez, lisez et écrivez une langue supplémentaire de votre choix."
+            }
+          ]
+        },
+        {
+          "id": "wood_elf",
+          "nom": "Elfe des Bois",
+          "description": "Les elfes des bois ont des sens et une intuition aiguisés, et leurs pieds les portent rapidement à travers leurs forêts natales.",
+          "vitesse": 10.5,
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Sagesse augmente de 1.",
+              "bonus_caracteristiques": {
+                "sagesse": 1
+              }
+            },
+            {
+              "nom": "Entraînement Martial Elfique",
+              "description": "Maîtrise de l'épée longue, épée courte, arc long et arc court."
+            },
+            {
+              "nom": "Pied Léger",
+              "description": "Votre vitesse de base est de 10,50m."
+            },
+            {
+              "nom": "Camouflage Naturel",
+              "description": "Vous pouvez tenter de vous cacher même si vous n'êtes que légèrement obscurci par le feuillage, la pluie forte, la neige, le brouillard ou d'autres phénomènes naturels."
+            }
+          ]
+        },
+        {
+          "id": "drow",
+          "nom": "Elfe Noir (Drow)",
+          "description": "Descendants d'une sous-race d'elfes à la peau noire qui furent exilés du monde de surface, les drows règnent dans les Ténèbres souterraines.",
+          "vision": {
+            "type": "Vision dans le Noir Supérieure",
+            "portee": 36
+          },
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Charisme augmente de 1.",
+              "bonus_caracteristiques": {
+                "charisme": 1
+              }
+            },
+            {
+              "nom": "Vision dans le Noir Supérieure",
+              "description": "Votre vision dans le noir a une portée de 36m."
+            },
+            {
+              "nom": "Sensibilité au Soleil",
+              "description": "Désavantage aux jets d'attaque et de Perception (vue) en pleine lumière du soleil."
+            },
+            {
+              "nom": "Magie Drow",
+              "description": "Niveau 1: Sort mineur Lumières Dansantes. Niveau 3: Sort Lueurs Féeriques 1/jour. Niveau 5: Sort Ténèbres 1/jour. Charisme est votre caractéristique d'incantation."
+            },
+            {
+              "nom": "Entraînement Martial Drow",
+              "description": "Maîtrise de la rapière, épée courte et arbalète de poing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dwarf",
+      "nom": "Nain",
+      "nom_en": "Dwarf",
+      "description": "Royaumes riches d'anciennes grandeurs, salles creusées dans les racines des montagnes, le bruit des marteaux résonnant dans les mines profondes.",
+      "taille": "Moyenne",
+      "vitesse": 7.5,
+      "langues": ["Commun", "Nain"],
+      "source": "Player's Handbook",
+      "vision": {
+        "type": "Vision dans le Noir",
+        "portee": 18
+      },
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Constitution augmente de 2.",
+          "bonus_caracteristiques": {
+            "constitution": 2
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les nains mûrissent au même rythme que les humains mais sont considérés jeunes jusqu'à 50 ans. Ils vivent en moyenne 350 ans."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les nains mesurent entre 1,20m et 1,50m. Votre taille est Moyenne."
+        },
+        {
+          "nom": "Lent mais Robuste",
+          "description": "Votre vitesse n'est pas réduite par le port d'une armure lourde."
+        },
+        {
+          "nom": "Résilience Naine",
+          "description": "Avantage aux jets de sauvegarde contre le poison. Résistance aux dégâts de poison."
+        },
+        {
+          "nom": "Entraînement aux Armes Naines",
+          "description": "Maîtrise de la hache d'armes, hachette, marteau léger et marteau de guerre."
+        },
+        {
+          "nom": "Maîtrise des Outils",
+          "description": "Maîtrise d'un outil d'artisan de votre choix : outils de forgeron, matériel de brasseur ou outils de maçon."
+        },
+        {
+          "nom": "Connaissance de la Pierre",
+          "description": "Double bonus de maîtrise aux jets d'Intelligence (Histoire) liés à la pierre."
+        }
+      ],
+      "sous_races": [
+        {
+          "id": "mountain_dwarf",
+          "nom": "Nain des Montagnes",
+          "description": "Les nains des montagnes sont forts et robustes, habitués à une vie difficile en terrain accidenté.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Force augmente de 2.",
+              "bonus_caracteristiques": {
+                "force": 2
+              }
+            },
+            {
+              "nom": "Entraînement aux Armures Naines",
+              "description": "Maîtrise des armures légères et intermédiaires."
+            }
+          ]
+        },
+        {
+          "id": "hill_dwarf",
+          "nom": "Nain des Collines",
+          "description": "Les nains des collines ont des sens aiguisés, une grande sagesse et une constitution remarquable.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Sagesse augmente de 1.",
+              "bonus_caracteristiques": {
+                "sagesse": 1
+              }
+            },
+            {
+              "nom": "Robustesse Naine",
+              "description": "Vos points de vie maximum augmentent de 1, et de 1 supplémentaire à chaque niveau."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "halfling",
+      "nom": "Halfelin",
+      "nom_en": "Halfling",
+      "description": "Les confortables foyers des halfelins sont bien entretenus, des fermes ordonnées et des bosquets soigneusement cultivés.",
+      "taille": "Petite",
+      "vitesse": 7.5,
+      "langues": ["Commun", "Halfelin"],
+      "source": "Player's Handbook",
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Dextérité augmente de 2.",
+          "bonus_caracteristiques": {
+            "dexterite": 2
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Un halfelin atteint l'âge adulte à 20 ans et vit généralement jusqu'à 150 ans."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les halfelins mesurent environ 90cm. Votre taille est Petite."
+        },
+        {
+          "nom": "Chanceux",
+          "description": "Quand vous obtenez un 1 sur un jet d'attaque, de caractéristique ou de sauvegarde, vous pouvez relancer le dé. Vous devez utiliser le nouveau résultat."
+        },
+        {
+          "nom": "Brave",
+          "description": "Avantage aux jets de sauvegarde contre la terreur."
+        },
+        {
+          "nom": "Agilité Halfeline",
+          "description": "Vous pouvez vous déplacer dans l'espace de toute créature d'une taille supérieure à la vôtre."
+        }
+      ],
+      "sous_races": [
+        {
+          "id": "lightfoot",
+          "nom": "Halfelin Pied-Léger",
+          "description": "Les pieds-légers peuvent se cacher facilement, même derrière d'autres créatures.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Charisme augmente de 1.",
+              "bonus_caracteristiques": {
+                "charisme": 1
+              }
+            },
+            {
+              "nom": "Discrétion Naturelle",
+              "description": "Vous pouvez tenter de vous cacher derrière une créature d'une taille supérieure à la vôtre."
+            }
+          ]
+        },
+        {
+          "id": "stout",
+          "nom": "Halfelin Robuste",
+          "description": "Les robustes sont plus résistants que la moyenne des halfelins et ont une certaine résistance au poison.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Constitution augmente de 1.",
+              "bonus_caracteristiques": {
+                "constitution": 1
+              }
+            },
+            {
+              "nom": "Résilience des Robustes",
+              "description": "Avantage aux jets de sauvegarde contre le poison. Résistance aux dégâts de poison."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dragonborn",
+      "nom": "Drakéide",
+      "nom_en": "Dragonborn",
+      "description": "Les drakéides ressemblent à des dragons humanoïdes. Ils marchent fièrement parmi les autres races du monde.",
+      "taille": "Moyenne",
+      "vitesse": 9,
+      "langues": ["Commun", "Draconique"],
+      "source": "Player's Handbook",
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Force augmente de 2 et votre Charisme de 1.",
+          "bonus_caracteristiques": {
+            "force": 2,
+            "charisme": 1
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les drakéides grandissent rapidement. Ils marchent quelques heures après l'éclosion, atteignent la taille d'un enfant humain de 10 ans à 3 ans, et sont adultes à 15 ans. Ils vivent jusqu'à 80 ans."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les drakéides sont plus grands et lourds que les humains, mesurant plus de 1,80m et pesant en moyenne 125kg. Votre taille est Moyenne."
+        },
+        {
+          "nom": "Ascendance Draconique",
+          "description": "Choisissez un type de dragon. Votre souffle et votre résistance aux dégâts sont déterminés par ce choix.",
+          "choix_dragon": [
+            {"type": "Noir", "degats": "Acide", "forme": "Ligne de 1,50m × 9m (jet Dex)"},
+            {"type": "Bleu", "degats": "Foudre", "forme": "Ligne de 1,50m × 9m (jet Dex)"},
+            {"type": "Airain", "degats": "Feu", "forme": "Ligne de 1,50m × 9m (jet Dex)"},
+            {"type": "Bronze", "degats": "Foudre", "forme": "Ligne de 1,50m × 9m (jet Dex)"},
+            {"type": "Cuivre", "degats": "Acide", "forme": "Ligne de 1,50m × 9m (jet Dex)"},
+            {"type": "Or", "degats": "Feu", "forme": "Cône de 4,50m (jet Dex)"},
+            {"type": "Vert", "degats": "Poison", "forme": "Cône de 4,50m (jet Con)"},
+            {"type": "Rouge", "degats": "Feu", "forme": "Cône de 4,50m (jet Dex)"},
+            {"type": "Argent", "degats": "Froid", "forme": "Cône de 4,50m (jet Con)"},
+            {"type": "Blanc", "degats": "Froid", "forme": "Cône de 4,50m (jet Con)"}
+          ]
+        },
+        {
+          "nom": "Arme de Souffle",
+          "description": "Action pour exhaler une énergie destructrice. DD = 8 + mod Constitution + bonus maîtrise. Dégâts = 2d6 au niveau 1, 3d6 au niveau 6, 4d6 au niveau 11, 5d6 au niveau 16. Utilisable 1/repos court.",
+          "utilisation": {
+            "type": "repos_court",
+            "nombre": 1
+          }
+        },
+        {
+          "nom": "Résistance aux Dégâts",
+          "description": "Résistance au type de dégâts associé à votre ascendance draconique."
+        }
+      ]
+    },
+    {
+      "id": "gnome",
+      "nom": "Gnome",
+      "nom_en": "Gnome",
+      "description": "Un bourdonnement constant d'activité industrieuse emplit les terriers et les quartiers où les communautés de gnomes forment leurs colonies.",
+      "taille": "Petite",
+      "vitesse": 7.5,
+      "langues": ["Commun", "Gnome"],
+      "source": "Player's Handbook",
+      "vision": {
+        "type": "Vision dans le Noir",
+        "portee": 18
+      },
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Intelligence augmente de 2.",
+          "bonus_caracteristiques": {
+            "intelligence": 2
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les gnomes mûrissent au même rythme que les humains mais sont considérés adultes vers 40 ans. Ils vivent entre 350 et 500 ans."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les gnomes mesurent entre 90cm et 1,20m. Votre taille est Petite."
+        },
+        {
+          "nom": "Ruse Gnome",
+          "description": "Avantage aux jets de sauvegarde d'Intelligence, Sagesse et Charisme contre la magie."
+        }
+      ],
+      "sous_races": [
+        {
+          "id": "forest_gnome",
+          "nom": "Gnome des Forêts",
+          "description": "Les gnomes des forêts ont un don naturel pour l'illusion et une rapidité et une discrétion inhérentes.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Dextérité augmente de 1.",
+              "bonus_caracteristiques": {
+                "dexterite": 1
+              }
+            },
+            {
+              "nom": "Illusionniste-Né",
+              "description": "Vous connaissez le sort mineur Illusion Mineure. Intelligence est votre caractéristique d'incantation."
+            },
+            {
+              "nom": "Parler aux Petites Bêtes",
+              "description": "Vous pouvez communiquer des idées simples avec des bêtes de taille P ou inférieure par des sons et gestes."
+            }
+          ]
+        },
+        {
+          "id": "rock_gnome",
+          "nom": "Gnome des Roches",
+          "description": "Les gnomes des roches sont les inventeurs et les bricoleurs naturels des gnomes.",
+          "traits": [
+            {
+              "nom": "Augmentation de Caractéristiques",
+              "description": "Votre Constitution augmente de 1.",
+              "bonus_caracteristiques": {
+                "constitution": 1
+              }
+            },
+            {
+              "nom": "Connaissances en Ingénierie",
+              "description": "Double bonus de maîtrise aux jets d'Intelligence (Histoire) liés aux objets magiques, alchimiques ou technologiques."
+            },
+            {
+              "nom": "Bricoleur",
+              "description": "Maîtrise des outils d'artisan (outils de bricoleur). Avec 1h et 10 po, créez un Mécanisme de horlogerie (24h de fonctionnement). 3 mécanismes actifs max."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "half_elf",
+      "nom": "Demi-Elfe",
+      "nom_en": "Half-Elf",
+      "description": "Marchant entre deux mondes sans appartenir totalement à aucun, les demi-elfes combinent les meilleures qualités des elfes et des humains.",
+      "taille": "Moyenne",
+      "vitesse": 9,
+      "langues": ["Commun", "Elfique", "1 langue au choix"],
+      "source": "Player's Handbook",
+      "vision": {
+        "type": "Vision dans le Noir",
+        "portee": 18
+      },
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Charisme augmente de 2 et deux autres caractéristiques de votre choix augmentent de 1.",
+          "bonus_caracteristiques": {
+            "charisme": 2,
+            "choix": 2,
+            "valeur_choix": 1
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les demi-elfes mûrissent au même rythme que les humains et atteignent l'âge adulte vers 20 ans. Ils vivent plus longtemps que les humains, dépassant souvent les 180 ans."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les demi-elfes ont à peu près la même taille que les humains, entre 1,50m et 1,80m. Votre taille est Moyenne."
+        },
+        {
+          "nom": "Ascendance Féerique",
+          "description": "Avantage aux jets de sauvegarde contre charme. La magie ne peut pas vous endormir."
+        },
+        {
+          "nom": "Polyvalence",
+          "description": "Vous maîtrisez deux compétences de votre choix."
+        }
+      ]
+    },
+    {
+      "id": "half_orc",
+      "nom": "Demi-Orc",
+      "nom_en": "Half-Orc",
+      "description": "Les demi-orcs naissent d'humains et d'orcs. Ils subissent des préjugés constants mais leur force remarquable les rend redoutables.",
+      "taille": "Moyenne",
+      "vitesse": 9,
+      "langues": ["Commun", "Orc"],
+      "source": "Player's Handbook",
+      "vision": {
+        "type": "Vision dans le Noir",
+        "portee": 18
+      },
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Force augmente de 2 et votre Constitution de 1.",
+          "bonus_caracteristiques": {
+            "force": 2,
+            "constitution": 1
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les demi-orcs mûrissent un peu plus vite que les humains, atteignant l'âge adulte vers 14 ans. Ils vieillissent notablement plus vite et vivent rarement plus de 75 ans."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les demi-orcs sont plus grands et plus massifs que les humains, mesurant entre 1,50m et plus de 1,80m. Votre taille est Moyenne."
+        },
+        {
+          "nom": "Ténacité Implacable",
+          "description": "Quand vous tombez à 0 PV sans mourir, vous pouvez passer à 1 PV à la place. 1/repos long.",
+          "utilisation": {
+            "type": "repos_long",
+            "nombre": 1
+          }
+        },
+        {
+          "nom": "Attaques Sauvages",
+          "description": "Lors d'un coup critique avec une arme de corps à corps, lancez un dé de dégâts d'arme supplémentaire."
+        },
+        {
+          "nom": "Intimidation",
+          "description": "Vous maîtrisez la compétence Intimidation."
+        }
+      ]
+    },
+    {
+      "id": "tiefling",
+      "nom": "Tieffelin",
+      "nom_en": "Tiefling",
+      "description": "Portant l'héritage infernal dans leur sang, les tieffelins n'ont pas de patrie et sont considérés avec suspicion partout.",
+      "taille": "Moyenne",
+      "vitesse": 9,
+      "langues": ["Commun", "Infernal"],
+      "source": "Player's Handbook",
+      "vision": {
+        "type": "Vision dans le Noir",
+        "portee": 18
+      },
+      "traits": [
+        {
+          "nom": "Augmentation de Caractéristiques",
+          "description": "Votre Charisme augmente de 2 et votre Intelligence de 1.",
+          "bonus_caracteristiques": {
+            "charisme": 2,
+            "intelligence": 1
+          }
+        },
+        {
+          "nom": "Âge",
+          "description": "Les tieffelins mûrissent au même rythme que les humains mais vivent quelques années de plus."
+        },
+        {
+          "nom": "Taille",
+          "description": "Les tieffelins ont à peu près la même taille et corpulence que les humains. Votre taille est Moyenne."
+        },
+        {
+          "nom": "Héritage Infernal",
+          "description": "Niveau 1: Sort mineur Thaumaturgie. Niveau 3: Sort Représailles Infernales 1/jour. Niveau 5: Sort Ténèbres 1/jour. Charisme est votre caractéristique d'incantation."
+        },
+        {
+          "nom": "Résistance Infernale",
+          "description": "Résistance aux dégâts de feu."
+        }
+      ]
+    }
+  ]
+}

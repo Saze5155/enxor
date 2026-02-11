@@ -45,14 +45,15 @@ export default function CharacterSheetPage({ character: propCharacter = null, is
         }
     };
 
-    const handleInventoryUpdate = async ({ inventory }) => {
-        const updatedChar = { ...char, inventory: inventory };
+    const handleInventoryUpdate = async (updates) => {
+        // Update local state immediately for responsiveness
+        const updatedChar = { ...char, ...updates };
         setChar(updatedChar);
 
         try {
-            await characterService.update(char.id, { inventory });
+            await characterService.update(char.id, updates);
         } catch (error) {
-            console.error("Failed to save inventory", error);
+            console.error("Failed to save updates", error);
         }
     };
 
@@ -63,33 +64,22 @@ export default function CharacterSheetPage({ character: propCharacter = null, is
     };
 
     const handleLevelUpConfirm = async ({ newLevel, hpGain, newFeatures, subclass }) => {
-        const newHpMax = char.hpMax + hpGain;
-        const newHpCurrent = char.hpCurrent + hpGain;
-
-        // Construct update payload
+        // Construct payload for levelUp endpoint
         const payload = {
-            level: newLevel,
-            hpMax: newHpMax,
-            hpCurrent: newHpCurrent,
-            // If subclass selected, update it
-            ...(subclass ? { subClass: subclass } : {})
+            newLevel,
+            hpGain,
+            subclass,
+            newFeatures // Include the resolved features with choices
         };
 
-        // TODO: Handle adding new features to character.features list
-        // For now we just alert or log, as features are complex objects.
-        // real implementation would push to character.features
-
-        // Optimistic Update
-        setChar(prev => ({
-            ...prev,
-            ...payload,
-            subClass: subclass || prev.subClass
-        }));
-
         try {
-            await characterService.update(char.id, payload);
+            // Use dedicated levelUp endpoint which adds features automatically
+            const updatedChar = await characterService.levelUp(char.id, payload);
+
+            // Update local state with the full response (including new features)
+            setChar(updatedChar);
             setShowLevelUpModal(false);
-            if (!isGM) alert(`Niveau ${newLevel} atteint ! PV Max +${hpGain}`);
+            if (!isGM) alert(`Niveau ${newLevel} atteint ! PV Max +${hpGain}, nouvelles capacités débloquées !`);
         } catch (error) {
             console.error("Level up failed", error);
         }

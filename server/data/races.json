@@ -11,7 +11,8 @@
             "cha": 1
         },
         "vitesse": 9,
-        "traits": []
+        "traits": [],
+        "visible": true
     },
     {
         "nom": "Elfe",
@@ -25,7 +26,8 @@
             "Sens aiguisés",
             "Ascendance féerique",
             "Transe"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Nain",
@@ -39,7 +41,8 @@
             "Résistance naine",
             "Formation aux armes naines",
             "Maîtrise des outils"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Halfelin",
@@ -52,7 +55,8 @@
             "Chanceux",
             "Brave",
             "Agilité halfeline"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Draconéide",
@@ -66,7 +70,8 @@
             "Ascendance draconique",
             "Souffle",
             "Résistance aux dégâts"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Gnome",
@@ -78,7 +83,8 @@
         "traits": [
             "Vision dans le noir",
             "Ruse gnome"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Demi-Elfe",
@@ -91,7 +97,8 @@
             "Vision dans le noir",
             "Ascendance féerique",
             "Polyvalence"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Demi-Orc",
@@ -106,7 +113,8 @@
             "Menaçant",
             "Endurance implacable",
             "Attaques sauvages"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Tieffelin",
@@ -120,6 +128,24 @@
             "Vision dans le noir",
             "Résistance infernale",
             "Héritage infernal"
-        ]
+        ],
+        "visible": true
+    },
+    {
+        "nom": "test",
+        "description": "test",
+        "bonus_caracteristiques": {
+            "str": 1,
+            "dex": 5,
+            "con": 3,
+            "cha": 3,
+            "wis": 5,
+            "int": 5
+        },
+        "vitesse": 9,
+        "traits": [
+            "trop fort"
+        ],
+        "visible": true
     }
 ]

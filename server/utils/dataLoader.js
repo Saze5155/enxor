@@ -24,4 +24,27 @@ const readJsonFile = (filename) => {
     }
 };
 
-module.exports = { readJsonFile };
+const writeJsonFile = (filename, data) => {
+    try {
+        let dataDir = path.join(process.cwd(), 'server/data');
+        if (!fs.existsSync(dataDir)) {
+             dataDir = path.join(process.cwd(), 'data');
+        }
+        
+        const filePath = path.join(dataDir, filename);
+        
+        // Ensure directory exists
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
+
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 4), 'utf8');
+        console.log(`DataLoader: Successfully wrote to ${filename}`);
+        return true;
+    } catch (error) {
+        console.error(`DataLoader: Error writing to ${filename}:`, error);
+        return false;
+    }
+};
+
+module.exports = { readJsonFile, writeJsonFile };

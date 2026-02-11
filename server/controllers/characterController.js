@@ -8,6 +8,7 @@ const parseJSON = (str) => {
 
 // CREATE
 const { readJsonFile } = require('../utils/dataLoader');
+const { calculateSpellSlots } = require('../utils/spellSlots');
 
 // CREATE
 exports.createCharacter = async (req, res) => {
@@ -104,9 +105,133 @@ exports.createCharacter = async (req, res) => {
             });
         }
         
-        // --- 4. Starting Equipment from Background ---
-        // (Optional: we can add items if we have a robust Item system, otherwise add to Notes or similar)
-        // For now, let's keep it simple and just do Features/Skills. Equipment needs Item parsing.
+        // --- 4. Starting Equipment ---
+        const itemsToCreate = [];
+        const startingEquipment = req.body.startingEquipment || {};
+
+        if (classRef && classRef.equipement_depart && classRef.equipement_depart.choix) {
+            classRef.equipement_depart.choix.forEach((choice, index) => {
+                let optionIndex = -1;
+                
+                // If only one option, it's automatic
+                if (choice.options.length === 1) {
+                    optionIndex = 0;
+                } else if (startingEquipment[index] !== undefined) {
+                    // Start counting from 0
+                    optionIndex = parseInt(startingEquipment[index]);
+                }
+
+                if (optionIndex >= 0 && choice.options[optionIndex]) {
+                    const selectedItems = choice.options[optionIndex]; // Array of strings e.g. ["Cotte de mailles"]
+                    
+                    selectedItems.forEach(itemStr => {
+                        let name = itemStr;
+                        let quantity = 1;
+                        
+                        // Parse quantity e.g. "Flèches (20)"
+                        const qtyMatch = itemStr.match(/(.*)\s\((\d+)\)$/);
+                        if (qtyMatch) {
+                            name = qtyMatch[1];
+                            quantity = parseInt(qtyMatch[2]);
+                        }
+
+                        // Determine type (improved)
+                        let type = "objet";
+                        let damage = "";
+                        let properties = "";
+                        const lowerName = name.toLowerCase();
+                        
+                        // Item Stats Database (Partial)
+                        const ITEM_STATS = {
+                            // Generic weapons (for placeholder names)
+                            'arme de guerre': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
+                            'arme courante': { damage: '1d6', properties: '', type: 'arme' },
+                            
+                            // Specific weapons
+                            'épée à deux mains': { damage: '2d6', properties: 'Lourde, Deux mains', type: 'arme' },
+                            'épée longue': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
+                            'épée courte': { damage: '1d6', properties: 'Finesse, Légère', type: 'arme' },
+                            'dague': { damage: '1d4', properties: 'Finesse, Légère, Lancer (portée 6/18)', type: 'arme' },
+                            'hache à deux mains': { damage: '1d12', properties: 'Lourde, Deux mains', type: 'arme' },
+                            'hache d\'armes': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
+                            'hachette': { damage: '1d6', properties: 'Légère, Lancer (portée 6/18)', type: 'arme' },
+                            'masse d\'armes': { damage: '1d6', properties: '', type: 'arme' },
+                            'marteau de guerre': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
+                            'bâton': { damage: '1d6', properties: 'Polyvalente (1d8)', type: 'arme' },
+                            'lance': { damage: '1d6', properties: 'Lancer (portée 6/18), Polyvalente (1d8)', type: 'arme' },
+                            'javelot': { damage: '1d6', properties: 'Lancer (portée 9/36)', type: 'arme' },
+                            'arc long': { damage: '1d8', properties: 'Munitions (portée 45/180), Lourde, Deux mains', type: 'arme' },
+                            'arc court': { damage: '1d6', properties: 'Munitions (portée 24/96), Deux mains', type: 'arme' },
+                            'arbalète légère': { damage: '1d8', properties: 'Munitions (portée 24/96), Chargement, Deux mains', type: 'arme' },
+                            'arbalète lourde': { damage: '1d10', properties: 'Munitions (portée 30/120), Chargement, Deux mains', type: 'arme' },
+                            'fronde': { damage: '1d4', properties: 'Munitions (portée 9/36)', type: 'arme' },
+                            'rapière': { damage: '1d8', properties: 'Finesse', type: 'arme' },
+                            'cimeterre': { damage: '1d6', properties: 'Finesse, Légère', type: 'arme' },
+                            'gourdin': { damage: '1d4', properties: 'Légère', type: 'arme' },
+                            'massue': { damage: '1d8', properties: 'Deux mains', type: 'arme' },
+                            
+                            // Armor
+                            'armure de cuir': { type: 'armure', properties: 'Légère, CA 11 + Dex' },
+                            'armure de cuir clouté': { type: 'armure', properties: 'Légère, CA 12 + Dex' },
+                            'chemise de mailles': { type: 'armure', properties: 'Intermédiaire, CA 13 + Dex (max 2)' },
+                            'cotte de mailles': { type: 'armure', properties: 'Lourde, CA 16, Discrétion désavantagée, For 13' },
+                            'harnois': { type: 'armure', properties: 'Lourde, CA 18, Discrétion désavantagée, For 15' },
+                            'bouclier': { type: 'bouclier', properties: '+2 CA' },
+                            'robe': { type: 'armure', properties: 'Pas d\'armure' }
+                        };
+
+                        // 1. Exact match lookup
+                        // 2. Partial match lookup if not found
+                        let stats = null;
+                        
+                        // Try to find a key that is included in the item name
+                        // e.g. item name "Une épée longue" -> matches key "épée longue"
+                        // longer keys first to match specific checks
+                        const sortedKeys = Object.keys(ITEM_STATS).sort((a, b) => b.length - a.length);
+                        const matchedKey = sortedKeys.find(key => lowerName.includes(key));
+                        
+                        if (matchedKey) {
+                            stats = ITEM_STATS[matchedKey];
+                            type = stats.type;
+                            damage = stats.damage || "";
+                            properties = stats.properties || "";
+                        } else {
+                            // Fallback logic
+                            // Weapon keywords
+                            const weaponKeywords = [
+                                'épée', 'hache', 'dague', 'arc', 'arbalète', 'marteau', 'glaive', 'bâton', 'masse', 
+                                'lance', 'javeline', 'trident', 'fouet', 'fléau', 'morningstar', 'pique', 'rapière', 'cimeterre',
+                                'fronde', 'dard', 'arme' 
+                            ];
+
+                            // Armor keywords
+                            const armorKeywords = ['armure', 'cotte', 'bouclier', 'robe', 'gilet', 'cuir', 'plaques', 'chemise', 'maille'];
+
+                            if (weaponKeywords.some(t => lowerName.includes(t))) type = "arme";
+                            else if (armorKeywords.some(t => lowerName.includes(t))) type = "armure";
+                            else if (['potion', 'parchemin', 'kit', 'trousse'].some(t => lowerName.includes(t))) type = "consommable";
+                        }
+
+                        itemsToCreate.push({
+                            name: name,
+                            quantity: quantity,
+                            type: type,
+                            damage: damage,
+                            properties: properties,
+                            isEquipped: false 
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Add Background Equipment if defined (Simulated for now as specific items might not be in JSON yet)
+        if (bgRef && bgRef.equipement) {
+             bgRef.equipement.forEach(itemStr => {
+                 // Reuse parsing logic if needed or just push
+                  itemsToCreate.push({ name: itemStr, quantity: 1, type: 'objet' });
+             });
+        }
 
 
         const character = await prisma.character.create({
@@ -128,10 +253,14 @@ exports.createCharacter = async (req, res) => {
                 
                 skills: JSON.stringify(charSkills),
                 proficiencies: JSON.stringify(proficiencies),
+                spellSlots: JSON.stringify(calculateSpellSlots(charClass, 1)),
                 
                 // Relations
                 features: {
                     create: featuresToCreate
+                },
+                inventory: {
+                    create: itemsToCreate
                 }
             },
             include: {
@@ -205,7 +334,8 @@ exports.getCharacter = async (req, res) => {
             ...character,
             stats: parseJSON(character.stats),
             skills: parseJSON(character.skills),
-            proficiencies: parseJSON(character.proficiencies)
+            proficiencies: parseJSON(character.proficiencies),
+            wallet: parseJSON(character.wallet)
         };
 
         res.json(parsedChar);
@@ -232,7 +362,7 @@ exports.updateCharacter = async (req, res) => {
         const updateData = { ...req.body };
 
         // Handle JSON fields
-        ['stats', 'skills', 'proficiencies'].forEach(field => {
+        ['stats', 'skills', 'proficiencies', 'wallet'].forEach(field => {
             if (updateData[field] && typeof updateData[field] === 'object') {
                 updateData[field] = JSON.stringify(updateData[field]);
             }
@@ -254,6 +384,14 @@ exports.updateCharacter = async (req, res) => {
         delete prismaUpdateData.inventory;
         delete prismaUpdateData.spells;
         delete prismaUpdateData.features;
+
+        // Stringify JSON fields if they are objects
+        const jsonFields = ['spellSlots', 'skills', 'proficiencies', 'wallet'];
+        jsonFields.forEach(field => {
+            if (prismaUpdateData[field] && typeof prismaUpdateData[field] === 'object') {
+                prismaUpdateData[field] = JSON.stringify(prismaUpdateData[field]);
+            }
+        });
 
         // Transaction to handle potential relation updates + main update
         const result = await prisma.$transaction(async (prisma) => {
@@ -284,6 +422,7 @@ exports.updateCharacter = async (req, res) => {
                              name: item.name,
                              quantity: item.quantity,
                              isEquipped: item.isEquipped,
+                             equippedSlot: item.equippedSlot || null,
                              type: item.type,
                              properties: item.properties ? (typeof item.properties === 'string' ? item.properties : JSON.stringify(item.properties)) : null,
                              notes: item.notes
@@ -349,6 +488,145 @@ exports.updateCharacter = async (req, res) => {
     } catch (error) {
          console.error("Update Char Error", error);
         res.status(500).json({ message: "Erreur mise à jour personnage" });
+    }
+};
+
+// LEVEL UP
+exports.levelUp = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId, role } = req.user;
+        const { hpGain, newLevel, subclass, newFeatures, asiChoice } = req.body; // hpGain from frontend
+        
+        console.log('=== LEVEL UP REQUEST ===');
+        console.log('Character ID:', id);
+        console.log('New Level:', newLevel);
+        console.log('HP Gain:', hpGain);
+        console.log('Subclass:', subclass);
+        console.log('ASI Choice:', asiChoice);
+
+        const character = await prisma.character.findUnique({
+             where: { id },
+             include: { features: true }
+        });
+
+        if (!character) return res.status(404).json({ message: "Personnage introuvable" });
+        if (role !== 'MJ' && character.userId !== userId) return res.status(403).json({ message: "Interdit" });
+
+        const featuresToCreate = [];
+
+        // If frontend provided resolved features (with choices), use them
+        if (newFeatures && Array.isArray(newFeatures)) {
+            newFeatures.forEach(feat => {
+                 featuresToCreate.push({
+                    name: feat.nom,
+                    source: "CLASS", // or feat.source if available
+                    levelObtained: newLevel,
+                    description: feat.description || feat.desc || '', // Default to empty string if missing
+                    // Map other fields if needed
+                 });
+            });
+        } else {
+            // Fallback: Load from file (no choices)
+            const classesData = readJsonFile('classes.json');
+            const classList = classesData.classes || [];
+            const classRef = classList.find(c => c.nom === character.class);
+            
+            if (classRef && classRef.capacites_par_niveau && classRef.capacites_par_niveau[newLevel.toString()]) {
+                classRef.capacites_par_niveau[newLevel.toString()].forEach(feat => {
+                     featuresToCreate.push({
+                        name: feat.nom,
+                        source: "CLASS",
+                        levelObtained: newLevel,
+                        description: feat.description || '' // Default to empty string if missing
+                    });
+                });
+            }
+            
+             // Subclass features fallback
+            if (subclass && classRef && classRef.sous_classes) {
+                 const subRef = classRef.sous_classes.find(sc => sc.nom === subclass);
+                 if (subRef && subRef.capacites) {
+                     const subFeats = subRef.capacites.filter(f => f.niveau === newLevel);
+                     subFeats.forEach(feat => {
+                         featuresToCreate.push({
+                            name: feat.nom,
+                            source: "SUBCLASS",
+                            levelObtained: newLevel,
+                            description: feat.description || '' // Default to empty string if missing
+                        });
+                     });
+                 }
+            }
+        }
+
+        const activeSubclass = subclass || character.subClass;
+        
+        // Handle ASI (Ability Score Improvement)
+        let updatedStats = null;
+        if (asiChoice && asiChoice.type === 'stat_increase' && asiChoice.increases) {
+            console.log('Applying ASI...');
+            updatedStats = typeof character.stats === 'string' ? JSON.parse(character.stats) : character.stats || {};
+            Object.entries(asiChoice.increases).forEach(([stat, increase]) => {
+                const currentValue = updatedStats[stat] || 10;
+                const newValue = Math.min(20, currentValue + increase); // Cap at 20
+                updatedStats[stat] = newValue;
+                console.log(`ASI: ${stat} increased from ${currentValue} to ${newValue}`);
+            });
+        } else if (asiChoice && asiChoice.type === 'feat' && asiChoice.featName) {
+            // Add feat as a feature
+            console.log('Applying Feat:', asiChoice.featName);
+            const featData = asiChoice.featData || {};
+            featuresToCreate.push({
+                name: asiChoice.featName,
+                source: "FEAT",
+                levelObtained: newLevel,
+                description: featData.description || ''
+            });
+        }
+
+        // Build update data
+        const updateData = {
+            level: newLevel,
+            hpMax: character.hpMax + hpGain,
+            hpCurrent: character.hpCurrent + hpGain,
+            subClass: activeSubclass,
+            spellSlots: JSON.stringify(calculateSpellSlots(character.class, newLevel)),
+            features: {
+                create: featuresToCreate
+            }
+        };
+        
+        // Only update stats if ASI was applied
+        if (updatedStats) {
+            updateData.stats = JSON.stringify(updatedStats);
+        }
+
+        console.log('Updating character with data:', JSON.stringify(updateData, null, 2));
+
+        const updated = await prisma.character.update({
+            where: { id },
+            data: updateData,
+            include: { features: true, inventory: true, spells: true }
+        });
+
+        // Parse JSON for response
+        const result = {
+            ...updated,
+            stats: parseJSON(updated.stats),
+            skills: parseJSON(updated.skills),
+            proficiencies: parseJSON(updated.proficiencies),
+            wallet: parseJSON(updated.wallet)
+        };
+
+        console.log('Level up successful!');
+        res.json(result);
+
+    } catch (error) {
+        console.error("=== LEVEL UP ERROR ===");
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+        res.status(500).json({ message: "Erreur lors de la montée de niveau", error: error.message });
     }
 };
 

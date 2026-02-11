@@ -3,10 +3,10 @@ import wikiService from '../services/wikiService';
 import userService from '../services/userService';
 
 const VISIBILITIES = [
-    { id: 'DRAFT', icon: '🔒', label: 'Brouillon', color: 'bg-gray-600' },
-    { id: 'PUBLIC', icon: '✅', label: 'Public', color: 'bg-green-600' },
-    { id: 'PARTIAL', icon: '👁️', label: 'Partiel', color: 'bg-yellow-600' },
-    { id: 'TARGETED', icon: '🎯', label: 'Ciblé', color: 'bg-indigo-600' },
+    { id: 'DRAFT', icon: 'lock', label: 'Brouillon', color: 'bg-stone-600' },
+    { id: 'PUBLIC', icon: 'public', label: 'Public', color: 'bg-green-600' },
+    { id: 'PARTIAL', icon: 'visibility', label: 'Partiel', color: 'bg-amber-600' },
+    { id: 'TARGETED', icon: 'gps_fixed', label: 'Ciblé', color: 'bg-indigo-600' },
 ];
 
 export default function VisibilityControl({ article, onUpdate }) {
@@ -41,6 +41,7 @@ export default function VisibilityControl({ article, onUpdate }) {
 
             const updated = await wikiService.updateArticle(article.id, payload);
             if (onUpdate) onUpdate(updated);
+            // Close modal if open (though handleTargetSave does it too)
         } catch (error) {
             console.error("Failed to update", error);
         } finally {
@@ -53,7 +54,6 @@ export default function VisibilityControl({ article, onUpdate }) {
         if (players.length === 0) {
             try {
                 const data = await userService.getPlayers();
-                // Filter out current user (MJ) if needed, but let's keep all for now
                 setPlayers(data);
             } catch (error) {
                 console.error("Failed to load players");
@@ -76,19 +76,18 @@ export default function VisibilityControl({ article, onUpdate }) {
 
     return (
         <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-            <div className="flex bg-gray-800 rounded p-1 gap-1 border border-gray-700">
+            <div className="flex bg-stone-900 rounded p-1 gap-1 border border-stone-700">
                 {VISIBILITIES.map((viz) => {
                     const isActive = article.visibility === viz.id;
                     return (
                         <button
                             key={viz.id}
                             onClick={(e) => handleStatusClick(e, viz.id)}
-                            className={`p-1.5 rounded transition-all text-xs flex items-center gap-1 ${isActive ? viz.color + ' text-white shadow-lg scale-105 font-bold' : 'text-gray-400 hover:bg-gray-700'}`}
+                            className={`p-1.5 rounded transition-all flex items-center justify-center ${isActive ? viz.color + ' text-white shadow-lg ring-1 ring-white/50' : 'text-stone-500 hover:bg-stone-800 hover:text-stone-300'}`}
                             title={viz.label}
                             disabled={loading}
                         >
-                            <span>{viz.icon}</span>
-                            {isActive && <span>{viz.label}</span>}
+                            <span className="material-symbols-outlined text-[18px] leading-none">{viz.icon}</span>
                         </button>
                     );
                 })}

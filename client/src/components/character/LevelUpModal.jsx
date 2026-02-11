@@ -4,6 +4,7 @@ import dataService from '../../services/dataService';
 export default function LevelUpModal({ character, onClose, onConfirm }) {
     const [step, setStep] = useState(1);
     const [classesData, setClassesData] = useState([]);
+    const [featsData, setFeatsData] = useState([]);
     const [loading, setLoading] = useState(true);
 
     // Level Up State
@@ -12,17 +13,42 @@ export default function LevelUpModal({ character, onClose, onConfirm }) {
     const [hpMode, setHpMode] = useState('average'); // 'average' or 'roll'
     const [rolledHp, setRolledHp] = useState(null);
     const [selectedSubclass, setSelectedSubclass] = useState('');
+    const [selectedOptions, setSelectedOptions] = useState({}); // { "Feature Name": "Option Name" }
+
+    // ASI State
+    const isASILevel = [4, 8, 12, 16, 19].includes(nextLevel);
+    const [asiChoice, setAsiChoice] = useState('stats'); // 'stats' or 'feat'
+    const [asiMode, setAsiMode] = useState('single'); // 'single' (+2 to one) or 'double' (+1 to two)
+    const [asiStat1, setAsiStat1] = useState('');
+    const [asiStat2, setAsiStat2] = useState('');
+    const [selectedFeat, setSelectedFeat] = useState('');
+
+    const statNames = {
+        str: 'Force',
+        dex: 'Dextérité',
+        con: 'Constitution',
+        int: 'Intelligence',
+        wis: 'Sagesse',
+        cha: 'Charisme'
+    };
+
+    const handleOptionChange = (featureName, value) => {
+        setSelectedOptions(prev => ({ ...prev, [featureName]: value }));
+    };
 
     // Fetch data on mount
     useEffect(() => {
         const loadData = async () => {
             try {
-                const data = await dataService.getClasses();
-                // data is { classes: [...] } based on the JSON structure I saw
-                setClassesData(data.classes || []);
+                const [classesResponse, featsResponse] = await Promise.all([
+                    dataService.getClasses(),
+                    dataService.getFeats()
+                ]);
+                setClassesData(classesResponse.classes || []);
+                setFeatsData(featsResponse || []);
                 setLoading(false);
             } catch (e) {
-                console.error("Failed to load class data", e);
+                console.error("Failed to load data", e);
                 setLoading(false);
             }
         };
@@ -35,8 +61,9 @@ export default function LevelUpModal({ character, onClose, onConfirm }) {
     const features = classInfo.capacites_par_niveau ? classInfo.capacites_par_niveau[nextLevel] : [];
 
     // Hit Die Logic
+    const stats = typeof character.stats === 'string' ? JSON.parse(character.stats) : character.stats || {};
     const hitDieVal = classInfo.de_vie ? parseInt(classInfo.de_vie.replace('d', '')) : 8;
-    const conMod = Math.floor((character.stats.con - 10) / 2);
+    const conMod = Math.floor(((stats.con || 10) - 10) / 2);
     const avgHp = Math.max(1, (hitDieVal / 2) + 1 + conMod);
 
     const handleRoll = () => {
@@ -47,11 +74,69 @@ export default function LevelUpModal({ character, onClose, onConfirm }) {
     const finalHpGain = hpMode === 'average' ? avgHp : Math.max(1, (rolledHp || 0) + conMod);
 
     const handleConfirm = () => {
+        // Validate ASI if applicable
+        if (isASILevel) {
+            if (asiChoice === 'stats') {
+                if (asiMode === 'single' && !asiStat1) {
+                    alert('Veuillez sélectionner une caractéristique à améliorer.');
+                    return;
+                }
+                if (asiMode === 'double' && (!asiStat1 || !asiStat2)) {
+                    alert('Veuillez sélectionner deux caractéristiques à améliorer.');
+                    return;
+                }
+                if (asiMode === 'double' && asiStat1 === asiStat2) {
+                    alert('Vous devez choisir deux caractéristiques différentes.');
+                    return;
+                }
+            } else if (asiChoice === 'feat') {
+                if (!selectedFeat) {
+                    alert('Veuillez sélectionner un don.');
+                    return;
+                }
+            }
+        }
+
+        // Merge choices into features
+        const finalFeatures = (features || []).map(f => {
+            if (selectedOptions[f.nom]) {
+                const choice = f.options.find(o => o.nom === selectedOptions[f.nom]);
+                return {
+                    ...f,
+                    nom: `${f.nom}: ${choice.nom}`,
+                    description: choice.description || f.description,
+                    effect: choice.effect // if any
+                };
+            }
+            return f;
+        });
+
+        // Build ASI choice if applicable
+        let asiChoiceData = null;
+        if (isASILevel) {
+            if (asiChoice === 'stats') {
+                asiChoiceData = {
+                    type: 'stat_increase',
+                    increases: asiMode === 'single'
+                        ? { [asiStat1]: 2 }
+                        : { [asiStat1]: 1, [asiStat2]: 1 }
+                };
+            } else if (asiChoice === 'feat') {
+                const featData = featsData.find(f => f.nom === selectedFeat);
+                asiChoiceData = {
+                    type: 'feat',
+                    featName: selectedFeat,
+                    featData: featData
+                };
+            }
+        }
+
         onConfirm({
             newLevel: nextLevel,
             hpGain: finalHpGain,
-            newFeatures: features || [], // We might want to save these to the character
-            subclass: selectedSubclass // return this if selected
+            newFeatures: finalFeatures || [],
+            subclass: selectedSubclass,
+            asiChoice: asiChoiceData
         });
     };
 
@@ -111,7 +196,28 @@ export default function LevelUpModal({ character, onClose, onConfirm }) {
                                     <li key={i}>
                                         <strong className="text-amber-800">{feat.nom}</strong>
                                         <p className="text-xs text-stone-700 mt-1">{feat.description}</p>
-                                        {/* Handle Choices (Subclass, ASI, Fighting Style) */}
+                                        {/* Handle Choices (Subclass, ASI, Fighting Style, etc.) */}
+                                        {feat.options && feat.options.length > 0 && (
+                                            <div className="mt-2 bg-stone-50 p-2 border border-stone-300 rounded">
+                                                <p className="text-xs font-bold text-stone-700 mb-1">⭐ Faire un choix :</p>
+                                                <select
+                                                    className="w-full text-sm p-1 border rounded bg-white"
+                                                    value={selectedOptions[feat.nom] || ''}
+                                                    onChange={e => handleOptionChange(feat.nom, e.target.value)}
+                                                >
+                                                    <option value="">-- Sélectionner --</option>
+                                                    {feat.options.map((opt, idx) => (
+                                                        <option key={idx} value={opt.nom}>{opt.nom}</option>
+                                                    ))}
+                                                </select>
+                                                {selectedOptions[feat.nom] && (
+                                                    <p className="text-[10px] italic mt-1 text-stone-500">
+                                                        {feat.options.find(o => o.nom === selectedOptions[feat.nom])?.description}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
+
                                         {feat.type === 'sous_classe' && (
                                             <div className="mt-2 bg-yellow-50 p-2 border border-yellow-200 rounded">
                                                 <p className="text-xs font-bold text-amber-700 mb-1">⭐ Choix de Sous-Classe Requis</p>
@@ -132,9 +238,132 @@ export default function LevelUpModal({ character, onClose, onConfirm }) {
                                                 )}
                                             </div>
                                         )}
-                                        {feat.type === 'asi' && (
-                                            <div className="mt-2 text-xs italic text-stone-500">
-                                                (Note: La gestion automatique des améliorations de caractéristiques n'est pas encore implémentée. Ajoutez-les manuellement après le niveau.)
+                                        {isASILevel && feat.type === 'asi' && (
+                                            <div className="mt-2 bg-blue-50 p-2 border border-blue-200 rounded">
+                                                <p className="text-xs font-bold text-blue-700 mb-1">⭐ Amélioration de Caractéristique (ASI)</p>
+
+                                                {/* Choice: Stats or Feat */}
+                                                <div className="flex space-x-4 mb-3">
+                                                    <label className="flex items-center text-sm font-semibold">
+                                                        <input
+                                                            type="radio"
+                                                            name="asiChoice"
+                                                            value="stats"
+                                                            checked={asiChoice === 'stats'}
+                                                            onChange={() => setAsiChoice('stats')}
+                                                            className="mr-1"
+                                                        />
+                                                        📊 Améliorer les stats
+                                                    </label>
+                                                    <label className="flex items-center text-sm font-semibold">
+                                                        <input
+                                                            type="radio"
+                                                            name="asiChoice"
+                                                            value="feat"
+                                                            checked={asiChoice === 'feat'}
+                                                            onChange={() => setAsiChoice('feat')}
+                                                            className="mr-1"
+                                                        />
+                                                        ⭐ Prendre un don
+                                                    </label>
+                                                </div>
+
+                                                {asiChoice === 'stats' && (
+                                                    <>
+                                                        <div className="flex space-x-4 mb-2">
+                                                            <label className="flex items-center text-sm">
+                                                                <input
+                                                                    type="radio"
+                                                                    name="asiMode"
+                                                                    value="single"
+                                                                    checked={asiMode === 'single'}
+                                                                    onChange={() => { setAsiMode('single'); setAsiStat2(''); }}
+                                                                    className="mr-1"
+                                                                />
+                                                                +2 à une caractéristique
+                                                            </label>
+                                                            <label className="flex items-center text-sm">
+                                                                <input
+                                                                    type="radio"
+                                                                    name="asiMode"
+                                                                    value="double"
+                                                                    checked={asiMode === 'double'}
+                                                                    onChange={() => setAsiMode('double')}
+                                                                    className="mr-1"
+                                                                />
+                                                                +1 à deux caractéristiques
+                                                            </label>
+                                                        </div>
+                                                        <div className="flex space-x-2">
+                                                            <select
+                                                                className="w-1/2 text-sm p-1 border rounded bg-white"
+                                                                value={asiStat1}
+                                                                onChange={e => setAsiStat1(e.target.value)}
+                                                            >
+                                                                <option value="">-- Caractéristique 1 --</option>
+                                                                {Object.entries(statNames).map(([key, name]) => (
+                                                                    <option key={key} value={key}>{name}</option>
+                                                                ))}
+                                                            </select>
+                                                            {asiMode === 'double' && (
+                                                                <select
+                                                                    className="w-1/2 text-sm p-1 border rounded bg-white"
+                                                                    value={asiStat2}
+                                                                    onChange={e => setAsiStat2(e.target.value)}
+                                                                >
+                                                                    <option value="">-- Caractéristique 2 --</option>
+                                                                    {Object.entries(statNames).map(([key, name]) => (
+                                                                        <option key={key} value={key}>{name}</option>
+                                                                    ))}
+                                                                </select>
+                                                            )}
+                                                        </div>
+                                                        {asiStat1 && (
+                                                            <p className="text-[10px] italic mt-1 text-stone-500">
+                                                                {asiMode === 'single'
+                                                                    ? `Augmente la ${statNames[asiStat1]} de 2.`
+                                                                    : `Augmente la ${statNames[asiStat1]} de 1${asiStat2 ? ` et la ${statNames[asiStat2]} de 1.` : '.'}`
+                                                                }
+                                                            </p>
+                                                        )}
+                                                    </>
+                                                )}
+
+                                                {asiChoice === 'feat' && (
+                                                    <div>
+                                                        <select
+                                                            className="w-full text-sm p-2 border rounded bg-white mb-2"
+                                                            value={selectedFeat}
+                                                            onChange={e => setSelectedFeat(e.target.value)}
+                                                        >
+                                                            <option value="">-- Choisir un don --</option>
+                                                            {featsData.map((feat, idx) => (
+                                                                <option key={idx} value={feat.nom}>
+                                                                    {feat.nom}
+                                                                    {feat.prerequis ? ` (Prérequis: ${feat.prerequis})` : ''}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                        {selectedFeat && (() => {
+                                                            const feat = featsData.find(f => f.nom === selectedFeat);
+                                                            return feat ? (
+                                                                <div className="bg-white p-2 border rounded text-xs">
+                                                                    <p className="font-bold text-blue-800 mb-1">{feat.nom}</p>
+                                                                    <p className="text-stone-600 mb-1">{feat.description}</p>
+                                                                    {feat.prerequis && (
+                                                                        <p className="text-orange-600 italic mb-1">Prérequis: {feat.prerequis}</p>
+                                                                    )}
+                                                                    <p className="font-semibold text-stone-700 mt-2">Effets:</p>
+                                                                    <ul className="list-disc list-inside text-stone-600">
+                                                                        {feat.effets?.map((effet, i) => (
+                                                                            <li key={i}>{effet}</li>
+                                                                        ))}
+                                                                    </ul>
+                                                                </div>
+                                                            ) : null;
+                                                        })()}
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </li>

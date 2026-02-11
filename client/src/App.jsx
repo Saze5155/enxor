@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/CampaignDashboard'; // Use CampaignDashboard as main Dashboard
+import Dashboard from './pages/CampaignDashboard';
 import MainLayout from './components/MainLayout';
 import WikiHome from './pages/wiki/WikiHome';
 import ArticleEditor from './pages/wiki/ArticleEditor';
@@ -9,7 +9,7 @@ import ArticleReader from './pages/wiki/ArticleReader';
 import CharactersList from './pages/characters/CharactersList';
 import CharacterCreator from './pages/characters/CharacterCreator';
 import CharacterSheet from './pages/characters/CharacterSheet';
-// import CampaignDashboard from './pages/CampaignDashboard'; // Already imported as Dashboard
+import MJTools from './pages/tools/MJTools';
 import GameSession from './pages/session/GameSession';
 
 const PrivateRoute = ({ children }) => {
@@ -44,7 +44,7 @@ function AppRoutes() {
         {/* Campaign Routes handled by Dashboard */}
 
         <Route path="/character" element={<Navigate to="/characters" replace />} />
-        <Route path="/mj-tools" element={<div className="p-8">Outils MJ (En construction)</div>} />
+        <Route path="/mj-tools" element={<MJTools />} />
       </Route>
 
       {/* Session Route (Standalone) */}

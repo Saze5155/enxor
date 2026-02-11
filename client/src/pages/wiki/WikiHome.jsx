@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import wikiService from '../../services/wikiService';
 import { useAuth } from '../../context/AuthContext';
 import VisibilityControl from '../../components/VisibilityControl';
+// Removed Heroicons import
 
 export default function WikiHome() {
     const [categories, setCategories] = useState([]);
@@ -11,6 +12,11 @@ export default function WikiHome() {
 
     // Quick MJ actions state
     const [newCatName, setNewCatName] = useState('');
+
+    // Search & Filter State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortOrder, setSortOrder] = useState('alpha'); // 'alpha', 'recent'
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     useEffect(() => {
         loadData();
@@ -30,126 +36,198 @@ export default function WikiHome() {
     const handleCreateCategory = async (e) => {
         e.preventDefault();
         if (!newCatName.trim()) return;
-        await wikiService.createCategory({ name: newCatName, icon: '📂' }); // Default icon for now
+        await wikiService.createCategory({ name: newCatName, icon: 'folder' }); // Use Material 'folder'
         setNewCatName('');
         loadData();
     }
 
-    const [selectedCategory, setSelectedCategory] = useState(null);
-
-    // Filter articles based on selection
-    const displayedArticles = selectedCategory
-        ? articles.filter(a => a.categoryId === selectedCategory.id)
-        : articles;
-
-    const handleCategoryClick = (cat) => {
-        setSelectedCategory(cat);
+    // Helper to render Emoji or Material Icon
+    const renderIcon = (icon) => {
+        const iconStr = icon || 'folder';
+        // Heuristic: M-Icons are words (length > 2), Emojis are usually short
+        if (iconStr.length > 2 && /^[a-z0-9_]+$/.test(iconStr)) {
+            return <span className="material-symbols-outlined align-middle">{iconStr}</span>;
+        }
+        return <span className="text-xl align-middle">{iconStr}</span>;
     };
 
-    return (
-        <div className="p-8">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-indigo-400">
-                    {selectedCategory ? `Encyclopédie > ${selectedCategory.name}` : 'Encyclopédie'}
-                </h1>
-                <div className="flex gap-4">
-                    {/* Debug info */}
-                    <span className="text-xs bg-gray-700 px-2 py-1 rounded">Role: {user?.role || 'Guest'}</span>
+    // Filter Logic
+    const filteredArticles = articles.filter(article => {
+        const matchesCategory = selectedCategory ? article.categoryId === selectedCategory.id : true;
+        const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (article.tags && article.tags.some(t => t.name.toLowerCase().includes(searchTerm.toLowerCase())));
+        return matchesCategory && matchesSearch;
+    });
 
-                    <NavLink
-                        to="/wiki/new"
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow transition"
-                    >
-                        + Nouvel Article
-                    </NavLink>
+    // Sort Logic
+    const sortedArticles = [...filteredArticles].sort((a, b) => {
+        if (sortOrder === 'recent') {
+            return new Date(b.updatedAt) - new Date(a.updatedAt);
+        }
+        return a.title.localeCompare(b.title);
+    });
+
+    return (
+        <div className="p-8 min-h-screen bg-stone-900 text-stone-200 font-sans">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 className="text-4xl font-bold text-amber-500 font-serif tracking-wider">Encyclopédie</h1>
+                    <p className="text-stone-400 text-sm mt-1">Le savoir du monde à portée de main.</p>
+                </div>
+
+                <div className="flex gap-4">
+                    {user?.role === 'MJ' && (
+                        <NavLink
+                            to="/wiki/new"
+                            className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded shadow transition flex items-center gap-2 font-bold"
+                        >
+                            <span>+</span> Nouvel Article
+                        </NavLink>
+                    )}
                 </div>
             </div>
 
-            {/* Categories Grid (Show only if no category selected) */}
-            {!selectedCategory && (
-                <>
-                    <h2 className="text-xl font-bold mb-4 text-gray-300">Catégories</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
-                        {categories.map((cat) => (
-                            <div
-                                key={cat.id}
-                                onClick={() => handleCategoryClick(cat)}
-                                className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-indigo-500 transition cursor-pointer group"
-                            >
-                                <div className="text-3xl mb-2">{cat.icon || '📂'}</div>
-                                <h3 className="font-bold text-lg group-hover:text-indigo-400">{cat.name}</h3>
-                                <p className="text-sm text-gray-500">{cat.articles?.length || 0} articles</p>
-                            </div>
-                        ))}
+            {/* Search & Toolbar */}
+            <div className="bg-stone-800 p-4 rounded-lg shadow-lg border border-stone-700 mb-8 flex flex-col md:flex-row gap-4 items-center">
+                {/* Search Input */}
+                <div className="relative flex-1 w-full">
+                    <input
+                        type="text"
+                        placeholder="Rechercher un article, un tag..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-stone-900 border border-stone-600 rounded-full py-2 pl-10 pr-4 text-stone-200 focus:outline-none focus:border-amber-500 transition"
+                    />
+                    <span className="material-symbols-outlined w-5 h-5 text-stone-500 absolute left-3 top-2.5 pointer-events-none">search</span>
+                </div>
 
-                        {/* Add Category Card (Dev: Visible to all) */}
-                        <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 border-dashed flex flex-col justify-center">
-                            <h3 className="font-bold text-gray-400 mb-2 text-sm">+ Nouvelle Catégorie</h3>
+                {/* Sort Select */}
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                    <span className="material-symbols-outlined w-5 h-5 text-stone-500">filter_list</span>
+                    <select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        className="bg-stone-900 border border-stone-600 rounded px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+                    >
+                        <option value="alpha">A-Z</option>
+                        <option value="recent">Plus Récents</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* Content Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+                {/* Sidebar: Categories */}
+                <div className="lg:col-span-1 space-y-4">
+                    <h2 className="font-bold text-lg text-amber-500 border-b border-stone-700 pb-2 hidden lg:block">Catégories</h2>
+                    <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+                        <button
+                            onClick={() => setSelectedCategory(null)}
+                            className={`text-left px-4 py-2 rounded transition flex justify-between items-center shadow-md ${!selectedCategory ? 'bg-amber-700 text-white ring-2 ring-amber-500' : 'bg-stone-800 text-stone-400 hover:bg-stone-700'}`}
+                        >
+                            <span className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-xl">public</span>
+                                <span className="font-medium hidden lg:inline">Toutes</span>
+                            </span>
+                            <span className="text-xs bg-stone-900 px-2 py-0.5 rounded opacity-70 hidden lg:inline">{articles.length}</span>
+                        </button>
+                        {categories.map(cat => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`text-left px-4 py-2 rounded transition flex justify-between items-center shadow-md group ${selectedCategory?.id === cat.id ? 'bg-amber-700 text-white ring-2 ring-amber-500' : 'bg-stone-800 text-stone-400 hover:bg-stone-700'}`}
+                            >
+                                <span className="flex items-center gap-2">
+                                    {renderIcon(cat.icon)}
+                                    <span className="font-medium hidden lg:inline">{cat.name}</span>
+                                </span>
+                                <span className="text-xs bg-stone-900 px-2 py-0.5 rounded opacity-50 group-hover:opacity-100 transition hidden lg:inline">{cat.articles?.length || 0}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Quick Add Category (Dev/MJ) */}
+                    {user?.role === 'MJ' && (
+                        <div className="pt-4 border-t border-stone-700 mt-4 hidden lg:block">
                             <form onSubmit={handleCreateCategory} className="flex gap-2">
                                 <input
                                     type="text"
                                     value={newCatName}
                                     onChange={(e) => setNewCatName(e.target.value)}
-                                    placeholder="Nom..."
-                                    className="bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm flex-1"
+                                    placeholder="Nouvelle..."
+                                    className="bg-stone-900 border border-stone-600 rounded px-2 py-1 text-xs flex-1 text-white w-full"
                                 />
-                                <button type="submit" className="bg-indigo-600 px-3 rounded text-sm">OK</button>
+                                <button type="submit" className="bg-stone-700 hover:bg-stone-600 px-2 rounded text-xs text-white">+</button>
                             </form>
                         </div>
+                    )}
+                </div>
+
+                {/* Main Content: Articles Grid */}
+                <div className="lg:col-span-3">
+                    <div className="mb-4 text-stone-400 text-sm flex justify-between items-center">
+                        <span>{sortedArticles.length} article(s) trouvé(s)</span>
+                        {selectedCategory && <span className="text-amber-500 font-bold">Filtre : {selectedCategory.name}</span>}
                     </div>
-                </>
-            )}
 
-            {/* Articles List */}
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-300">
-                    {selectedCategory ? `Articles dans "${selectedCategory.name}"` : 'Tous les Articles Récents'}
-                </h2>
-                {selectedCategory && (
-                    <button
-                        onClick={() => setSelectedCategory(null)}
-                        className="text-gray-400 hover:text-white underline text-sm"
-                    >
-                        ← Retour aux catégories
-                    </button>
-                )}
-            </div>
-
-            <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-                {displayedArticles.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">Aucun article dans cette section.</div>
-                ) : (
-                    <div className="divide-y divide-gray-700">
-                        {displayedArticles.map((article) => (
-                            <NavLink
-                                key={article.id}
-                                to={`/wiki/article/${article.id}`}
-                                className="block p-4 hover:bg-gray-700 flex justify-between items-center transition"
-                            >
-                                <div>
-                                    <h4 className="font-bold text-indigo-300">{article.title}</h4>
-                                    <span className="text-xs text-gray-500 uppercase tracking-wider">{article.category?.name}</span>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    {/* Visibility Badge for MJ */}
-                                    {user?.role === 'MJ' ? (
-                                        <VisibilityControl
-                                            article={article}
-                                            onUpdate={(updated) => {
-                                                setArticles(prev => prev.map(a => a.id === updated.id ? updated : a));
-                                            }}
-                                        />
-                                    ) : article.visibility === 'TARGETED' && (
-                                        <span className="text-xs px-2 py-1 rounded border border-indigo-500 text-indigo-400">
-                                            🎯 Ciblé
+                    {sortedArticles.length === 0 ? (
+                        <div className="text-center py-20 bg-stone-800 rounded border border-dashed border-stone-700">
+                            <p className="text-stone-500 text-lg">Aucun article ne correspond à votre recherche.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            {sortedArticles.map(article => (
+                                <NavLink
+                                    key={article.id}
+                                    to={`/wiki/article/${article.id}`}
+                                    className="bg-stone-800 rounded-lg border border-stone-700 overflow-hidden hover:border-amber-500 transition shadow-lg group flex flex-col"
+                                >
+                                    {/* Card Header with Category Label */}
+                                    <div className="h-8 bg-gradient-to-r from-amber-900 to-stone-800 flex items-center px-3 justify-between border-b border-stone-700">
+                                        <span className="text-xs font-bold text-amber-500 uppercase tracking-widest flex items-center gap-1">
+                                            {renderIcon(article.category?.icon)} {article.category?.name}
                                         </span>
-                                    )}
-                                    <span className="text-gray-500 text-sm">➔</span>
-                                </div>
-                            </NavLink>
-                        ))}
-                    </div>
-                )}
+
+                                        {/* Visibility Badges in Header */}
+                                        {user?.role === 'MJ' ? (
+                                            <div onClick={(e) => e.preventDefault()}> {/* Prevent nav link click */}
+                                                <VisibilityControl
+                                                    article={article}
+                                                    onUpdate={(updated) => setArticles(prev => prev.map(a => a.id === updated.id ? updated : a))}
+                                                />
+                                            </div>
+                                        ) : article.visibility === 'TARGETED' && (
+                                            <span className="material-symbols-outlined text-indigo-400 text-sm opacity-80" title="Ciblé">gps_fixed</span>
+                                        )}
+                                    </div>
+
+                                    <div className="p-5 flex-1 flex flex-col">
+                                        <h3 className="text-xl font-bold text-stone-200 group-hover:text-amber-400 transition mb-2">
+                                            {article.title}
+                                        </h3>
+
+                                        {/* Tags */}
+                                        {article.tags && article.tags.length > 0 && (
+                                            <div className="flex flex-wrap gap-1 mt-auto pt-4">
+                                                {article.tags.map(tag => (
+                                                    <span key={tag.id} className="text-[10px] bg-stone-900 text-stone-400 px-2 py-1 rounded-full">
+                                                        #{tag.name}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        <div className="text-[10px] text-stone-600 mt-2 text-right">
+                                            Mis à jour le {new Date(article.updatedAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                </NavLink>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

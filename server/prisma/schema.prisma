@@ -65,6 +65,8 @@ model Character {
   // Stockage JSON pour SQLite : simple et flexible
   skills    String   @default("[]") // Liste des compétences et expertises
   proficiencies String @default("{\"armor\":[],\"weapons\":[],\"tools\":[],\"languages\":[]}")
+  wallet    String   @default("{\"cp\":0,\"sp\":0,\"ep\":0,\"gp\":0,\"pp\":0}") // PO, PA, PC...
+  spellSlots String  @default("{\"1\":{\"max\":0,\"used\":0},\"2\":{\"max\":0,\"used\":0},\"3\":{\"max\":0,\"used\":0},\"4\":{\"max\":0,\"used\":0},\"5\":{\"max\":0,\"used\":0},\"6\":{\"max\":0,\"used\":0},\"7\":{\"max\":0,\"used\":0},\"8\":{\"max\":0,\"used\":0},\"9\":{\"max\":0,\"used\":0}}") // Emplacements de sorts
   
   // Relations
   inventory CharacterItem[]
@@ -94,10 +96,12 @@ model CharacterItem {
   name        String
   quantity    Int       @default(1)
   isEquipped  Boolean   @default(false)
+  equippedSlot String?  // main_hand, off_hand, armor, head, feet, accessory_1, etc.
   type        String?   // weapon, armor, potion, etc.
   
-  // Propriétés spécifiques (JSON)
-  properties  String?   // Dégâts, CA, Poids, etc.
+  // Propriétés spécifiques
+  damage      String?   // Dégâts (ex: "1d8", "2d6")
+  properties  String?   // Propriétés (ex: "Finesse, Légère")
   
   notes       String?
 }

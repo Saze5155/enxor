@@ -21,6 +21,16 @@ export default function CharactersList() {
         }
     };
 
+    const handleDelete = async (id) => {
+        try {
+            await characterService.delete(id);
+            setCharacters(characters.filter(c => c.id !== id));
+        } catch (error) {
+            console.error("Failed to delete character", error);
+            alert("Erreur lors de la suppression du personnage.");
+        }
+    };
+
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-8">
@@ -43,24 +53,38 @@ export default function CharactersList() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {characters.map(char => (
-                        <NavLink
-                            key={char.id}
-                            to={`/characters/${char.id}`}
-                            className="block bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 transition group"
-                        >
-                            <div className="h-32 bg-gray-900 flex items-center justify-center">
-                                {/* Placeholder for Avatar */}
-                                <span className="text-4xl">👤</span>
-                            </div>
-                            <div className="p-4">
-                                <h3 className="text-xl font-bold text-white group-hover:text-indigo-400">{char.name}</h3>
-                                <p className="text-sm text-gray-400">{char.race} {char.class} (Lv.{char.level})</p>
-                                <div className="mt-4 flex justify-between text-xs text-gray-500">
-                                    <span>HP: {char.hpCurrent}/{char.hpMax}</span>
-                                    <span>Joueur: {char.user?.username}</span>
+                        <div key={char.id} className="relative group">
+                            <NavLink
+                                to={`/characters/${char.id}`}
+                                className="block bg-stone-800 rounded-lg overflow-hidden border border-stone-700 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 transition group-hover:bg-stone-700"
+                            >
+                                <div className="h-32 bg-stone-900 flex items-center justify-center relative">
+                                    {/* Placeholder for Avatar */}
+                                    <span className="text-4xl">👤</span>
                                 </div>
-                            </div>
-                        </NavLink>
+                                <div className="p-4">
+                                    <h3 className="text-xl font-bold text-stone-100 group-hover:text-indigo-400 font-serif">{char.name}</h3>
+                                    <p className="text-sm text-stone-400 font-serif">{char.race} {char.class} (Lv.{char.level})</p>
+                                    <div className="mt-4 flex justify-between text-xs text-stone-500">
+                                        <span>HP: {char.hpCurrent}/{char.hpMax}</span>
+                                        <span>Joueur: {char.user?.username}</span>
+                                    </div>
+                                </div>
+                            </NavLink>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (window.confirm(`Voulez-vous vraiment supprimer ${char.name} ? Cette action est irréversible.`)) {
+                                        handleDelete(char.id);
+                                    }
+                                }}
+                                className="absolute top-2 right-2 bg-red-600/80 hover:bg-red-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
+                                title="Supprimer le personnage"
+                            >
+                                🗑️
+                            </button>
+                        </div>
                     ))}
                 </div>
             )}

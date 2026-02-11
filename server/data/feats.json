@@ -1,1 +1,165 @@
-[]
+[
+    {
+        "nom": "Alerte",
+        "description": "Toujours à l'affût du danger, vous gagnez les avantages suivants :",
+        "prerequis": null,
+        "effets": [
+            "Vous ne pouvez pas être surpris tant que vous êtes conscient",
+            "Vous gagnez un bonus de +5 à l'initiative",
+            "Les créatures que vous ne voyez pas n'ont pas l'avantage aux jets d'attaque contre vous"
+        ]
+    },
+    {
+        "nom": "Athlète",
+        "description": "Vous avez suivi un entraînement physique intensif qui vous confère les avantages suivants :",
+        "prerequis": null,
+        "effets": [
+            "Augmentez votre Force ou Dextérité de 1, jusqu'à un maximum de 20",
+            "Vous relever du sol ne coûte que 1,5 mètre de mouvement",
+            "Escalader ne coûte plus de mouvement supplémentaire",
+            "Vous pouvez faire un saut en longueur avec élan en ne parcourant que 1,5 mètre au lieu de 3 mètres"
+        ]
+    },
+    {
+        "nom": "Chanceux",
+        "description": "Vous avez une chance inexplicable qui semble tomber au bon moment.",
+        "prerequis": null,
+        "effets": [
+            "Vous avez 3 points de chance. Vous pouvez dépenser un point pour relancer un d20 que vous venez de lancer",
+            "Vous pouvez dépenser un point pour relancer un jet d'attaque contre vous",
+            "Vous regagnez tous vos points de chance après un repos long"
+        ]
+    },
+    {
+        "nom": "Combattant au bouclier",
+        "description": "Vous utilisez les boucliers non seulement pour vous protéger mais aussi comme arme offensive.",
+        "prerequis": null,
+        "effets": [
+            "Si vous effectuez l'action Attaquer à votre tour, vous pouvez utiliser une action bonus pour frapper avec votre bouclier",
+            "Si vous n'êtes pas incapable d'agir, vous pouvez ajouter votre bonus de bouclier à tout jet de sauvegarde de Dextérité contre un sort ou effet qui ne vous cible que vous"
+        ]
+    },
+    {
+        "nom": "Combattant à deux armes",
+        "description": "Vous maîtrisez le combat à deux armes et gagnez les avantages suivants :",
+        "prerequis": null,
+        "effets": [
+            "Vous gagnez un bonus de +1 à la CA tant que vous maniez une arme de corps à corps dans chaque main",
+            "Vous pouvez utiliser le combat à deux armes même si les armes que vous maniez ne sont pas légères",
+            "Vous pouvez dégainer ou rengainer deux armes en même temps"
+        ]
+    },
+    {
+        "nom": "Dur à cuire",
+        "description": "Robuste et résistant, vous gagnez les avantages suivants :",
+        "prerequis": null,
+        "effets": [
+            "Augmentez votre Constitution de 1, jusqu'à un maximum de 20",
+            "Votre maximum de points de vie augmente d'un montant égal à votre niveau actuel + 1 (minimum 1) lorsque vous gagnez ce don"
+        ]
+    },
+    {
+        "nom": "Érudit",
+        "description": "Vous êtes un étudiant passionné qui a passé des années à apprendre.",
+        "prerequis": null,
+        "effets": [
+            "Augmentez votre Intelligence de 1, jusqu'à un maximum de 20",
+            "Vous gagnez la maîtrise de trois compétences de votre choix"
+        ]
+    },
+    {
+        "nom": "Incantation de guerre",
+        "description": "Vous avez pratiqué l'incantation de sorts en plein combat.",
+        "prerequis": "Capacité à lancer au moins un sort",
+        "effets": [
+            "Vous avez l'avantage aux jets de sauvegarde de Constitution pour maintenir votre concentration sur un sort",
+            "Vous pouvez effectuer des attaques d'opportunité même si vous avez lancé un sort"
+        ]
+    },
+    {
+        "nom": "Initié à la magie",
+        "description": "Choisissez une classe : barde, clerc, druide, ensorceleur, magicien ou occultiste.",
+        "prerequis": null,
+        "effets": [
+            "Vous apprenez deux tours de magie de votre choix de la liste de sorts de cette classe",
+            "Vous apprenez un sort de niveau 1 de cette liste",
+            "Vous pouvez lancer ce sort une fois sans dépenser d'emplacement de sort (repos long pour récupérer)"
+        ]
+    },
+    {
+        "nom": "Maître d'armes",
+        "description": "Vous avez pratiqué intensément avec diverses armes.",
+        "prerequis": null,
+        "effets": [
+            "Augmentez votre Force ou Dextérité de 1, jusqu'à un maximum de 20",
+            "Vous gagnez la maîtrise de quatre armes de votre choix"
+        ]
+    },
+    {
+        "nom": "Mobile",
+        "description": "Vous êtes exceptionnellement rapide et agile.",
+        "prerequis": null,
+        "effets": [
+            "Votre vitesse augmente de 3 mètres",
+            "Vous pouvez utiliser l'action Foncer sur un terrain difficile sans coût supplémentaire",
+            "Quand vous attaquez une créature, vous ne provoquez pas d'attaque d'opportunité de sa part pour le reste du tour"
+        ]
+    },
+    {
+        "nom": "Observateur",
+        "description": "Rapide à remarquer les détails de votre environnement.",
+        "prerequis": null,
+        "effets": [
+            "Augmentez votre Intelligence ou Sagesse de 1, jusqu'à un maximum de 20",
+            "Si vous pouvez voir la bouche d'une créature pendant qu'elle parle une langue que vous comprenez, vous pouvez lire sur ses lèvres",
+            "Vous avez un bonus de +5 aux jets de Sagesse (Perception) et Intelligence (Investigation) passifs"
+        ]
+    },
+    {
+        "nom": "Pourfendeur",
+        "description": "Vous avez appris à mettre le poids de votre arme derrière vos coups.",
+        "prerequis": null,
+        "effets": [
+            "Augmentez votre Force de 1, jusqu'à un maximum de 20",
+            "Une fois par tour, quand vous touchez avec une arme de corps à corps, vous pouvez relancer les dés de dégâts et utiliser le nouveau résultat"
+        ]
+    },
+    {
+        "nom": "Robuste",
+        "description": "Vous avez une santé remarquable.",
+        "prerequis": null,
+        "effets": [
+            "Augmentez votre Constitution de 1, jusqu'à un maximum de 20",
+            "Quand vous lancez un Dé de Vie pour regagner des points de vie, le minimum que vous pouvez obtenir est le double de votre modificateur de Constitution (minimum 2)"
+        ]
+    },
+    {
+        "nom": "Sentinelle",
+        "description": "Vous avez maîtrisé les techniques pour tirer avantage de chaque faux pas d'un ennemi.",
+        "prerequis": null,
+        "effets": [
+            "Quand vous touchez une créature avec une attaque d'opportunité, sa vitesse devient 0 pour le reste du tour",
+            "Les créatures provoquent des attaques d'opportunité même si elles utilisent l'action Se désengager",
+            "Quand une créature à 1,50 mètre de vous attaque une cible autre que vous, vous pouvez utiliser votre réaction pour faire une attaque de corps à corps contre elle"
+        ]
+    },
+    {
+        "nom": "Tireur d'élite",
+        "description": "Vous avez maîtrisé les armes à distance et pouvez faire des tirs que d'autres trouveraient impossibles.",
+        "prerequis": null,
+        "effets": [
+            "Attaquer à longue portée n'impose pas le désavantage à vos jets d'attaque à distance",
+            "Vos attaques à distance ignorent les abris partiels et les trois-quarts d'abri",
+            "Avant de faire une attaque avec une arme à distance, vous pouvez choisir de prendre un malus de -5 au jet d'attaque. Si l'attaque touche, vous ajoutez +10 aux dégâts"
+        ]
+    },
+    {
+        "nom": "Tueur de mages",
+        "description": "Vous avez pratiqué des techniques utiles en combat de mêlée contre les lanceurs de sorts.",
+        "prerequis": null,
+        "effets": [
+            "Quand une créature à 1,50 mètre de vous lance un sort, vous pouvez utiliser votre réaction pour faire une attaque de corps à corps contre elle",
+            "Vous avez l'avantage aux jets de sauvegarde contre les sorts lancés par des créatures à 1,50 mètre de vous"
+        ]
+    }
+]

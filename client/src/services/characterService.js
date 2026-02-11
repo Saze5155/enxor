@@ -17,6 +17,10 @@ const characterService = {
         const response = await api.put(`/characters/${id}`, data);
         return response.data;
     },
+    levelUp: async (id, data) => {
+        const response = await api.post(`/characters/${id}/level-up`, data);
+        return response.data;
+    },
     delete: async (id) => {
         const response = await api.delete(`/characters/${id}`);
         return response.data;

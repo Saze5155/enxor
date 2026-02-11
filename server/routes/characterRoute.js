@@ -9,6 +9,7 @@ router.post('/', characterController.createCharacter);
 router.get('/', characterController.getCharacters);
 router.get('/:id', characterController.getCharacter);
 router.put('/:id', characterController.updateCharacter);
+router.post('/:id/level-up', characterController.levelUp);
 router.delete('/:id', characterController.deleteCharacter);
 
 module.exports = router;

@@ -1,1 +1,63 @@
-[]
+[
+    {
+        "name": "Dague",
+        "type": "Arme",
+        "weight": 0.5,
+        "value": 2,
+        "damage": "1d4 perforant",
+        "visible": true,
+        "properties": "Finesse, léger, lancer (portée 6/18)"
+    },
+    {
+        "name": "Épée longue",
+        "type": "Arme",
+        "weight": 1.5,
+        "value": 15,
+        "damage": "1d8 tranchant",
+        "visible": true,
+        "properties": "Polyvalente (1d10)"
+    },
+    {
+        "name": "Arc court",
+        "type": "Arme",
+        "weight": 1,
+        "value": 25,
+        "damage": "1d6 perforant",
+        "visible": true,
+        "properties": "Munitions (portée 24/96), à deux mains"
+    },
+    {
+        "name": "Cotte de mailles",
+        "type": "Armure",
+        "weight": 25,
+        "value": 75,
+        "armorClass": "16",
+        "visible": true,
+        "properties": "Désavantage discrétion, Force 13"
+    },
+    {
+        "name": "Armure de cuir",
+        "type": "Armure",
+        "weight": 5,
+        "value": 10,
+        "armorClass": "11 + Dex",
+        "visible": true,
+        "properties": "-"
+    },
+    {
+        "name": "Potion de Soin",
+        "type": "Objet",
+        "weight": 0.25,
+        "value": 50,
+        "visible": true,
+        "properties": "Rend 2d4 + 2 PV"
+    },
+    {
+        "name": "Sac à dos",
+        "type": "Objet",
+        "weight": 2.5,
+        "value": 2,
+        "visible": true,
+        "properties": "Peut contenir 30kg d'équipement"
+    }
+]

@@ -2,6 +2,7 @@ import React from 'react';
 
 const TABS = [
     { id: 'combat', label: 'Combat', icon: '⚔️' },
+    { id: 'equipment', label: 'Équipement', icon: '🛡️' }, // New Equipment Tab
     { id: 'spells', label: 'Grimoire', icon: '✨' },
     { id: 'inventory', label: 'Inventaire', icon: '🎒' },
     { id: 'features', label: 'Capacités', icon: '🧩' },

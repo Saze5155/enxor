@@ -2800,6 +2800,58 @@
           "Tromperie"
         ]
       },
+      "equipement_depart": {
+        "choix": [
+          {
+            "description": "Une rapière OU une épée courte",
+            "options": [
+              [
+                "Rapière"
+              ],
+              [
+                "Épée courte"
+              ]
+            ]
+          },
+          {
+            "description": "Un arc court et 20 flèches OU une épée courte",
+            "options": [
+              [
+                "Arc court",
+                "Flèches (20)"
+              ],
+              [
+                "Épée courte"
+              ]
+            ]
+          },
+          {
+            "description": "Un paquetage de cambrioleur OU un paquetage d'explorateur OU un paquetage d'aventurier",
+            "options": [
+              [
+                "Paquetage de cambrioleur"
+              ],
+              [
+                "Paquetage d'explorateur"
+              ],
+              [
+                "Paquetage d'aventurier"
+              ]
+            ]
+          },
+          {
+            "description": "Armure de cuir, deux dagues et des outils de voleur",
+            "options": [
+              [
+                "Armure de cuir",
+                "Dague",
+                "Dague",
+                "Outils de voleur"
+              ]
+            ]
+          }
+        ]
+      },
       "caracteristique_principale": "Dextérité",
       "capacites_par_niveau": {
         "1": [
@@ -3753,6 +3805,43 @@
           "Investigation",
           "Médecine",
           "Religion"
+        ]
+      },
+      "equipement_depart": {
+        "choix": [
+          {
+            "description": "Un bâton OU une dague",
+            "options": [
+              [
+                "Bâton"
+              ],
+              [
+                "Dague"
+              ]
+            ]
+          },
+          {
+            "description": "Une sacoche à composantes OU un focaliseur arcanique",
+            "options": [
+              [
+                "Sacoche à composantes"
+              ],
+              [
+                "Focaliseur arcanique"
+              ]
+            ]
+          },
+          {
+            "description": "Un paquetage d'érudit OU un paquetage d'explorateur",
+            "options": [
+              [
+                "Paquetage d'érudit"
+              ],
+              [
+                "Paquetage d'explorateur"
+              ]
+            ]
+          }
         ]
       },
       "caracteristique_principale": "Intelligence",

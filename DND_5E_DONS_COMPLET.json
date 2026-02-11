@@ -1,0 +1,554 @@
+{
+  "version": "1.0",
+  "source": "D&D 5e Player's Handbook",
+  "description": "Liste complète des dons officiels avec prérequis et effets",
+  "dons": [
+    {
+      "id": "alert",
+      "nom": "Alerte",
+      "nom_en": "Alert",
+      "description": "Toujours à l'affût du danger, vous gagnez les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "+5 à l'initiative",
+        "Vous ne pouvez pas être surpris tant que vous êtes conscient",
+        "Les créatures cachées n'ont pas l'avantage aux jets d'attaque contre vous"
+      ]
+    },
+    {
+      "id": "athlete",
+      "nom": "Athlète",
+      "nom_en": "Athlete",
+      "description": "Vous avez suivi un entraînement physique intense qui vous confère les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Force ou Dextérité de 1 (max 20)",
+        "Se relever d'être à terre ne coûte que 1,50m de mouvement",
+        "Escalader ne coûte plus de mouvement supplémentaire",
+        "Saut en longueur avec élan : distance supplémentaire = mod Force (en mètres)"
+      ],
+      "bonus_caracteristique": {
+        "choix": ["force", "dexterite"],
+        "valeur": 1
+      }
+    },
+    {
+      "id": "actor",
+      "nom": "Acteur",
+      "nom_en": "Actor",
+      "description": "Habile à imiter les autres et à créer des personnages convaincants, vous gagnez les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Charisme de 1 (max 20)",
+        "Avantage aux jets de Charisme (Tromperie) et Charisme (Représentation) pour vous faire passer pour quelqu'un d'autre",
+        "Vous pouvez imiter la voix d'une autre personne ou d'une créature après l'avoir entendue parler pendant au moins 1 minute"
+      ],
+      "bonus_caracteristique": {
+        "charisme": 1
+      }
+    },
+    {
+      "id": "charger",
+      "nom": "Chargeur",
+      "nom_en": "Charger",
+      "description": "Quand vous utilisez votre action pour Foncer, vous pouvez utiliser une action bonus pour :",
+      "prerequis": null,
+      "effets": [
+        "Faire une attaque de corps à corps",
+        "Ou bousculer une créature",
+        "Vous devez vous être déplacé d'au moins 3m en ligne droite avant l'action bonus",
+        "Si vous attaquez : +5 aux dégâts",
+        "Si vous bousculez : +5 au jet de Force (Athlétisme). Déplacement max de 3m seulement ce tour"
+      ]
+    },
+    {
+      "id": "crossbow_expert",
+      "nom": "Expert des Arbalètes",
+      "nom_en": "Crossbow Expert",
+      "description": "Grâce à votre pratique extensive des arbalètes, vous gagnez les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "Vous ignorez la propriété Rechargement des arbalètes",
+        "Être à 1,50m d'une créature hostile n'impose pas de désavantage à vos jets d'attaque à distance",
+        "Quand vous attaquez avec une arme à une main, vous pouvez faire une attaque bonus avec une arbalète de poing"
+      ]
+    },
+    {
+      "id": "defensive_duelist",
+      "nom": "Duelliste Défensif",
+      "nom_en": "Defensive Duelist",
+      "description": "Quand vous maniez une arme de finesse et qu'une créature vous touche avec une attaque de corps à corps, vous pouvez utiliser votre réaction pour ajouter votre bonus de maîtrise à votre CA contre cette attaque.",
+      "prerequis": "Dextérité 13+",
+      "effets": [
+        "Réaction : +bonus de maîtrise à la CA contre une attaque de corps à corps",
+        "Vous devez manier une arme de finesse"
+      ]
+    },
+    {
+      "id": "dual_wielder",
+      "nom": "Combat à Deux Armes",
+      "nom_en": "Dual Wielder",
+      "description": "Vous maîtrisez le combat avec deux armes, ce qui vous confère les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "+1 à la CA quand vous maniez une arme de corps à corps dans chaque main",
+        "Vous pouvez utiliser le combat à deux armes même si les armes n'ont pas la propriété Légère",
+        "Vous pouvez dégainer ou rengainer deux armes à une main quand vous en dégaineriez ou rengaineriez normalement une"
+      ]
+    },
+    {
+      "id": "dungeon_delver",
+      "nom": "Explorateur de Donjons",
+      "nom_en": "Dungeon Delver",
+      "description": "Expérience extensive de l'exploration souterraine vous donne les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "Avantage aux jets de Sagesse (Perception) et Intelligence (Investigation) pour détecter des passages secrets",
+        "Avantage aux jets de sauvegarde pour éviter ou résister aux pièges",
+        "Résistance aux dégâts des pièges",
+        "Vous pouvez chercher des pièges tout en voyageant à rythme normal au lieu de lent"
+      ]
+    },
+    {
+      "id": "durable",
+      "nom": "Robuste",
+      "nom_en": "Durable",
+      "description": "Hardy et résistant, vous gagnez les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Constitution de 1 (max 20)",
+        "Quand vous lancez un Dé de Vie pour récupérer des PV, le minimum de PV récupérés = 2 × mod Constitution (min 2)"
+      ],
+      "bonus_caracteristique": {
+        "constitution": 1
+      }
+    },
+    {
+      "id": "elemental_adept",
+      "nom": "Adepte Élémentaire",
+      "nom_en": "Elemental Adept",
+      "description": "Quand vous gagnez ce don, choisissez un type de dégâts : acide, froid, feu, foudre ou tonnerre.",
+      "prerequis": "Capacité de lancer au moins un sort",
+      "effets": [
+        "Les sorts que vous lancez ignorent la résistance au type de dégâts choisi",
+        "Quand vous lancez des dégâts de ce type avec un sort, traitez tout 1 sur les dés de dégâts comme un 2",
+        "Vous pouvez prendre ce don plusieurs fois, en choisissant un type différent à chaque fois"
+      ],
+      "choix_type": ["acide", "froid", "feu", "foudre", "tonnerre"]
+    },
+    {
+      "id": "grappler",
+      "nom": "Lutteur",
+      "nom_en": "Grappler",
+      "description": "Vous développez les compétences nécessaires pour maintenir une créature en lutte.",
+      "prerequis": "Force 13+",
+      "effets": [
+        "Avantage aux jets d'attaque contre une créature que vous agrippez",
+        "Action pour tenter d'immobiliser une créature agrippée (jet de Force (Athlétisme) opposé). Succès = vous et la créature êtes entravés jusqu'à la fin de l'agrippement"
+      ]
+    },
+    {
+      "id": "great_weapon_master",
+      "nom": "Maître des Armes à Deux Mains",
+      "nom_en": "Great Weapon Master",
+      "description": "Vous avez appris à mettre le poids d'une arme en votre faveur.",
+      "prerequis": null,
+      "effets": [
+        "Lors de votre tour, quand vous faites un coup critique ou réduisez une créature à 0 PV avec une arme de corps à corps, vous pouvez faire une attaque de corps à corps en action bonus",
+        "Avant de faire une attaque avec une arme de corps à corps lourde, vous pouvez choisir de prendre -5 au jet d'attaque. Si l'attaque touche, vous ajoutez +10 aux dégâts"
+      ]
+    },
+    {
+      "id": "healer",
+      "nom": "Guérisseur",
+      "nom_en": "Healer",
+      "description": "Vous êtes un médecin accompli, permettant de stabiliser rapidement les mourants et de restaurer les PV.",
+      "prerequis": null,
+      "effets": [
+        "Quand vous utilisez une trousse de soins pour stabiliser une créature mourante, elle récupère aussi 1 PV",
+        "Action pour dépenser une utilisation d'une trousse de soins : une créature récupère 1d6 + 4 PV + son nombre max de Dés de Vie. Elle ne peut pas bénéficier de cet effet à nouveau avant un repos court ou long"
+      ]
+    },
+    {
+      "id": "heavily_armored",
+      "nom": "Port d'Armure Lourde",
+      "nom_en": "Heavily Armored",
+      "description": "Vous avez été formé au port des armures lourdes.",
+      "prerequis": "Maîtrise des armures intermédiaires",
+      "effets": [
+        "Augmentez votre Force de 1 (max 20)",
+        "Vous gagnez la maîtrise des armures lourdes"
+      ],
+      "bonus_caracteristique": {
+        "force": 1
+      },
+      "maitrise": ["armures_lourdes"]
+    },
+    {
+      "id": "heavy_armor_master",
+      "nom":="Maître des Armures Lourdes",
+      "nom_en": "Heavy Armor Master",
+      "description": "Vous pouvez utiliser votre armure pour dévier les coups qui tueraient d'autres.",
+      "prerequis": "Maîtrise des armures lourdes",
+      "effets": [
+        "Augmentez votre Force de 1 (max 20)",
+        "Tant que vous portez une armure lourde, les dégâts contondants, perforants et tranchants d'armes non-magiques que vous subissez sont réduits de 3"
+      ],
+      "bonus_caracteristique": {
+        "force": 1
+      }
+    },
+    {
+      "id": "inspiring_leader",
+      "nom": "Meneur Inspirant",
+      "nom_en": "Inspiring Leader",
+      "description": "Vous pouvez passer 10 minutes à inspirer vos compagnons.",
+      "prerequis": "Charisme 13+",
+      "effets": [
+        "Choisissez jusqu'à 6 créatures alliées (dont vous) à 9m qui peuvent vous voir ou vous entendre et vous comprendre",
+        "Chaque créature gagne PV temporaires = votre niveau + mod Charisme",
+        "Une créature ne peut pas gagner de PV temporaires de cette capacité à nouveau avant un repos court ou long"
+      ]
+    },
+    {
+      "id": "keen_mind",
+      "nom": "Esprit Acéré",
+      "nom_en": "Keen Mind",
+      "description": "Vous avez un esprit qui peut suivre le temps, la direction et les détails avec une précision remarquable.",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Intelligence de 1 (max 20)",
+        "Vous savez toujours dans quelle direction est le nord",
+        "Vous savez toujours le nombre d'heures avant le prochain lever/coucher du soleil",
+        "Vous pouvez vous rappeler avec précision tout ce que vous avez vu ou entendu dans le dernier mois"
+      ],
+      "bonus_caracteristique": {
+        "intelligence": 1
+      }
+    },
+    {
+      "id": "lightly_armored",
+      "nom": "Port d'Armure Légère",
+      "nom_en": "Lightly Armored",
+      "description": "Vous avez été formé au port des armures légères.",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Force ou Dextérité de 1 (max 20)",
+        "Vous gagnez la maîtrise des armures légères"
+      ],
+      "bonus_caracteristique": {
+        "choix": ["force", "dexterite"],
+        "valeur": 1
+      },
+      "maitrise": ["armures_legeres"]
+    },
+    {
+      "id": "linguist",
+      "nom": "Linguiste",
+      "nom_en": "Linguist",
+      "description": "Vous avez étudié les langues et les codes.",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Intelligence de 1 (max 20)",
+        "Vous apprenez trois langues de votre choix",
+        "Vous pouvez créer des chiffres écrits. Vous et d'autres qui connaissent ce chiffre pouvez les lire. D'autres doivent réussir un jet d'Intelligence DD = Intelligence + bonus maîtrise pour le déchiffrer"
+      ],
+      "bonus_caracteristique": {
+        "intelligence": 1
+      }
+    },
+    {
+      "id": "lucky",
+      "nom": "Chanceux",
+      "nom_en": "Lucky",
+      "description": "Vous avez une chance inexplicable qui semble tomber au bon moment.",
+      "prerequis": null,
+      "effets": [
+        "Vous avez 3 points de chance",
+        "Quand vous faites un jet d'attaque, de caractéristique ou de sauvegarde, vous pouvez dépenser 1 point pour lancer 1d20 supplémentaire. Vous choisissez quel dé utiliser après les avoir tous lancés",
+        "Vous pouvez dépenser 1 point après qu'une créature ait fait un jet d'attaque contre vous. Lancez 1d20 et choisissez quel dé la créature utilise",
+        "Vous récupérez vos points de chance dépensés après un repos long"
+      ]
+    },
+    {
+      "id": "mage_slayer",
+      "nom": "Tueur de Mages",
+      "nom_en": "Mage Slayer",
+      "description": "Vous avez pratiqué des techniques utiles en combat de mêlée contre les lanceurs de sorts.",
+      "prerequis": null,
+      "effets": [
+        "Quand une créature à 1,50m lance un sort, vous pouvez utiliser votre réaction pour faire une attaque de corps à corps contre elle",
+        "Quand vous touchez une créature avec une attaque d'opportunité, elle a désavantage au prochain jet de sauvegarde pour maintenir la concentration avant la fin de son prochain tour",
+        "Avantage aux jets de sauvegarde contre les sorts lancés par des créatures à 1,50m"
+      ]
+    },
+    {
+      "id": "magic_initiate",
+      "nom": "Initié à la Magie",
+      "nom_en": "Magic Initiate",
+      "description": "Choisissez une classe : barde, clerc, druide, ensorceleur, magicien ou occultiste.",
+      "prerequis": null,
+      "effets": [
+        "Vous apprenez deux sorts mineurs de cette classe",
+        "Vous apprenez un sort de niveau 1 de cette classe",
+        "Vous pouvez lancer ce sort de niveau 1 une fois sans dépenser d'emplacement. Vous devez terminer un repos long avant de pouvoir le lancer à nouveau",
+        "Caractéristique d'incantation : Charisme (barde, ensorceleur, occultiste), Sagesse (clerc, druide), Intelligence (magicien)"
+      ],
+      "choix_classe": ["barde", "clerc", "druide", "ensorceleur", "magicien", "occultiste"]
+    },
+    {
+      "id": "martial_adept",
+      "nom": "Adepte Martial",
+      "nom_en": "Martial Adept",
+      "description": "Vous avez une formation martiale qui vous permet d'effectuer des manœuvres de combat spéciales.",
+      "prerequis": null,
+      "effets": [
+        "Vous apprenez deux manœuvres de votre choix parmi celles disponibles à l'archétype Maître de Bataille du guerrier",
+        "Si une manœuvre nécessite un jet de sauvegarde, le DD = 8 + bonus maîtrise + mod Force ou Dextérité (au choix)",
+        "Vous gagnez un dé de supériorité (d6). Il s'ajoute aux autres dés de supériorité si vous en avez déjà. Il est dépensé pour utiliser vos manœuvres. Récupération après repos court ou long"
+      ]
+    },
+    {
+      "id": "medium_armor_master",
+      "nom": "Maître des Armures Intermédiaires",
+      "nom_en": "Medium Armor Master",
+      "description": "Vous avez pratiqué le port d'armures intermédiaires et êtes devenu expert dans leur utilisation.",
+      "prerequis": "Maîtrise des armures intermédiaires",
+      "effets": [
+        "Porter une armure intermédiaire n'impose pas de désavantage aux jets de Dextérité (Discrétion)",
+        "Quand vous portez une armure intermédiaire, vous pouvez ajouter 3 au lieu de 2 à votre CA si vous avez une Dextérité de 16 ou plus"
+      ]
+    },
+    {
+      "id": "mobile",
+      "nom": "Mobile",
+      "nom_en": "Mobile",
+      "description": "Vous êtes exceptionnellement rapide et agile.",
+      "prerequis": null,
+      "effets": [
+        "Votre vitesse augmente de 3m",
+        "Quand vous utilisez l'action Foncer, le terrain difficile ne coûte pas de mouvement supplémentaire ce tour",
+        "Quand vous faites une attaque de corps à corps contre une créature, vous ne provoquez pas d'attaque d'opportunité de cette créature pour le reste du tour, que vous la touchiez ou non"
+      ]
+    },
+    {
+      "id": "moderately_armored",
+      "nom": "Port d'Armure Intermédiaire",
+      "nom_en": "Moderately Armored",
+      "description": "Vous avez été formé au port des armures intermédiaires et des boucliers.",
+      "prerequis": "Maîtrise des armures légères",
+      "effets": [
+        "Augmentez votre Force ou Dextérité de 1 (max 20)",
+        "Vous gagnez la maîtrise des armures intermédiaires et des boucliers"
+      ],
+      "bonus_caracteristique": {
+        "choix": ["force", "dexterite"],
+        "valeur": 1
+      },
+      "maitrise": ["armures_intermediaires", "boucliers"]
+    },
+    {
+      "id": "mounted_combatant",
+      "nom": "Combattant Monté",
+      "nom_en": "Mounted Combatant",
+      "description": "Vous êtes un cavalier dangereux.",
+      "prerequis": null,
+      "effets": [
+        "Avantage aux jets d'attaque de corps à corps contre toute créature non-montée plus petite que votre monture",
+        "Vous pouvez forcer une attaque ciblant votre monture à vous cibler à la place",
+        "Si votre monture est soumise à un effet qui permet un jet de sauvegarde de Dextérité pour demi-dégâts, elle ne subit aucun dégât si elle réussit et seulement la moitié si elle échoue"
+      ]
+    },
+    {
+      "id": "observant",
+      "nom": "Observateur",
+      "nom_en": "Observant",
+      "description": "Rapidement observateur des détails de votre environnement, vous gagnez les bénéfices suivants :",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Intelligence ou Sagesse de 1 (max 20)",
+        "Si vous pouvez voir la bouche d'une créature pendant qu'elle parle une langue que vous comprenez, vous pouvez interpréter ce qu'elle dit en lisant sur ses lèvres",
+        "+5 à votre score passif de Sagesse (Perception) et Intelligence (Investigation)"
+      ],
+      "bonus_caracteristique": {
+        "choix": ["intelligence", "sagesse"],
+        "valeur": 1
+      }
+    },
+    {
+      "id": "polearm_master",
+      "nom": "Maître d'Armes d'Hast",
+      "nom_en": "Polearm Master",
+      "description": "Vous maîtrisez les armes d'hast.",
+      "prerequis": null,
+      "effets": [
+        "Quand vous effectuez l'action Attaquer avec une lance, hallebarde, quarterstaff ou lance, vous pouvez utiliser une action bonus pour faire une attaque de corps à corps avec l'autre extrémité de l'arme (dégâts = 1d4 contondant, propriété versatile ignorée)",
+        "Tant que vous tenez une lance, hallebarde, pike, quarterstaff ou lance, les autres créatures provoquent une attaque d'opportunité quand elles entrent dans votre allonge"
+      ]
+    },
+    {
+      "id": "resilient",
+      "nom": "Résilient",
+      "nom_en": "Resilient",
+      "description": "Choisissez une caractéristique.",
+      "prerequis": null,
+      "effets": [
+        "Augmentez la caractéristique choisie de 1 (max 20)",
+        "Vous gagnez la maîtrise des jets de sauvegarde utilisant cette caractéristique"
+      ],
+      "bonus_caracteristique": {
+        "choix": ["force", "dexterite", "constitution", "intelligence", "sagesse", "charisme"],
+        "valeur": 1
+      }
+    },
+    {
+      "id": "ritual_caster",
+      "nom": "Lanceur de Rituels",
+      "nom_en": "Ritual Caster",
+      "description": "Vous avez appris un nombre de sorts que vous pouvez lancer en tant que rituels.",
+      "prerequis": "Intelligence ou Sagesse 13+",
+      "effets": [
+        "Choisissez une classe : clerc, druide ou magicien. Vous obtenez un livre de rituels contenant deux sorts de niveau 1 avec le tag rituel de cette classe",
+        "Caractéristique d'incantation : Sagesse (clerc, druide), Intelligence (magicien)",
+        "Si vous trouvez un sort avec le tag rituel, vous pouvez l'ajouter à votre livre si le niveau est un niveau de sort que vous pouvez lancer (coût 50 po et 2h par niveau)",
+        "Vous pouvez lancer un sort rituel de votre livre tant que vous l'avez en main"
+      ],
+      "choix_classe": ["clerc", "druide", "magicien"]
+    },
+    {
+      "id": "savage_attacker",
+      "nom": "Attaquant Sauvage",
+      "nom_en": "Savage Attacker",
+      "description": "Une fois par tour quand vous lancez des dégâts pour une attaque d'arme de corps à corps, vous pouvez relancer les dés de dégâts et utiliser l'un ou l'autre total.",
+      "prerequis": null,
+      "effets": [
+        "1/tour : relancer les dés de dégâts d'une attaque de corps à corps"
+      ]
+    },
+    {
+      "id": "sentinel",
+      "nom": "Sentinelle",
+      "nom_en": "Sentinel",
+      "description": "Vous maîtrisez les techniques pour tirer avantage de chaque baisse de garde de l'ennemi.",
+      "prerequis": null,
+      "effets": [
+        "Quand vous touchez une créature avec une attaque d'opportunité, sa vitesse devient 0 pour le reste du tour",
+        "Les créatures provoquent des attaques d'opportunité même si elles utilisent l'action Se Désengager",
+        "Quand une créature à 1,50m attaque une cible autre que vous (et cette cible n'a pas ce don), vous pouvez utiliser votre réaction pour faire une attaque de corps à corps contre la créature attaquante"
+      ]
+    },
+    {
+      "id": "sharpshooter",
+      "nom": "Tireur d'Élite",
+      "nom_en": "Sharpshooter",
+      "description": "Vous avez maîtrisé les armes à distance et pouvez faire des tirs que d'autres trouveraient impossibles.",
+      "prerequis": null,
+      "effets": [
+        "Attaquer à longue portée n'impose pas de désavantage",
+        "Vos attaques à distance ignorent la demi-couverture et les trois-quarts de couverture",
+        "Avant de faire une attaque à distance, vous pouvez choisir de prendre -5 au jet d'attaque. Si touché, ajoutez +10 aux dégâts"
+      ]
+    },
+    {
+      "id": "shield_master",
+      "nom": "Maître du Bouclier",
+      "nom_en": "Shield Master",
+      "description": "Vous utilisez les boucliers non seulement pour protéger mais aussi pour attaquer.",
+      "prerequis": null,
+      "effets": [
+        "Si vous effectuez l'action Attaquer, vous pouvez utiliser une action bonus pour tenter de bousculer une créature à 1,50m avec votre bouclier",
+        "Si vous n'êtes pas incapable d'agir, vous pouvez ajouter le bonus de CA de votre bouclier à tout jet de sauvegarde de Dextérité contre un sort ou effet qui cible uniquement vous",
+        "Si vous êtes soumis à un effet permettant un jet de Dextérité pour demi-dégâts, vous pouvez utiliser votre réaction pour ne subir aucun dégât si vous réussissez (au lieu de la moitié)"
+      ]
+    },
+    {
+      "id": "skilled",
+      "nom": "Compétent",
+      "nom_en": "Skilled",
+      "description": "Vous gagnez la maîtrise de trois compétences ou outils de votre choix.",
+      "prerequis": null,
+      "effets": [
+        "Maîtrise de 3 compétences OU outils au choix"
+      ]
+    },
+    {
+      "id": "skulker",
+      "nom": "Rôdeur Furtif",
+      "nom_en": "Skulker",
+      "description": "Vous êtes expert pour vous faufiler dans l'ombre.",
+      "prerequis": "Dextérité 13+",
+      "effets": [
+        "Vous pouvez tenter de vous cacher quand vous êtes légèrement obscurci",
+        "Quand vous êtes caché et ratez une attaque à distance, rater ne révèle pas votre position",
+        "La lumière faible n'impose pas de désavantage à vos jets de Sagesse (Perception) basés sur la vue"
+      ]
+    },
+    {
+      "id": "spell_sniper",
+      "nom": "Tireur de Sorts",
+      "nom_en": "Spell Sniper",
+      "description": "Vous avez appris des techniques pour améliorer vos attaques avec certains types de sorts.",
+      "prerequis": "Capacité de lancer au moins un sort",
+      "effets": [
+        "Quand vous lancez un sort nécessitant un jet d'attaque, la portée du sort est doublée",
+        "Vos sorts à jet d'attaque ignorent la demi-couverture et les trois-quarts de couverture",
+        "Vous apprenez un sort mineur nécessitant un jet d'attaque. Choisissez parmi barde, clerc, druide, ensorceleur, magicien ou occultiste"
+      ]
+    },
+    {
+      "id": "tavern_brawler",
+      "nom": "Bagarreur de Taverne",
+      "nom_en": "Tavern Brawler",
+      "description": "Habitué aux combats brutaux utilisant tout ce qui vous tombe sous la main.",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Force ou Constitution de 1 (max 20)",
+        "Vous maîtrisez les armes improvisées",
+        "Vos attaques à mains nues utilisent 1d4 pour les dégâts",
+        "Quand vous touchez avec une attaque à mains nues ou une arme improvisée lors de votre tour, vous pouvez utiliser une action bonus pour tenter d'agripper la cible"
+      ],
+      "bonus_caracteristique": {
+        "choix": ["force", "constitution"],
+        "valeur": 1
+      }
+    },
+    {
+      "id": "tough",
+      "nom": "Dur à Cuire",
+      "nom_en": "Tough",
+      "description": "Vos points de vie maximum augmentent de 2 × votre niveau actuel. Quand vous gagnez un niveau, vos PV max augmentent de 2 supplémentaires.",
+      "prerequis": null,
+      "effets": [
+        "PV max + (2 × niveau actuel)",
+        "+2 PV max à chaque niveau gagné"
+      ]
+    },
+    {
+      "id": "war_caster",
+      "nom": "Incantateur de Guerre",
+      "nom_en": "War Caster",
+      "description": "Vous avez pratiqué le lancement de sorts au milieu du combat.",
+      "prerequis": "Capacité de lancer au moins un sort",
+      "effets": [
+        "Avantage aux jets de sauvegarde de Constitution pour maintenir la concentration sur un sort",
+        "Vous pouvez effectuer les composantes somatiques même si vos mains tiennent des armes ou un bouclier",
+        "Quand une créature hostile provoque une attaque d'opportunité, vous pouvez utiliser votre réaction pour lancer un sort ciblant cette créature (au lieu de faire une attaque d'opportunité). Le sort doit avoir un temps d'incantation de 1 action et cibler uniquement cette créature"
+      ]
+    },
+    {
+      "id": "weapon_master",
+      "nom": "Maître d'Armes",
+      "nom_en": "Weapon Master",
+      "description": "Vous avez pratiqué extensivement avec diverses armes.",
+      "prerequis": null,
+      "effets": [
+        "Augmentez votre Force ou Dextérité de 1 (max 20)",
+        "Vous gagnez la maîtrise de quatre armes de votre choix (chaque arme doit être courante ou de guerre)"
+      ],
+      "bonus_caracteristique": {
+        "choix": ["force", "dexterite"],
+        "valeur": 1
+      }
+    }
+  ]
+}

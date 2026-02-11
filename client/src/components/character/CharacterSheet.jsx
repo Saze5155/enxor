@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import EquipmentTab from './tabs/EquipmentTab'; // Import
+// ...
 import CharacterHeader from './CharacterHeader';
 import CharacterTabs from './CharacterTabs';
 import CharacterSidebar from './CharacterSidebar';
@@ -16,10 +18,11 @@ export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate
     const renderTabContent = () => {
         switch (activeTab) {
             case 'combat': return <CombatTab character={character} />;
-            case 'spells': return <SpellsTab character={character} />;
+            case 'equipment': return <EquipmentTab character={character} onUpdate={onInventoryUpdate} />;
+            case 'spells': return <SpellsTab character={character} onUpdate={onInventoryUpdate} />;
             case 'inventory': return <InventoryTab character={character} onUpdate={onInventoryUpdate} />;
             case 'features': return <FeaturesTab character={character} />;
-            case 'bio': return <BioTab character={character} />;
+            case 'bio': return <BioTab character={character} onUpdate={onInventoryUpdate} />;
             default: return <CombatTab character={character} />;
         }
     };
