@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function DataManager({ title, data, type, onUpdate }) {
+export default function DataManager({ title, data, type, onUpdate, onEdit }) {
     const [searchTerm, setSearchTerm] = useState('');
 
     // Filter logic
@@ -42,19 +42,31 @@ export default function DataManager({ title, data, type, onUpdate }) {
                                     {type === 'items' && `${item.type} - ${item.value}po`}
                                     {type === 'spells' && `Niveau ${item.niveau}`}
                                     {type === 'feats' && `${item.prerequis || 'Aucun prérequis'}`}
+                                    {type === 'enemies' && `${item.creatureType} - FP ${item.stats?.pv_moyenne ? Math.round(item.stats.pv_moyenne / 10) : '?'}`}
                                 </div>
                             </div>
 
-                            <label className="flex items-center cursor-pointer">
-                                <span className={`mr-2 text-xs font-bold uppercase ${isVisible ? 'text-green-500' : 'text-stone-500'}`}>
-                                    {isVisible ? 'Utilisable' : 'Caché'}
-                                </span>
-                                <div className="relative">
-                                    <input type="checkbox" className="sr-only" checked={isVisible} onChange={() => handleToggle(item)} />
-                                    <div className={`block w-10 h-6 rounded-full transition ${isVisible ? 'bg-green-600' : 'bg-stone-600'}`}></div>
-                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform ${isVisible ? 'translate-x-4' : ''}`}></div>
-                                </div>
-                            </label>
+                            <div className="flex items-center gap-3">
+                                {onEdit && (
+                                    <button
+                                        onClick={() => onEdit(item)}
+                                        className="text-stone-400 hover:text-amber-500 transition-colors p-1"
+                                        title="Modifier"
+                                    >
+                                        ✏️
+                                    </button>
+                                )}
+                                <label className="flex items-center cursor-pointer">
+                                    <span className={`mr-2 text-xs font-bold uppercase ${isVisible ? 'text-green-500' : 'text-stone-500'}`}>
+                                        {isVisible ? 'Utilisable' : 'Caché'}
+                                    </span>
+                                    <div className="relative">
+                                        <input type="checkbox" className="sr-only" checked={isVisible} onChange={() => handleToggle(item)} />
+                                        <div className={`block w-10 h-6 rounded-full transition ${isVisible ? 'bg-green-600' : 'bg-stone-600'}`}></div>
+                                        <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform ${isVisible ? 'translate-x-4' : ''}`}></div>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     );
                 })}

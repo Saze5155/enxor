@@ -1,11 +1,11 @@
 export const STANDARD_ITEMS = [
     // Armes Courantes - Mêlée
-    { name: "Bâton", type: "arme", weight: 1.8, value: 0.2, damage: "1d6 contondant", properties: "Polyvalente (1d8)" },
+    { name: "Bâton", type: "arme", weight: 1.8, value: 0.2, damage: "1d6 contondant", damage2: "1d8 contondant", properties: "Polyvalente (1d8)" },
     { name: "Dague", type: "arme", weight: 0.5, value: 2, damage: "1d4 perforant", properties: "Finesse, légère, lancer (portée 6/18)" },
     { name: "Gourdin", type: "arme", weight: 1, value: 0.1, damage: "1d4 contondant", properties: "Légère" },
     { name: "Hachette", type: "arme", weight: 1, value: 5, damage: "1d6 tranchant", properties: "Légère, lancer (portée 6/18)" },
     { name: "Javelot", type: "arme", weight: 1, value: 0.5, damage: "1d6 perforant", properties: "Lancer (portée 9/36)" },
-    { name: "Lance", type: "arme", weight: 1.5, value: 1, damage: "1d6 perforant", properties: "Lancer (portée 6/18), polyvalente (1d8)" },
+    { name: "Lance", type: "arme", weight: 1.5, value: 1, damage: "1d6 perforant", damage2: "1d8 perforant", properties: "Lancer (portée 6/18), polyvalente (1d8)" },
     { name: "Marteau léger", type: "arme", weight: 1, value: 2, damage: "1d4 contondant", properties: "Légère, lancer (portée 6/18)" },
     { name: "Massue", type: "arme", weight: 5, value: 0.2, damage: "1d8 contondant", properties: "A deux mains" },
     { name: "Faucille", type: "arme", weight: 1, value: 1, damage: "1d4 tranchant", properties: "Légère" },
@@ -18,12 +18,12 @@ export const STANDARD_ITEMS = [
     // Armes de Guerre - Mêlée
     { name: "Épée à deux mains", type: "arme", weight: 3, value: 50, damage: "2d6 tranchant", properties: "Lourde, à deux mains" },
     { name: "Épée courte", type: "arme", weight: 1, value: 10, damage: "1d6 perforant", properties: "Finesse, légère" },
-    { name: "Épée longue", type: "arme", weight: 1.5, value: 15, damage: "1d8 tranchant", properties: "Polyvalente (1d10)" },
-    { name: "Hache d'armes", type: "arme", weight: 2, value: 10, damage: "1d8 tranchant", properties: "Polyvalente (1d10)" },
+    { name: "Épée longue", type: "arme", weight: 1.5, value: 15, damage: "1d8 tranchant", damage2: "1d10 tranchant", properties: "Polyvalente (1d10)" },
+    { name: "Hache d'armes", type: "arme", weight: 2, value: 10, damage: "1d8 tranchant", damage2: "1d10 tranchant", properties: "Polyvalente (1d10)" },
     { name: "Grande hache", type: "arme", weight: 3.5, value: 30, damage: "1d12 tranchant", properties: "Lourde, à deux mains" },
     { name: "Cimeterre", type: "arme", weight: 1.5, value: 25, damage: "1d6 tranchant", properties: "Finesse, légère" },
     { name: "Rapière", type: "arme", weight: 1, value: 25, damage: "1d8 perforant", properties: "Finesse" },
-    { name: "Marteau de guerre", type: "arme", weight: 1, value: 15, damage: "1d8 contondant", properties: "Polyvalente (1d10)" },
+    { name: "Marteau de guerre", type: "arme", weight: 1, value: 15, damage: "1d8 contondant", damage2: "1d10 contondant", properties: "Polyvalente (1d10)" },
     { name: "Hallebarde", type: "arme", weight: 3, value: 20, damage: "1d10 tranchant", properties: "Lourde, allongée, à deux mains" },
 
     // Armes de Guerre - Distance

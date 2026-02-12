@@ -1,6 +1,42 @@
 // Calculate Armor Class based on equipped items and stats
+// Helper to get effective stats (base + overrides)
+export const getEffectiveStats = (character) => {
+    let stats = typeof character.stats === 'string' ? JSON.parse(character.stats) : character.stats || {};
+    
+    // Safety check for statsOverrides
+    let overrides = {};
+    try {
+        overrides = typeof character.statsOverrides === 'string' ? JSON.parse(character.statsOverrides) : character.statsOverrides || {};
+    } catch (e) {
+        console.error("Error parsing statsOverrides", e);
+    }
+
+    return { ...stats, ...overrides };
+};
+
+// Calculate Armor Class based on equipped items and stats
 export const calculateAC = (character) => {
-    const stats = typeof character.stats === 'string' ? JSON.parse(character.stats) : character.stats || {};
+    const stats = getEffectiveStats(character);
+    
+    // Check for manual AC override
+    if (stats.ac !== undefined && stats.ac !== null) {
+         // Should we use the override? The override merges into 'stats'.
+         // If 'ac' is in overrides, it's in 'stats'.
+         // But wait, 'stats' from DB usually doesn't have 'ac'. 'ac' is a separate field on Character?
+         // No, Character has 'ac' generic field but it's often calculated.
+         // Let's check schema: 'ac Int @default(10)'. This is the stored value.
+         // But `calculateAC` is used to *display* the dynamic value.
+         // If `statsOverrides` has `ac`, we return that.
+    }
+    
+    // Actually, `getEffectiveStats` merges `stats` (the JSON attribute scores) and `overrides`.
+    // Overrides might contain 'str', 'dex', but could also contain 'ac', 'hpMax'.
+    // If 'ac' is in the returned object, return it?
+    // BUT `stats` (the attribute JSON) usually acts as the source for Str/Dex.
+    // Let's assume `statsOverrides` can contain ANY key.
+    
+    if (stats.ac_override !== undefined) return parseInt(stats.ac_override);
+
     const dexMod = Math.floor(((stats.dex || 10) - 10) / 2);
     
     const inventory = character.inventory || [];
@@ -45,6 +81,7 @@ export const calculateAC = (character) => {
 
 // Calculate Initiative
 export const calculateInitiative = (character) => {
-    const stats = typeof character.stats === 'string' ? JSON.parse(character.stats) : character.stats || {};
+    const stats = getEffectiveStats(character);
+    if (stats.init_override !== undefined) return parseInt(stats.init_override);
     return Math.floor(((stats.dex || 10) - 10) / 2);
 };

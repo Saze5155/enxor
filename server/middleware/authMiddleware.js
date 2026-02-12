@@ -4,10 +4,16 @@ exports.authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
-  if (!token) return res.sendStatus(401);
+  if (!token) {
+    console.log('[Auth] No token provided');
+    return res.sendStatus(401);
+  }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
+    if (err) {
+      console.log('[Auth] Token verification failed:', err.message);
+      return res.sendStatus(403);
+    }
     req.user = user;
     next();
   });

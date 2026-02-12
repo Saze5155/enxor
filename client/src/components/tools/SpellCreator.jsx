@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dataService from '../../services/dataService';
 
 const CLASSES = [
     "Barbare", "Barde", "Clerc", "Druide", "Ensorceleur",
@@ -10,7 +11,7 @@ const SCHOOLS = [
     "Illusion", "Invocation", "Nécromancie", "Transmutation"
 ];
 
-export default function SpellCreator() {
+export default function SpellCreator({ initialData, onCancel, onSuccess }) {
     const [spell, setSpell] = useState({
         nom: '',
         niveau: 0,
@@ -24,6 +25,32 @@ export default function SpellCreator() {
         classes: [],
         visible: true
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setSpell({
+                ...initialData,
+                aux_niveaux_superieurs: initialData.aux_niveaux_superieurs || '',
+                classes: initialData.classes || [],
+                visible: initialData.visible !== false
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            setSpell({
+                nom: '',
+                niveau: 0,
+                ecole: 'Évocation',
+                temps_incantation: '1 action',
+                portee: '18 mètres',
+                composantes: 'V, S',
+                duree: 'Instantanée',
+                description: '',
+                aux_niveaux_superieurs: '',
+                classes: [],
+                visible: true
+            });
+        }
+    }, [initialData]);
 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
@@ -48,14 +75,24 @@ export default function SpellCreator() {
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/data/spells', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(cleanedSpell)
-            });
+            if (initialData) {
+                // Update
+                await dataService.updateSpell(cleanedSpell);
+                setMessage({ type: 'success', text: 'Sort mis à jour avec succès !' });
+            } else {
+                // Create
+                const response = await fetch('http://localhost:3000/api/data/spells', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cleanedSpell)
+                });
 
-            if (response.ok) {
+                if (!response.ok) throw new Error('Erreur création');
                 setMessage({ type: 'success', text: 'Sort créé avec succès !' });
+            }
+
+            if (onSuccess) onSuccess();
+            if (!initialData) {
                 setSpell({
                     nom: '',
                     niveau: 0,
@@ -68,21 +105,21 @@ export default function SpellCreator() {
                     aux_niveaux_superieurs: '',
                     classes: []
                 });
-            } else {
-                setMessage({ type: 'error', text: 'Erreur lors de la création.' });
             }
         } catch (error) {
             console.error(error);
-            setMessage({ type: 'error', text: 'Erreur réseau.' });
+            setMessage({ type: 'error', text: 'Erreur lors de l\'opération.' });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
+        <form onSubmit={handleSubmit} className={`space-y-6 max-w-3xl mx-auto p-4 rounded-lg border ${initialData ? 'bg-stone-800 border-purple-500/50' : ''}`}>
             <div className="flex justify-between items-start">
-                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">Nouveau Sort</h2>
+                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">
+                    {initialData ? `Modifier: ${initialData.nom}` : 'Nouveau Sort'}
+                </h2>
                 <label className="flex items-center cursor-pointer ml-4">
                     <span className="mr-2 text-sm text-stone-400 font-bold">{spell.visible ? 'Visible Joueurs' : 'Caché (MJ)'}</span>
                     <div className="relative">
@@ -219,8 +256,17 @@ export default function SpellCreator() {
                     disabled={loading}
                     className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-6 rounded shadow-lg transform transition active:scale-95 disabled:opacity-50"
                 >
-                    {loading ? 'Création...' : 'Créer le Sort'}
+                    {loading ? (initialData ? 'Modification...' : 'Création...') : (initialData ? 'Enregistrer les modifications' : 'Créer le Sort')}
                 </button>
+                {initialData && (
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="bg-stone-600 hover:bg-stone-500 text-white font-bold py-2 px-6 rounded shadow-lg ml-4 transition"
+                    >
+                        Annuler
+                    </button>
+                )}
             </div>
         </form>
     );

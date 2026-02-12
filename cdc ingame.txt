@@ -1,0 +1,1424 @@
+📋 CAHIER DES CHARGES FINAL - SYSTÈME IN-GAME
+
+🎯 PÉRIMÈTRE DU PROJET
+✅ CE QUI EST DÉJÀ FAIT
+
+Lanceur de dés 3D
+Fiches personnages complètes
+Création d'ennemis (manuel + IA)
+Encyclopédie avec articles
+
+🔨 CE QU'ON AJOUTE MAINTENANT
+Module 1 : Système de Combat
+
+Lancement de combat
+Initiative automatique
+Tracker d'initiative (haut à droite)
+Panels d'actions (joueurs + MJ)
+Tracking HP/Conditions temps réel
+
+Module 2 : Interface MJ
+
+Sidebar joueurs (visualisation compacte)
+Modification rapide fiches
+Jets invisibles + malus/bonus
+Onglet Histoire (notes session)
+Onglet PNJ (bibliothèque)
+
+Module 3 : Audio
+
+2 canaux (Musique + Ambiance)
+YouTube + Upload fichiers
+Playlists sauvegardées
+Contrôles volume
+
+Module 4 : Statistiques & Qualité de Vie
+
+Stats de session (dégâts, sorts, XP)
+Sauvegarde auto combat
+Notifications temps réel
+
+
+🎮 MODULE 1 : SYSTÈME DE COMBAT
+1.1 Structure de Données
+typescriptinterface Combat {
+  id: string;
+  session_id: string;
+  date_debut: Date;
+  date_fin?: Date;
+  statut: "en_cours" | "terminé" | "pause";
+  round_actuel: number;
+  
+  participants: CombatParticipant[];
+  ordre_initiative: string[]; // IDs dans l'ordre
+  tour_actuel_index: number;
+  
+  parametres: {
+    surprise: boolean;
+    difficulte: "facile" | "moyenne" | "difficile" | "mortelle";
+  };
+  
+  historique_actions: ActionCombat[];
+  statistiques: StatistiquesCombat;
+}
+
+interface CombatParticipant {
+  id: string;
+  type: "joueur" | "ennemi" | "pnj";
+  
+  // Référence
+  personnage_id?: string; // Si joueur
+  instance_ennemi_id?: string; // Si ennemi
+  
+  // Combat
+  initiative: number;
+  pv_actuels: number;
+  pv_max: number;
+  ca: number;
+  
+  conditions: Condition[];
+  effets_temporaires: EffetTemporaire[];
+  
+  // Position (pour plus tard)
+  position?: { x: number; y: number };
+  
+  // État
+  est_conscient: boolean;
+  mort: boolean;
+  concentre_sur?: string; // ID du sort
+}
+
+interface Condition {
+  nom: string; // "empoisonné", "étourdi", etc.
+  description: string;
+  duree?: {
+    type: "rounds" | "minutes" | "heures" | "permanent";
+    valeur: number;
+    rounds_restants?: number;
+  };
+  source: string; // "Sort Rayon Empoisonné", etc.
+  ajoutee_round: number;
+}
+
+interface EffetTemporaire {
+  id: string;
+  nom: string;
+  description: string;
+  type: "buff" | "debuff" | "autre";
+  duree_rounds: number;
+  rounds_restants: number;
+  effets: {
+    bonus_ca?: number;
+    bonus_degats?: number;
+    resistance_degats?: string[];
+    // etc.
+  };
+}
+
+interface ActionCombat {
+  id: string;
+  round: number;
+  participant_id: string;
+  type: "attaque" | "sort" | "capacite" | "mouvement" | "autre";
+  description: string;
+  cibles: string[]; // IDs des cibles
+  resultat?: {
+    jets_des?: { type: string; valeur: number }[];
+    degats?: { type: string; valeur: number };
+    touche?: boolean;
+    critique?: boolean;
+  };
+  timestamp: Date;
+}
+
+interface StatistiquesCombat {
+  duree_totale_secondes: number;
+  nombre_rounds: number;
+  
+  par_participant: {
+    [participant_id: string]: {
+      degats_infliges: number;
+      degats_recus: number;
+      soins_prodigues: number;
+      sorts_lances: number;
+      jets_critiques: number;
+      jets_echecs_critiques: number;
+      ko: boolean;
+      tue_par?: string;
+    };
+  };
+  
+  xp_gagne: number;
+  tresor_obtenu?: any;
+}
+```
+
+---
+
+### **1.2 Workflow Combat**
+
+#### **ÉTAPE 1 : Lancement (MJ)**
+```
+Interface MJ - Bouton "⚔️ Lancer un Combat"
+
+┌────────────────────────────────────────────────────────┐
+│  ⚔️ NOUVEAU COMBAT                                     │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  Joueurs présents: ✅ Tous (4/4)                       │
+│  [Strix] [Thorin] [Elara] [Marcus]                    │
+│                                                         │
+│  ─── AJOUTER DES ENNEMIS ───                           │
+│                                                         │
+│  [🔍 Rechercher dans la bibliothèque...]              │
+│                                                         │
+│  📚 Types récents:                                      │
+│  • Gobelin (FP 1/4)                                    │
+│    [+1] [+3] [+5] [+10]                               │
+│                                                         │
+│  • Orc (FP 1/2)                                        │
+│    [+1] [+3] [+5] [+10]                               │
+│                                                         │
+│  👹 Ennemis uniques:                                   │
+│  • Grishnak le Sanguinaire (FP 6)  [Ajouter]         │
+│  • Dragon de Glace Juvénile (FP 5) [Ajouter]         │
+│                                                         │
+│  👥 PNJ:                                               │
+│  • Capitaine Aldric (Allié)        [Ajouter]         │
+│  • Merlin le Sage (Allié)          [Ajouter]         │
+│                                                         │
+│  ─── PARTICIPANTS (Panier) ───                         │
+│                                                         │
+│  JOUEURS (4):                                          │
+│  ✓ Strix, Thorin, Elara, Marcus                       │
+│                                                         │
+│  ENNEMIS (4):                                          │
+│  • 3× Gobelin                       [Retirer]         │
+│  • 1× Grishnak le Sanguinaire      [Retirer]         │
+│                                                         │
+│  ─── ANALYSE ───                                       │
+│  Difficulté estimée: 🟡 Moyenne                        │
+│  Budget XP: 2,000 (groupe niv 5, 4 joueurs)          │
+│  XP des ennemis: 2,150                                │
+│                                                         │
+│  ─── OPTIONS ───                                       │
+│  ☑️ Initiative automatique pour les ennemis           │
+│  ☐ Combat surprise (joueurs désavantagés)            │
+│  ☐ Initiative fixe pour les PNJ                       │
+│                                                         │
+│  [⚔️ DÉMARRER LE COMBAT] [Annuler]                    │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+Backend API :
+javascriptPOST /api/combats/start
+Body: {
+  session_id: "session_123",
+  joueurs: ["joueur_1", "joueur_2", ...],
+  ennemis: [
+    { type_id: "goblin", quantite: 3 },
+    { instance_id: "grishnak_unique" }
+  ],
+  pnj: ["capitaine_aldric"],
+  parametres: {
+    surprise: false,
+    initiative_auto_ennemis: true
+  }
+}
+
+Response: {
+  combat_id: "combat_456",
+  statut: "attente_initiative"
+}
+
+// Notification Socket.io à tous les joueurs
+socket.emit('combat:started', { combat_id: "combat_456" })
+```
+
+---
+
+#### **ÉTAPE 2 : Jets d'Initiative**
+
+**Notification TOUS (MJ + Joueurs) :**
+```
+┌─────────────────────────────────────────┐
+│  🎲 COMBAT LANCÉ !                      │
+├─────────────────────────────────────────┤
+│                                          │
+│  ⚔️ Lancez votre initiative             │
+│                                          │
+│  Votre modificateur: +3                 │
+│                                          │
+│  [🎲 LANCER D20]                        │
+│                                          │
+└─────────────────────────────────────────┘
+```
+
+**Interface après clic :**
+```
+Animation 3D du dé...
+
+🎲 Résultat: 17 + 3 = 20
+
+✅ Initiative enregistrée !
+En attente des autres joueurs...
+
+Statut:
+✅ Strix: 20
+✅ Elara: 18  
+⏳ Thorin: ...
+⏳ Marcus: ...
+Backend :
+javascriptPOST /api/combats/:combat_id/initiative
+Body: {
+  participant_id: "joueur_1",
+  resultat_de: 17,
+  modificateur: 3,
+  total: 20
+}
+
+// Broadcast à tous
+socket.emit('combat:initiative_rolled', {
+  participant: "Strix",
+  initiative: 20
+})
+
+// Quand tous ont lancé
+socket.emit('combat:initiative_complete', {
+  ordre: [...] // Ordre trié
+})
+```
+
+---
+
+#### **ÉTAPE 3 : Interface Combat (TOUS)**
+
+**Tracker d'Initiative (Haut à Droite, toujours visible):**
+```
+┌─────────────────────────────────────┐
+│  ⚔️ ROUND 2                        │
+├─────────────────────────────────────┤
+│                                     │
+│  [23] 👹 Grishnak  ← Tour actuel   │
+│       █████████░░░ 28/36 HP        │
+│                                     │
+│  [20] 🧙 Strix                     │
+│       ████████░░░░ 45/82 HP        │
+│       🔥 Concentré (Hâte)          │
+│                                     │
+│  [18] 🏹 Elara                     │
+│       ██████████ 58/58 HP          │
+│                                     │
+│  [15] ⚔️ Thorin                    │
+│       ████░░░░░░ 28/65 HP          │
+│       💀 Inconscient               │
+│                                     │
+│  [12] 👹 Gobelin #1                │
+│       ██████████ 7/7 HP            │
+│                                     │
+│  [12] 👹 Gobelin #2                │
+│       ████░░░░░░ 3/7 HP            │
+│       🤢 Empoisonné                │
+│                                     │
+│  [10] 🛡️ Marcus                    │
+│       ██████████ 71/71 HP          │
+│                                     │
+│  [7]  👹 Gobelin #3  ☠️ Mort      │
+│                                     │
+│  [Prochain Round →]                │
+│                                     │
+└─────────────────────────────────────┘
+Composant React :
+jsx<InitiativeTracker 
+  participants={combat.participants}
+  ordre={combat.ordre_initiative}
+  tourActuelIndex={combat.tour_actuel_index}
+  round={combat.round_actuel}
+  position="top-right"
+  collapsible={true}
+/>
+```
+
+---
+
+#### **ÉTAPE 4 : Panel Actions Joueur**
+
+**Quand c'est le tour du joueur :**
+```
+┌────────────────────────────────────────────────────────┐
+│  ⚡ VOTRE TOUR - STRIX (Round 2)                       │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  HP: 45/82  CA: 19  Vitesse: 9m (18m restants)        │
+│                                                         │
+│  [Actions] [Actions Bonus] [Réactions] [Libres]       │
+│                                                         │
+│  ─── 🗡️ ACTIONS PRINCIPALES ───                        │
+│                                                         │
+│  ATTAQUER                                              │
+│  ┌──────────────────────────────────────────────────┐ │
+│  │ 🔮 Bâton                                          │ │
+│  │ Corps à corps: +6, 1d6+2 contondant              │ │
+│  │ Cible: [Dropdown ▼]                              │ │
+│  │ [🎲 Jet d'Attaque]                               │ │
+│  └──────────────────────────────────────────────────┘ │
+│                                                         │
+│  LANCER UN SORT                                        │
+│  ┌──────────────────────────────────────────────────┐ │
+│  │ 🔥 Boule de Feu (Niv 3)                          │ │
+│  │ Portée 45m, Sphère 6m, 8d6 feu (Dex DD 16)      │ │
+│  │ Emplacements niv 3: ⚫⚫⚪⚪ (2/4)                 │ │
+│  │ [Lancer]                                          │ │
+│  │                                                   │ │
+│  │ ⚡ Éclair (Niv 3)                                 │ │
+│  │ Ligne 30m, 8d6 foudre (Dex DD 16)               │ │
+│  │ Emplacements niv 3: ⚫⚫⚪⚪ (2/4)                 │ │
+│  │ [Lancer]                                          │ │
+│  │                                                   │ │
+│  │ 💨 Projectile Magique (Niv 1)                    │ │
+│  │ 3 projectiles, 1d4+1 chacun, touche auto        │ │
+│  │ Emplacements niv 1: ⚫⚫⚫⚪⚪ (3/5)                │ │
+│  │ [Lancer]                                          │ │
+│  └──────────────────────────────────────────────────┘ │
+│  [📖 Voir tous mes sorts (12)]                        │
+│                                                         │
+│  🏃 FONCER                                              │
+│  Doublez votre vitesse ce tour                         │
+│  [Action: Foncer]                                      │
+│                                                         │
+│  🛡️ ESQUIVER                                           │
+│  Désavantage aux attaques contre vous jusqu'à votre    │
+│  prochain tour                                         │
+│  [Action: Esquiver]                                    │
+│                                                         │
+│  🤝 AIDER                                               │
+│  Allié à 1,50m a avantage à sa prochaine action       │
+│  Cible: [Dropdown ▼]                                  │
+│  [Action: Aider]                                       │
+│                                                         │
+│  🔍 CHERCHER                                            │
+│  Jet de Perception ou Investigation                    │
+│  [Action: Chercher]                                    │
+│                                                         │
+│  ─── ⚡ CAPACITÉS DE CLASSE ───                        │
+│                                                         │
+│  🔮 Restauration Arcanique                             │
+│  Récupérez emplacements (niveau total ≤4)             │
+│  Utilisations: ⚪ (0/1 par jour)                       │
+│  [Utiliser]                                            │
+│                                                         │
+│  [⏭️ Terminer mon Tour]  [↩️ Annuler Action]          │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+```
+
+**Onglet Actions Bonus :**
+```
+┌────────────────────────────────────────┐
+│  ⚡ ACTIONS BONUS                      │
+├────────────────────────────────────────┤
+│                                         │
+│  Aucune action bonus disponible        │
+│                                         │
+│  (Certains sorts ou capacités          │
+│   peuvent être lancés en action bonus) │
+│                                         │
+└────────────────────────────────────────┘
+```
+
+**Onglet Réactions :**
+```
+┌────────────────────────────────────────┐
+│  ⚡ RÉACTIONS                          │
+├────────────────────────────────────────┤
+│                                         │
+│  Vous pouvez utiliser votre réaction   │
+│  quand déclenchée pendant le round.    │
+│                                         │
+│  🛡️ Bouclier (Sort, Niv 1)            │
+│  Déclencheur: Être touché par attaque  │
+│  Effet: +5 CA jusqu'à votre tour       │
+│  Emplacements niv 1: ⚫⚫⚫⚪⚪          │
+│                                         │
+│  🔄 Contresort (Sort, Niv 3)           │
+│  Déclencheur: Ennemi lance un sort     │
+│  Effet: Interrompt le sort             │
+│  Emplacements niv 3: ⚫⚫⚪⚪            │
+│                                         │
+│  ⚠️ Les réactions se déclenchent       │
+│     automatiquement selon vos choix    │
+│                                         │
+└────────────────────────────────────────┘
+```
+
+**Onglet Actions Libres :**
+```
+┌────────────────────────────────────────┐
+│  🆓 ACTIONS LIBRES                    │
+├────────────────────────────────────────┤
+│                                         │
+│  💬 Parler (quelques mots/phrases)     │
+│  🤲 Lâcher un objet                    │
+│  👋 Faire un geste                      │
+│  🔦 Allumer/Éteindre une torche        │
+│  🗡️ Dégainer/Rengainer une arme       │
+│  🎒 Interagir avec un objet simple     │
+│                                         │
+│  Ces actions ne consomment pas          │
+│  votre action principale.               │
+│                                         │
+└────────────────────────────────────────┘
+```
+
+---
+
+#### **ÉTAPE 5 : Lancer un Sort (Exemple)**
+
+**Joueur clique sur "Lancer" pour Boule de Feu :**
+```
+┌────────────────────────────────────────────────────────┐
+│  🔥 BOULE DE FEU (Niveau 3)                            │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  📖 Description:                                        │
+│  Une traînée jaillit de votre doigt vers un point      │
+│  à portée puis explose en gerbe de flammes.            │
+│                                                         │
+│  📊 Détails:                                            │
+│  • Portée: 45m                                         │
+│  • Zone: Sphère de 6m de rayon                        │
+│  • Jet de Sauvegarde: Dextérité DD 16                 │
+│  • Dégâts: 8d6 feu (demi si réussite)                 │
+│                                                         │
+│  🎯 CIBLAGE:                                            │
+│  Cliquez sur un point dans la zone de combat           │
+│  (ou indiquez les cibles affectées)                    │
+│                                                         │
+│  Cibles détectées dans la zone (6m):                   │
+│  ☑️ Grishnak le Sanguinaire                           │
+│  ☑️ Gobelin #1                                         │
+│  ☑️ Gobelin #2                                         │
+│  ☐ Thorin (allié - décochez pour épargner)           │
+│                                                         │
+│  [🔥 LANCER LE SORT]  [Annuler]                       │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+```
+
+**Après validation :**
+```
+Lancement du sort...
+
+🎲 Jets de sauvegarde:
+- Grishnak: 🎲 8 (échec) → 31 dégâts de feu
+- Gobelin #1: 🎲 14 (échec) → 31 dégâts de feu  ☠️ Mort !
+- Gobelin #2: 🎲 19 (réussite) → 15 dégâts de feu  ☠️ Mort !
+
+Emplacement de sort utilisé: Niveau 3 (1/4 restants)
+
+✅ Sort lancé avec succès !
+Backend :
+javascriptPOST /api/combats/:combat_id/action
+Body: {
+  participant_id: "strix",
+  type: "sort",
+  sort_id: "fireball",
+  niveau_emplacement: 3,
+  cibles: ["grishnak", "goblin_1", "goblin_2"],
+  point_impact: { x: 10, y: 5 } // Optionnel
+}
+
+Response: {
+  resultats: [
+    {
+      cible: "grishnak",
+      jet_sauvegarde: { de: 8, dd: 16, reussite: false },
+      degats: { type: "feu", valeur: 31 },
+      nouveau_hp: 5
+    },
+    ...
+  ]
+}
+
+// Broadcast
+socket.emit('combat:action_executed', { ... })
+socket.emit('combat:hp_updated', { participant_id, new_hp })
+socket.emit('combat:participant_died', { participant_id: "goblin_1" })
+```
+
+---
+
+#### **ÉTAPE 6 : Panel Actions MJ (Tour Ennemi)**
+```
+┌────────────────────────────────────────────────────────┐
+│  👹 TOUR DE GRISHNAK LE SANGUINAIRE (Round 2)         │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  HP: 5/36 ████░░░░░░░░░░░░░░░░░ (14% - Critique!)    │
+│  CA: 17  │  Vitesse: 9m                                │
+│                                                         │
+│  Conditions: Aucune                                     │
+│  [+ Ajouter Condition]                                 │
+│                                                         │
+│  ─── 🗡️ ACTIONS ───                                    │
+│                                                         │
+│  ⚔️ Attaques Multiples                                 │
+│  Fait 2 attaques au cimeterre                          │
+│  [Utiliser]                                            │
+│                                                         │
+│  ⚔️ Cimeterre +1                                       │
+│  +6 au toucher, allonge 1,50m                          │
+│  Dégâts: 1d6+4 tranchants                              │
+│  Cible: [Dropdown: Strix ▼]                           │
+│  [🎲 Jet d'Attaque]                                    │
+│                                                         │
+│  ─── ⚡ CAPACITÉS SPÉCIALES ───                        │
+│                                                         │
+│  📢 Cri de Guerre (1/jour)                             │
+│  Alliés gobelins à 9m ont avantage à leur prochaine   │
+│  attaque                                               │
+│  Utilisations: ⚪ (Utilisé)                            │
+│  [Recharger] (pour reset)                             │
+│                                                         │
+│  ─── 🏃 DÉPLACEMENT ───                                │
+│  Vitesse: 9m                                           │
+│  [Se déplacer de ___ m]                                │
+│                                                         │
+│  ─── 🔄 ACTIONS BONUS ───                              │
+│  🏃 Se Désengager / Se Cacher (Fuite Agile)           │
+│  Les gobelins peuvent utiliser action bonus pour      │
+│  Se Désengager ou Se Cacher                            │
+│  [Se Désengager] [Se Cacher]                          │
+│                                                         │
+│  ─── 💡 SUGGESTIONS IA ───                             │
+│  ⚠️ Grishnak est critique (14% HP)                     │
+│  💡 Suggestion: Fuite tactique ou négociation          │
+│                                                         │
+│  [✅ Terminer le Tour]  [⏭️ Passer]                   │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+```
+
+**Actions Rapides MJ (sidebar) :**
+```
+┌─────────────────────────────┐
+│  ⚡ ACTIONS RAPIDES MJ      │
+├─────────────────────────────┤
+│                              │
+│  HP Modification:            │
+│  Cible: [Dropdown ▼]        │
+│  [🩹 +___] [💀 -___]        │
+│                              │
+│  Conditions:                 │
+│  [😵 Inconscient]           │
+│  [🤢 Empoisonné]            │
+│  [🔥 En feu]                │
+│  [⚡ Étourdi]               │
+│  [+ Custom...]              │
+│                              │
+│  Combat:                     │
+│  [⏸️ Pause]                 │
+│  [⏭️ Tour Suivant]          │
+│  [🔄 Round Suivant]         │
+│  [🏁 Fin de Combat]         │
+│                              │
+└─────────────────────────────┘
+```
+
+---
+
+## 👁️ **MODULE 2 : INTERFACE MJ**
+
+### **2.1 Sidebar Joueurs (Vue Compacte)**
+```
+┌─────────────────────────────────┐
+│  👥 JOUEURS (4)                 │
+├─────────────────────────────────┤
+│                                  │
+│  🧙 STRIX  [Magicien 8]         │
+│  ┌────────────────────────────┐ │
+│  │ HP: 45/82 ████████░░░░░░   │ │
+│  │ CA: 19 │ PP: 11 │ Init: +3 │ │
+│  │ DD Sorts: 16 │ Bonus: +8   │ │
+│  │ Emplacements: [3][2][2][1] │ │
+│  │                             │ │
+│  │ 🔥 Concentré (Hâte, 3 rds) │ │
+│  │                             │ │
+│  │ [👁️] [✏️] [💬]            │ │
+│  └────────────────────────────┘ │
+│                                  │
+│  ⚔️ THORIN  [Guerrier 7]        │
+│  ┌────────────────────────────┐ │
+│  │ HP: 0/65 ░░░░░░░░░░░░░░░░  │ │
+│  │ CA: 18 │ PP: 12 │ Init: +1 │ │
+│  │                             │ │
+│  │ 💀 INCONSCIENT              │ │
+│  │ Jets de mort: ✓✓✗          │ │
+│  │                             │ │
+│  │ [👁️] [✏️] [💊 Stabiliser] │ │
+│  └────────────────────────────┘ │
+│                                  │
+│  🏹 ELARA  [Rôdeur 6]           │
+│  ┌────────────────────────────┐ │
+│  │ HP: 58/58 ██████████       │ │
+│  │ CA: 16 │ PP: 15 │ Init: +4 │ │
+│  │                             │ │
+│  │ Conditions: Aucune          │ │
+│  │                             │ │
+│  │ [👁️] [✏️] [💬]            │ │
+│  └────────────────────────────┘ │
+│                                  │
+│  🛡️ MARCUS  [Paladin 7]         │
+│  ┌────────────────────────────┐ │
+│  │ HP: 71/71 ██████████       │ │
+│  │ CA: 20 │ PP: 10 │ Init: +0 │ │
+│  │ Imposition: 35 HP restants │ │
+│  │                             │ │
+│  │ Conditions: Aucune          │ │
+│  │                             │ │
+│  │ [👁️] [✏️] [💬]            │ │
+│  └────────────────────────────┘ │
+│                                  │
+│  [Tout voir en tableau]         │
+│                                  │
+└─────────────────────────────────┘
+```
+
+**Boutons :**
+- **👁️ Voir** : Ouvre modal fiche complète (read-only ou edit)
+- **✏️ Modifier** : Modal modification rapide (HP, Conditions)
+- **💬 Message** : Envoyer message privé au joueur
+
+---
+
+### **2.2 Modal Modification Rapide**
+```
+┌────────────────────────────────────────┐
+│  ✏️ MODIFIER - STRIX                  │
+├────────────────────────────────────────┤
+│                                         │
+│  ─── POINTS DE VIE ───                 │
+│  Actuels: [45] / 82                    │
+│                                         │
+│  Actions rapides:                       │
+│  [−20] [−10] [−5] [−1]                 │
+│  [+1] [+5] [+10] [+20]                 │
+│  [Max] [0 (KO)]                        │
+│                                         │
+│  ─── POINTS DE VIE TEMPORAIRES ───     │
+│  [10] HP temporaires                   │
+│  [Appliquer] [Retirer]                 │
+│                                         │
+│  ─── CONDITIONS ───                     │
+│  Actuelles:                             │
+│  🔥 Concentré (Hâte) [Retirer]         │
+│                                         │
+│  Ajouter:                               │
+│  [Dropdown: Choisir... ▼]              │
+│  • Empoisonné                           │
+│  • Étourdi                              │
+│  • Paralysé                             │
+│  • En feu                               │
+│  • Aveuglé                              │
+│  • Assourdi                             │
+│  • Charmé                               │
+│  • Effrayé                              │
+│  • Agrippé                              │
+│  • Entravé                              │
+│  • Invisible                            │
+│  • Pétrifié                             │
+│  • Inconscient                          │
+│  • Custom...                            │
+│                                         │
+│  Durée: [3] rounds                     │
+│  [Ajouter Condition]                   │
+│                                         │
+│  ─── EMPLACEMENTS DE SORTS ───         │
+│  Niv 1: ⚫⚫⚫⚪⚪ (3/5)  [Reset]       │
+│  Niv 2: ⚫⚫⚪ (2/3)     [Reset]       │
+│  Niv 3: ⚫⚫⚪⚪ (2/4)    [Reset]       │
+│  Niv 4: ⚫⚪⚪ (1/3)     [Reset]       │
+│                                         │
+│  [Repos Court] [Repos Long]            │
+│                                         │
+│  [💾 Sauvegarder] [Annuler]            │
+│                                         │
+└────────────────────────────────────────┘
+```
+
+---
+
+### **2.3 Onglet Histoire**
+```
+┌────────────────────────────────────────────────────────┐
+│  📖 NOTES DE SESSION                                   │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  Session actuelle: #7 - "Les Mines de Karak"          │
+│  [📜 Historique ▼] [+ Nouvelle Session]               │
+│                                                         │
+│  ─── 📝 SYNOPSIS ───                                    │
+│  [Éditeur Markdown]                                    │
+│                                                         │
+│  # Session 7 : Les Mines de Karak                      │
+│                                                         │
+│  Les héros explorent les mines abandonnées à la       │
+│  recherche de l'Amulette de l'Ombre, volée par       │
+│  Grishnak le Sanguinaire...                            │
+│                                                         │
+│  ## Événements Clés                                    │
+│  - Combat contre 5 gobelins à l'entrée (victoire)     │
+│  - Découverte d'un tunnel secret                       │
+│  - Thorin a failli mourir (sauvé par Marcus)          │
+│                                                         │
+│  ─── ✅ OBJECTIFS ───                                  │
+│  ☑️ Trouver l'entrée des mines                         │
+│  ☑️ Éliminer les gardes gobelins                       │
+│  ☐ Récupérer l'Amulette de l'Ombre                    │
+│  ☐ Affronter Grishnak le Sanguinaire                  │
+│  ☐ Découvrir le secret du tunnel nord                 │
+│                                                         │
+│  [+ Ajouter Objectif]                                  │
+│                                                         │
+│  ─── 🗺️ LIEUX DÉCOUVERTS ───                           │
+│  • Entrée des Mines (Exploré)                          │
+│  • Salle des Gardes (Exploré)                         │
+│  • Tunnel Secret Nord (Non-exploré)                   │
+│  • Salle du Trône Gobelin (Rumeur)                    │
+│                                                         │
+│  [+ Ajouter Lieu]                                      │
+│                                                         │
+│  ─── 📌 NOTES RAPIDES ───                              │
+│  • Strix a identifié des runes anciennes              │
+│  • Elara a remarqué des traces de dragon              │
+│  • Marcus soupçonne une trahison au village           │
+│                                                         │
+│  [+ Ajouter Note]                                      │
+│                                                         │
+│  ─── 🎲 JETS IMPORTANTS ───                            │
+│  • Strix (Arcanes): 23 → Identifier runes             │
+│  • Thorin (Perception): 8 → Rate le piège             │
+│                                                         │
+│  (Ajoutés automatiquement pendant la session)          │
+│                                                         │
+│  [💾 Sauvegarder Auto ✓] [📤 Exporter PDF]           │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **2.4 Onglet PNJ**
+```
+┌────────────────────────────────────────────────────────┐
+│  👥 PNJ DE LA CAMPAGNE                                 │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  [+ Nouveau PNJ] [🔍 Rechercher...] [🗂️ Par Catégorie]│
+│                                                         │
+│  ─── 🟢 ACTIFS (En jeu actuellement) ───               │
+│                                                         │
+│  🧙‍♂️ Merlin le Sage                                    │
+│  ┌──────────────────────────────────────────────────┐ │
+│  │ Mentor des héros │ Mage Niveau 15                │ │
+│  │ Localisation: Tour d'Argent, Capitale            │ │
+│  │ Relation: Allié proche                            │ │
+│  │                                                   │ │
+│  │ Dernière interaction: Session 5                   │ │
+│  │ "A révélé l'existence de l'Amulette"            │ │
+│  │                                                   │ │
+│  │ [👁️ Voir] [💬 Notes] [⚔️ Ajouter au Combat]    │ │
+│  └──────────────────────────────────────────────────┘ │
+│                                                         │
+│  🛡️ Capitaine Aldric                                   │
+│  ┌──────────────────────────────────────────────────┐ │
+│  │ Garde Royale │ Paladin Niveau 8                  │ │
+│  │ Localisation: Caserne du Roi                      │ │
+│  │ Relation: Neutre (méfiant)                        │ │
+│  │                                                   │ │
+│  │ Dernière interaction: Session 6                   │ │
+│  │ "A interrogé le groupe sur leurs intentions"     │ │
+│  │                                                   │ │
+│  │ Secret (caché joueurs): Travaille pour la Reine  │ │
+│  │                                                   │ │
+│  │ [👁️ Voir] [💬 Notes] [⚔️ Ajouter au Combat]    │ │
+│  └──────────────────────────────────────────────────┘ │
+│                                                         │
+│  ─── 🔴 ANTAGONISTES ───                               │
+│                                                         │
+│  👹 Grishnak le Sanguinaire                            │
+│  ┌──────────────────────────────────────────────────┐ │
+│  │ Chef Gobelin │ Boss - FP 6                       │ │
+│  │ Localisation: Mines de Karak, Salle du Trône     │ │
+│  │ Relation: Ennemi juré                             │ │
+│  │                                                   │ │
+│  │ Statut actuel: En combat (5/36 HP - Critique!)   │ │
+│  │                                                   │ │
+│  │ Objectif: Utiliser l'Amulette pour conquérir     │ │
+│  │ la région                                         │ │
+│  │                                                   │ │
+│  │ [👁️ Voir] [💬 Notes] [⚔️ Contrôler en Combat]  │ │
+│  └──────────────────────────────────────────────────┘ │
+│                                                         │
+│  ─── ⚪ SECONDAIRES ───  [▼ Afficher (12)]            │
+│                                                         │
+│  ─── 📊 STATISTIQUES ───                               │
+│  Total PNJ: 15                                         │
+│  Alliés: 4 │ Neutres: 8 │ Ennemis: 3                 │
+│  Morts: 2 (RIP)                                        │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+```
+
+**Modal Fiche PNJ :**
+```
+┌────────────────────────────────────────────────────────┐
+│  🧙‍♂️ MERLIN LE SAGE                           [✏️] [❌]│
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  [Onglet: Infos] [Stats] [Relations] [Histoire]       │
+│                                                         │
+│  ─── 📋 INFORMATIONS ───                               │
+│                                                         │
+│  Nom complet: Merlin Ambrosius                         │
+│  Titre: Grand Mage de la Tour d'Argent                │
+│  Race: Humain  │  Âge: 67 ans                         │
+│  Classe: Magicien (École d'Évocation) - Niveau 15     │
+│                                                         │
+│  ─── 📍 LOCALISATION ───                               │
+│  Actuelle: Tour d'Argent, Capitale                     │
+│  Origine: Royaume du Nord                              │
+│                                                         │
+│  ─── 🤝 RELATION AVEC LE GROUPE ───                    │
+│  Statut: Allié proche                                  │
+│  Confiance: ★★★★★ (5/5)                               │
+│  Quêtes données: 3                                     │
+│                                                         │
+│  ─── 📜 PERSONNALITÉ ───                               │
+│  Traits: Sage, patient, mystérieux                     │
+│  Motivation: Protéger le royaume de la magie noire     │
+│  Peur: Que son passé sombre soit révélé                │
+│                                                         │
+│  ─── 🎭 DESCRIPTION ───                                │
+│  Vieil homme aux cheveux blancs et à la longue barbe. │
+│  Porte toujours une robe bleue étoilée et un bâton    │
+│  de bois ancien. Ses yeux brillent d'une sagesse      │
+│  profonde mais cachent aussi des secrets...            │
+│                                                         │
+│  ─── 🔒 SECRETS (Caché aux joueurs) ───                │
+│  - A été corrompu par la magie noire dans sa jeunesse │
+│  - Connaît la véritable identité du roi                │
+│  - Possède la clé du Tombeau Ancien                   │
+│                                                         │
+│  ─── 📅 HISTORIQUE D'INTERACTIONS ───                  │
+│  Session 1: A recruté les héros                        │
+│  Session 3: A révélé la prophétie                      │
+│  Session 5: A parlé de l'Amulette de l'Ombre          │
+│                                                         │
+│  [💬 Ajouter Note] [⚔️ Ajouter au Combat]             │
+│  [👁️ Voir Statblock] [📤 Exporter]                   │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+
+🎵 MODULE 3 : SYSTÈME AUDIO
+3.1 Structure de Données
+typescriptinterface AudioTrack {
+  id: string;
+  nom: string;
+  type: "musique" | "ambiance";
+  source: "youtube" | "upload";
+  
+  // Si YouTube
+  youtube_url?: string;
+  youtube_id?: string;
+  
+  // Si Upload
+  file_url?: string;
+  file_size?: number;
+  
+  duree_secondes: number;
+  thumbnail?: string;
+  
+  // Métadonnées
+  tags: string[]; // "combat", "taverne", "boss", etc.
+  volume_defaut: number; // 0-100
+  loop: boolean;
+  
+  created_at: Date;
+  created_by: string; // user_id
+}
+
+interface Playlist {
+  id: string;
+  nom: string;
+  description?: string;
+  
+  tracks_musique: string[]; // IDs des tracks
+  tracks_ambiance: string[]; // IDs des tracks
+  
+  auto_transition: boolean;
+  fade_duration: number; // secondes
+  
+  created_at: Date;
+}
+
+interface AudioState {
+  session_id: string;
+  
+  musique: {
+    track_actuelle?: string;
+    position_secondes: number;
+    volume: number;
+    en_lecture: boolean;
+    loop: boolean;
+  };
+  
+  ambiance: {
+    track_actuelle?: string;
+    position_secondes: number;
+    volume: number;
+    en_lecture: boolean;
+    loop: boolean;
+  };
+  
+  playlist_active?: string;
+}
+```
+
+---
+
+### **3.2 Interface Audio MJ**
+```
+┌────────────────────────────────────────────────────────┐
+│  🎵 GESTION AUDIO                                      │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  ─── 🎶 CANAL MUSIQUE ───                              │
+│                                                         │
+│  [Album Cover]   Epic Fantasy Battle Theme             │
+│                  Par: Composer Name                     │
+│                  [▶️] [⏸️] [⏹️] [🔀] [🔁]            │
+│                  ━━━━━━━━━━━━━━━━━━ 2:34 / 4:12       │
+│                  Volume: [━━━━━━━━━━░░] 75%           │
+│                                                         │
+│  Queue (3 titres):                                      │
+│  1. Epic Fantasy Battle Theme (actuel)                 │
+│  2. Dragon Fight Music                                 │
+│  3. Boss Battle Orchestral                             │
+│  [Éditer Queue]                                        │
+│                                                         │
+│  [+ YouTube] [📤 Upload] [📚 Bibliothèque]            │
+│                                                         │
+│  ─── 🌫️ CANAL AMBIANCE ───                             │
+│                                                         │
+│  [Icon]          Cave Drips & Echoes                   │
+│                  Ambiance souterraine                   │
+│                  [▶️] [⏸️] [⏹️] [🔁 Loop ✓]          │
+│                  ━━━━━━━━━━━━━━━━━━ [Boucle ∞]        │
+│                  Volume: [━━━━━░░░░░░░] 40%           │
+│                                                         │
+│  Sons rapides:                                          │
+│  [🏰 Donjon] [🌲 Forêt] [🏔️ Montagne] [🏛️ Temple]   │
+│  [⚔️ Combat] [🍺 Taverne] [🌊 Océan] [🔥 Feu Camp]    │
+│  [🌧️ Pluie] [⛈️ Orage] [🌬️ Vent] [🦉 Nuit]         │
+│                                                         │
+│  [+ YouTube] [📤 Upload] [📚 Bibliothèque]            │
+│                                                         │
+│  ─── 📚 MES PLAYLISTS ───                              │
+│                                                         │
+│  📁 Session 7 - Les Mines                              │
+│  🎶 Musique: Dungeon Exploration (3 titres)           │
+│  🌫️ Ambiance: Cave Sounds                             │
+│  [▶️ Charger] [✏️] [🗑️]                              │
+│                                                         │
+│  📁 Combat Boss                                         │
+│  🎶 Musique: Epic Orchestral Mix (5 titres)           │
+│  🌫️ Ambiance: Thunder Storm                           │
+│  [▶️ Charger] [✏️] [🗑️]                              │
+│                                                         │
+│  📁 Taverne Roleplay                                    │
+│  🎶 Musique: Medieval Tavern Music                     │
+│  🌫️ Ambiance: Crowd Chatter                           │
+│  [▶️ Charger] [✏️] [🗑️]                              │
+│                                                         │
+│  [+ Nouvelle Playlist] [📥 Importer]                  │
+│                                                         │
+│  ─── ⚙️ PARAMÈTRES ───                                 │
+│  ☑️ Synchroniser avec tous les joueurs                 │
+│  ☑️ Transition en fondu (3 secondes)                   │
+│  ☐ Auto-play suivant                                   │
+│  ☑️ Notifications pour les joueurs                     │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **3.3 Modal Ajout YouTube**
+```
+┌─────────────────────────────────────────────────────┐
+│  📺 AJOUTER DEPUIS YOUTUBE                          │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  URL YouTube:                                        │
+│  [https://youtube.com/watch?v=dQw4w9WgXcQ       ]  │
+│  [🔍 Charger Info]                                  │
+│                                                      │
+│  ─── APERÇU ───                                      │
+│  [Thumbnail]                                         │
+│  Titre: Epic Fantasy Battle Music                   │
+│  Durée: 4:12                                        │
+│  Auteur: Fantasy Music Channel                      │
+│                                                      │
+│  Nom personnalisé (optionnel):                      │
+│  [Combat Épique - Session 7                      ]  │
+│                                                      │
+│  Ajouter à:                                          │
+│  ● Canal Musique                                     │
+│  ○ Canal Ambiance                                    │
+│                                                      │
+│  Tags (pour recherche):                             │
+│  [combat] [épique] [boss] [+ Ajouter]              │
+│                                                      │
+│  Volume par défaut: [━━━━━━━━░░] 75%               │
+│  ☑️ Boucler automatiquement                         │
+│                                                      │
+│  Playlist:                                           │
+│  [Dropdown: Session 7 - Les Mines ▼]               │
+│  [+ Créer nouvelle playlist]                        │
+│                                                      │
+│  [➕ Ajouter] [Annuler]                             │
+│                                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+### **3.4 Modal Upload Fichier**
+```
+┌─────────────────────────────────────────────────────┐
+│  📤 UPLOADER UN FICHIER AUDIO                       │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  ┌─────────────────────────────────────────────┐   │
+│  │                                              │   │
+│  │   🎵 Glissez votre fichier audio ici        │   │
+│  │      ou cliquez pour parcourir               │   │
+│  │                                              │   │
+│  │   Formats: MP3, WAV, OGG, M4A               │   │
+│  │   Taille max: 50 MB                          │   │
+│  │                                              │   │
+│  └─────────────────────────────────────────────┘   │
+│                                                      │
+│  Ou choisir depuis:                                 │
+│  [💽 Bibliothèque Audio] [☁️ Google Drive]         │
+│                                                      │
+│  ─── FICHIER SÉLECTIONNÉ ───                        │
+│  📁 cave_ambience.mp3 (12.4 MB)                    │
+│  Durée: 8:34                                        │
+│                                                      │
+│  Nom d'affichage:                                   │
+│  [Ambiance Caverne                               ]  │
+│                                                      │
+│  Ajouter à:                                          │
+│  ○ Canal Musique                                     │
+│  ● Canal Ambiance                                    │
+│                                                      │
+│  Tags:                                              │
+│  [donjon] [cave] [ambiance] [+ Ajouter]            │
+│                                                      │
+│  Volume par défaut: [━━━━░░░░░░░] 40%              │
+│  ☑️ Boucler automatiquement                         │
+│                                                      │
+│  [⬆️ Upload] [Annuler]                             │
+│                                                      │
+│  [████████████░░░░░░░░] Uploading... 60%           │
+│                                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+### **3.5 Interface Audio Joueur (Simplifié)**
+```
+┌─────────────────────────────┐
+│  🎵 AUDIO                   │
+├─────────────────────────────┤
+│                              │
+│  🎶 Musique                  │
+│  Epic Battle Theme           │
+│  [🔊 ━━━━━━━━░░] 75%        │
+│                              │
+│  🌫️ Ambiance                 │
+│  Cave Drips                  │
+│  [🔊 ━━━━░░░░░░] 40%        │
+│                              │
+│  [🔇 Couper Tout]            │
+│                              │
+└─────────────────────────────┘
+```
+
+Les joueurs peuvent uniquement :
+- Voir ce qui joue
+- Ajuster leur volume local (n'affecte pas les autres)
+- Couper leur audio
+
+---
+
+## 📊 **MODULE 4 : STATISTIQUES & QoL**
+
+### **4.1 Statistiques de Session**
+```
+┌────────────────────────────────────────────────────────┐
+│  📊 STATISTIQUES - SESSION #7                          │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│  [Vue: Combat Actuel] [Session Complète] [Campagne]   │
+│                                                         │
+│  ─── ⚔️ COMBAT vs GRISHNAK & GOBELINS ───              │
+│  Durée: 18 minutes  │  Rounds: 4                       │
+│  Statut: ✅ Victoire                                   │
+│                                                         │
+│  ─── 💀 DÉGÂTS INFLIGÉS ───                            │
+│  Total: 156 dégâts                                     │
+│                                                         │
+│  🥇 Strix: 78 dégâts (50%)                             │
+│  │  • Boule de Feu: 62 (2 ennemis tués)               │
+│  │  • Projectile Magique: 16                           │
+│                                                         │
+│  🥈 Elara: 45 dégâts (29%)                             │
+│  │  • Arc Long: 45 (1 ennemi tué)                      │
+│                                                         │
+│  🥉 Marcus: 24 dégâts (15%)                            │
+│  │  • Épée Longue: 24                                  │
+│                                                         │
+│  4️⃣ Thorin: 9 dégâts (6%)                             │
+│  │  • Hache: 9 (KO round 2)                           │
+│                                                         │
+│  ─── 🩹 SOINS PRODIGUÉS ───                            │
+│  Total: 42 HP restaurés                                │
+│                                                         │
+│  Marcus: 37 HP                                         │
+│  │  • Imposition des Mains sur Thorin: 37             │
+│                                                         │
+│  Elara: 5 HP                                           │
+│  │  • Potion de Soin sur Strix: 5                     │
+│                                                         │
+│  ─── ✨ SORTS LANCÉS ───                               │
+│  Total: 8 sorts                                         │
+│                                                         │
+│  Strix: 6 sorts                                        │
+│  │  • Niv 3: Boule de Feu (×1), Hâte (×1)            │
+│  │  • Niv 1: Projectile Magique (×3), Bouclier (×1)  │
+│                                                         │
+│  Marcus: 2 sorts                                       │
+│  │  • Niv 2: Soin des Blessures (×2)                 │
+│                                                         │
+│  ─── 🎲 JETS REMARQUABLES ───                          │
+│  🎯 Critiques: 2                                       │
+│  │  • Elara: 20 naturel (Arc Long, 24 dégâts)        │
+│  │  • Marcus: 20 naturel (Épée Longue, 18 dégâts)    │
+│                                                         │
+│  💥 Échecs Critiques: 1                                │
+│  │  • Thorin: 1 naturel (rate et tombe)              │
+│                                                         │
+│  ─── 💰 RÉCOMPENSES ───                                │
+│  XP Gagné: 2,150 XP (par joueur: 537 XP)              │
+│  Trésor: 45 PO, 120 PA                                │
+│  Objets: Cimeterre +1, Amulette de l'Ombre ⭐         │
+│                                                         │
+│  [📥 Distribuer XP] [💰 Distribuer Trésor]            │
+│  [📤 Exporter Rapport]                                 │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+Auto-généré en temps réel pendant le combat !
+
+4.2 Sauvegarde Automatique
+Système de sauvegarde :
+typescript// Sauvegarde auto toutes les 30 secondes
+setInterval(() => {
+  sauvegarderEtatCombat(combat);
+}, 30000);
+
+// Sauvegarde immédiate à chaque action importante
+socket.on('combat:action', (action) => {
+  executerAction(action);
+  sauvegarderEtatCombat(combat); // ← Sauvegarde immédiate
+});
+
+// En cas de déconnexion
+socket.on('disconnect', () => {
+  sauvegarderEtatCombat(combat);
+});
+
+// Récupération à la reconnexion
+socket.on('reconnect', async () => {
+  const etatSauvegarde = await chargerDernierEtatCombat(session_id);
+  
+  if (etatSauvegarde && etatSauvegarde.statut === 'en_cours') {
+    // Modal de récupération
+    showModal({
+      titre: "Combat en Cours Détecté",
+      message: "Un combat était en cours. Voulez-vous le reprendre ?",
+      boutons: [
+        {
+          texte: "Reprendre",
+          action: () => restaurerCombat(etatSauvegarde)
+        },
+        {
+          texte: "Terminer le Combat",
+          action: () => terminerCombat(etatSauvegarde.id)
+        }
+      ]
+    });
+  }
+});
+```
+
+**Indicateur visuel :**
+```
+En bas de l'écran, discret:
+💾 Sauvegarde auto: ✓ Il y a 12 secondes
+
+4.3 Système de Notifications
+typescriptinterface Notification {
+  id: string;
+  type: "info" | "warning" | "success" | "error" | "combat";
+  titre: string;
+  message: string;
+  destinataire: "tous" | "mj" | "joueur_id";
+  priorite: "basse" | "normale" | "haute";
+  actions?: NotificationAction[];
+  duree_ms?: number; // Auto-dismiss après X ms
+  persistante?: boolean; // Ne disparaît pas auto
+}
+
+interface NotificationAction {
+  texte: string;
+  action: string; // Action à trigger
+  style: "primary" | "secondary" | "danger";
+}
+```
+
+**Exemples de Notifications :**
+
+**1. C'est votre tour :**
+```
+┌─────────────────────────────────────┐
+│  ⚡ C'EST VOTRE TOUR !              │
+├─────────────────────────────────────┤
+│  Strix, c'est à vous de jouer !    │
+│  Round 3                            │
+│                                     │
+│  [Voir mes Actions]                │
+└─────────────────────────────────────┘
+```
+Avec son + vibration (mobile)
+
+**2. Effet de sort se termine :**
+```
+┌─────────────────────────────────────┐
+│  ⏰ EFFET SE TERMINE                │
+├─────────────────────────────────────┤
+│  Hâte sur Strix se termine au      │
+│  début de son prochain tour.       │
+│                                     │
+│  ⚠️ Vague de léthargie à venir     │
+│                                     │
+│  [OK]                               │
+└─────────────────────────────────────┘
+```
+
+**3. Recharge de capacité :**
+```
+┌─────────────────────────────────────┐
+│  ✨ CAPACITÉ RECHARGÉE !            │
+├─────────────────────────────────────┤
+│  Grishnak: Cri de Guerre            │
+│  est à nouveau disponible !         │
+│  (Recharge: 5-6 → 🎲 6)            │
+│                                     │
+│  [Utiliser Maintenant]             │
+└─────────────────────────────────────┘
+```
+
+**4. Joueur KO :**
+```
+┌─────────────────────────────────────┐
+│  💀 JOUEUR INCONSCIENT !            │
+├─────────────────────────────────────┤
+│  Thorin est tombé à 0 PV !         │
+│                                     │
+│  Jets de mort commence au          │
+│  début de son prochain tour.       │
+│                                     │
+│  [Voir Fiche] [Stabiliser]        │
+└─────────────────────────────────────┘
+Composant React :
+jsx<NotificationCenter 
+  notifications={notifications}
+  position="top-right"
+  maxVisible={3}
+  autoStack={true}
+  sound={true}
+/>
+```
+
+---
+
+## 🎲 **MODULE 5 : LANCEUR DE DÉS AMÉLIORÉ (MJ)**
+
+### **5.1 Interface Lanceur MJ**
+```
+┌─────────────────────────────────────────┐
+│  🎲 LANCEUR DE DÉS - MJ                │
+├─────────────────────────────────────────┤
+│                                          │
+│  Type de jet:                            │
+│  ○ Jet simple                            │
+│  ● Jet pour un joueur                    │
+│  ○ Jet de groupe                         │
+│                                          │
+│  Joueur (si applicable):                 │
+│  [Dropdown: Strix ▼]                    │
+│                                          │
+│  Dés:                                    │
+│  [d4] [d6] [d8] [d10] [d12] [d20] [d100]│
+│                                          │
+│  Formule: [2d20] + [3] - [2]            │
+│           [Effacer]                      │
+│                                          │
+│  Modificateurs:                          │
+│  ☑️ Avantage                             │
+│  ☐ Désavantage                           │
+│                                          │
+│  Visibilité:                             │
+│  ● Visible par tous                      │
+│  ○ Visible uniquement par le MJ         │
+│  ○ Visible par le MJ + joueur concerné  │
+│                                          │
+│  Description (optionnel):                │
+│  [Jet de Perception pour détecter      ] │
+│  [le piège                             ] │
+│                                          │
+│  [🎲 LANCER] [❌ Annuler]               │
+│                                          │
+└─────────────────────────────────────────┘
+```
+
+**Résultat MJ (jet invisible) :**
+```
+🎲 Vous avez lancé: 2d20+3-2 (Avantage)
+Pour: Strix (Perception)
+
+Résultats:
+Dé 1: 🎲 17
+Dé 2: 🎲 12
+→ Meilleur: 17 (avantage)
+
+Calcul: 17 + 3 - 2 = 18
+
+✅ Résultat final: 18
+
+Visibilité: 👁️ Vous seul
+
+[Révéler aux Joueurs] [Révéler à Strix]

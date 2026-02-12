@@ -1,15 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dataService from '../../services/dataService'; // Ensure this is imported
 
-export default function ItemCreator() {
+export default function ItemCreator({ initialData, onCancel, onSuccess }) {
     const [item, setItem] = useState({
         name: '',
         type: 'objet',
         weight: 0,
         value: 0,
         damage: '',
+        damage2: '',
         properties: '',
-        visible: true // Default visible
+        visible: true
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setItem(initialData);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            setItem({
+                name: '',
+                type: 'objet',
+                weight: 0,
+                value: 0,
+                damage: '',
+                damage2: '',
+                properties: '',
+                visible: true
+            });
+        }
+    }, [initialData]);
 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
@@ -20,37 +40,50 @@ export default function ItemCreator() {
         setMessage(null);
 
         try {
-            const response = await fetch('http://localhost:3000/api/data/items', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(item)
-            });
-
-            if (response.ok) {
+            let response;
+            if (initialData) {
+                // Update
+                await dataService.updateItem(item);
+                setMessage({ type: 'success', text: 'Objet mis à jour avec succès !' });
+            } else {
+                // Create
+                const res = await fetch('http://localhost:3000/api/data/items', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(item)
+                });
+                if (!res.ok) throw new Error('Erreur création');
                 setMessage({ type: 'success', text: 'Objet créé avec succès !' });
+            }
+
+            if (onSuccess) onSuccess();
+            if (!initialData) {
+                // Reset form only if creating
                 setItem({
                     name: '',
                     type: 'objet',
                     weight: 0,
                     value: 0,
                     damage: '',
-                    properties: ''
+                    damage2: '',
+                    properties: '',
+                    visible: true
                 });
-            } else {
-                setMessage({ type: 'error', text: 'Erreur lors de la création.' });
             }
         } catch (error) {
             console.error(error);
-            setMessage({ type: 'error', text: 'Erreur réseau.' });
+            setMessage({ type: 'error', text: 'Erreur lors de l\'opération.' });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className={`space-y-6 max-w-2xl mx-auto p-4 rounded-lg border ${initialData ? 'bg-stone-800 border-amber-500/50' : ''}`}>
             <div className="flex justify-between items-start">
-                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">Nouvel Objet</h2>
+                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">
+                    {initialData ? `Modifier: ${initialData.name}` : 'Nouvel Objet'}
+                </h2>
                 <label className="flex items-center cursor-pointer ml-4">
                     <span className="mr-2 text-sm text-stone-400 font-bold">{item.visible ? 'Visible Joueurs' : 'Caché (MJ)'}</span>
                     <div className="relative">
@@ -97,13 +130,22 @@ export default function ItemCreator() {
                 </div>
                 <div>
                     <label className="block text-sm font-bold text-stone-400 mb-1">Dégâts / CA (Optionnel)</label>
-                    <input
-                        type="text"
-                        value={item.damage}
-                        onChange={e => setItem({ ...item, damage: e.target.value })}
-                        className="w-full bg-stone-700 border border-stone-600 rounded p-2 text-stone-200 focus:outline-none focus:border-amber-500"
-                        placeholder="Ex: 1d8 / +2"
-                    />
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={item.damage}
+                            onChange={e => setItem({ ...item, damage: e.target.value })}
+                            className="w-full bg-stone-700 border border-stone-600 rounded p-2 text-stone-200 focus:outline-none focus:border-amber-500"
+                            placeholder="Dommages (1d8)"
+                        />
+                        <input
+                            type="text"
+                            value={item.damage2}
+                            onChange={e => setItem({ ...item, damage2: e.target.value })}
+                            className="w-full bg-stone-700 border border-stone-600 rounded p-2 text-stone-200 focus:outline-none focus:border-amber-500"
+                            placeholder="Dommages 2 (1d4)"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -147,8 +189,17 @@ export default function ItemCreator() {
                     disabled={loading}
                     className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded shadow-lg transform transition active:scale-95 disabled:opacity-50"
                 >
-                    {loading ? 'Création...' : 'Créer l\'Objet'}
+                    {loading ? (initialData ? 'Modification...' : 'Création...') : (initialData ? 'Enregistrer les modifications' : 'Créer l\'Objet')}
                 </button>
+                {initialData && (
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="bg-stone-600 hover:bg-stone-500 text-white font-bold py-2 px-6 rounded shadow-lg ml-4 transition"
+                    >
+                        Annuler
+                    </button>
+                )}
             </div>
         </form>
     );

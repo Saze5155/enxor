@@ -69,6 +69,32 @@ async function createWikiArticle(title, content, categoryName, visibility) {
     }
 }
 
+async function updateWikiArticle(oldTitle, newTitle, content, categoryName, visibility) {
+    try {
+        const article = await prisma.article.findFirst({
+            where: { title: oldTitle }
+        });
+
+        const wikiVisibility = visibility ? 'PUBLIC' : 'MJ';
+
+        if (article) {
+            await prisma.article.update({
+                where: { id: article.id },
+                data: {
+                    title: newTitle,
+                    content,
+                    visibility: wikiVisibility
+                }
+            });
+            console.log(`Wiki article updated for ${newTitle}`);
+        } else {
+            await createWikiArticle(newTitle, content, categoryName, visibility);
+        }
+    } catch (error) {
+        console.error('Error updating wiki article:', error);
+    }
+}
+
 exports.createRace = async (req, res) => {
     try {
         const races = readJsonFile('races.json');
@@ -156,99 +182,127 @@ exports.createSpell = async (req, res) => {
 };
 
 // Update Methods (for visibility toggle etc.)
-exports.updateRace = (req, res) => {
+exports.updateRace = async (req, res) => {
     try {
         const races = readJsonFile('races.json');
-        const { nom, visible } = req.body; // Identified by name for now
-        const index = races.findIndex(r => r.nom === nom);
+        const { name } = req.params; 
+        const updatedRace = { ...req.body, visible: req.body.visible !== false };
+        
+        const index = races.findIndex(r => r.nom === name);
         
         if (index !== -1) {
-            races[index].visible = visible;
+            races[index] = updatedRace;
             if (writeJsonFile('races.json', races)) {
-                // Ideally sync wiki here too, but visibility sync is complex (Wiki has its own field)
-                // For now just data update
-                 res.json({ message: 'Race updated', race: races[index] });
+                await updateWikiArticle(name, updatedRace.nom, formatRace(updatedRace), 'Races & Peuples', updatedRace.visible);
+                res.json({ message: 'Race updated', race: updatedRace });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
             }
         } else {
             res.status(404).json({ message: 'Race not found' });
         }
-    } catch (e) { res.status(500).json({ message: 'Error updating' }); }
+    } catch (e) { 
+        console.error(e);
+        res.status(500).json({ message: 'Error updating' }); 
+    }
 };
 
-exports.updateClass = (req, res) => {
+exports.updateClass = async (req, res) => {
     try {
         const classes = readJsonFile('classes.json');
-        const { nom, visible } = req.body;
-        const index = classes.findIndex(c => c.nom === nom);
+        const { name } = req.params;
+        const updatedClass = { ...req.body, visible: req.body.visible !== false };
+
+        const index = classes.findIndex(c => c.nom === name);
         
         if (index !== -1) {
-            classes[index].visible = visible;
+            classes[index] = updatedClass;
             if (writeJsonFile('classes.json', classes)) {
-                 res.json({ message: 'Class updated', class: classes[index] });
+                await updateWikiArticle(name, updatedClass.nom, formatClass(updatedClass), 'Classes', updatedClass.visible);
+                res.json({ message: 'Class updated', class: updatedClass });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
             }
         } else {
             res.status(404).json({ message: 'Class not found' });
         }
-    } catch (e) { res.status(500).json({ message: 'Error updating' }); }
+    } catch (e) { 
+        console.error(e);
+        res.status(500).json({ message: 'Error updating' }); 
+    }
 };
 
-exports.updateItem = (req, res) => {
+exports.updateItem = async (req, res) => {
     try {
         const items = readJsonFile('items.json');
-        const { name, visible } = req.body;
+        const { name } = req.params;
+        const updatedItem = { ...req.body, visible: req.body.visible !== false };
+
         const index = items.findIndex(i => i.name === name);
         
         if (index !== -1) {
-            items[index].visible = visible;
+            items[index] = updatedItem;
             if (writeJsonFile('items.json', items)) {
-                 res.json({ message: 'Item updated', item: items[index] });
+                await updateWikiArticle(name, updatedItem.name, formatItem(updatedItem), 'Objets & Artefacts', updatedItem.visible);
+                res.json({ message: 'Item updated', item: updatedItem });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
             }
         } else {
             res.status(404).json({ message: 'Item not found' });
         }
-    } catch (e) { res.status(500).json({ message: 'Error updating' }); }
+    } catch (e) { 
+        console.error(e);
+        res.status(500).json({ message: 'Error updating' }); 
+    }
 };
 
-exports.updateSpell = (req, res) => {
+exports.updateSpell = async (req, res) => {
     try {
         const spells = readJsonFile('spells.json');
-        const { nom, visible } = req.body;
-        const index = spells.findIndex(s => s.nom === nom);
+        const { name } = req.params;
+        const updatedSpell = { ...req.body, visible: req.body.visible !== false };
+
+        const index = spells.findIndex(s => s.nom === name);
         
         if (index !== -1) {
-            spells[index].visible = visible;
+            spells[index] = updatedSpell;
             if (writeJsonFile('spells.json', spells)) {
-                 res.json({ message: 'Spell updated', spell: spells[index] });
+                await updateWikiArticle(name, updatedSpell.nom, formatSpell(updatedSpell), 'Magie & Systèmes', updatedSpell.visible);
+                res.json({ message: 'Spell updated', spell: updatedSpell });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
             }
         } else {
             res.status(404).json({ message: 'Spell not found' });
         }
-    } catch (e) { res.status(500).json({ message: 'Error updating' }); }
+    } catch (e) { 
+        console.error(e);
+        res.status(500).json({ message: 'Error updating' }); 
+    }
 };
 
-exports.updateFeat = (req, res) => {
+exports.updateFeat = async (req, res) => {
     try {
         const feats = readJsonFile('feats.json');
-        const { nom, visible } = req.body;
-        const index = feats.findIndex(f => f.nom === nom);
+        const { name } = req.params;
+        const updatedFeat = { ...req.body, visible: req.body.visible !== false };
+
+        const index = feats.findIndex(f => f.nom === name);
         
         if (index !== -1) {
-            feats[index].visible = visible;
+            feats[index] = updatedFeat;
             if (writeJsonFile('feats.json', feats)) {
-                 res.json({ message: 'Feat updated', feat: feats[index] });
+                await updateWikiArticle(name, updatedFeat.nom, formatFeat(updatedFeat), 'Magie & Systèmes', updatedFeat.visible);
+                res.json({ message: 'Feat updated', feat: updatedFeat });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
             }
         } else {
             res.status(404).json({ message: 'Feat not found' });
         }
-    } catch (e) { res.status(500).json({ message: 'Error updating' }); }
+    } catch (e) { 
+        console.error(e);
+        res.status(500).json({ message: 'Error updating' }); 
+    }
 };

@@ -2,18 +2,19 @@ import { useState, useEffect } from 'react';
 
 // Format item to ensure data consistency
 // Format item to ensure data consistency
-const createItem = (name, quantity = 1, weight = 0, value = 0, type = 'objet', damage = '', properties = '') => ({
+const createItem = (name, quantity = 1, weight = 0, value = 0, type = 'objet', damage = '', properties = '', damage2 = '') => ({
     id: Date.now().toString(),
     name,
     quantity: parseInt(quantity) || 1,
     weight: parseFloat(weight) || 0,
     value: parseFloat(value) || 0,
-    type,
+    type: type.toLowerCase(),
     damage,
+    damage2,
     properties
 });
 
-import { STANDARD_ITEMS } from '../data/items';
+import dataService from '../services/dataService';
 
 export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 0, cp: 0 }, onUpdate }) {
     const [items, setItems] = useState(inventory || []);
@@ -44,14 +45,31 @@ export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 
     const [searchTerm, setSearchTerm] = useState('');
 
     // New Item Form State
-    const [newItem, setNewItem] = useState({ name: '', quantity: 1, weight: 0, value: 0, type: 'objet', damage: '', properties: '' });
+    const [newItem, setNewItem] = useState({ name: '', quantity: 1, weight: 0, value: 0, type: 'objet', damage: '', damage2: '', properties: '' });
+    const [availableItems, setAvailableItems] = useState([]);
+
+    // Load available items from API
+    useEffect(() => {
+        const loadItems = async () => {
+            try {
+                const items = await dataService.getItems();
+                // Filter only visible items for players
+                const visibleItems = items.filter(item => item.visible !== false);
+                setAvailableItems(visibleItems);
+            } catch (error) {
+                console.error('Error loading items:', error);
+                setAvailableItems([]);
+            }
+        };
+        loadItems();
+    }, []);
 
     const handleAddItem = () => {
         if (!newItem.name) return;
-        const updatedItems = [...items, createItem(newItem.name, newItem.quantity, newItem.weight, newItem.value, newItem.type, newItem.damage, newItem.properties)];
+        const updatedItems = [...items, createItem(newItem.name, newItem.quantity, newItem.weight, newItem.value, newItem.type, newItem.damage, newItem.properties, newItem.damage2)];
         setItems(updatedItems);
         onUpdate({ inventory: updatedItems, money: currency }); // Propagate updates
-        setNewItem({ name: '', quantity: 1, weight: 0, value: 0, type: 'objet', damage: '', properties: '' });
+        setNewItem({ name: '', quantity: 1, weight: 0, value: 0, type: 'objet', damage: '', damage2: '', properties: '' });
         setIsModalOpen(false);
     };
 
@@ -61,8 +79,9 @@ export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 
             quantity: 1,
             weight: item.weight,
             value: item.value,
-            type: item.type,
+            type: (item.type || 'objet').toLowerCase(),
             damage: item.damage || '',
+            damage2: item.damage2 || '',
             properties: item.properties || ''
         });
         setModalTab('create'); // Switch to create tab to let user adjust quantity/details
@@ -128,7 +147,7 @@ export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 
 
     const totalWeight = items.reduce((acc, i) => acc + (i.weight * i.quantity), 0).toFixed(1);
 
-    const filteredStandardItems = STANDARD_ITEMS.filter(item =>
+    const filteredStandardItems = availableItems.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.type.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -269,6 +288,7 @@ export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 
                                     {item.weight > 0 && `${item.weight}kg`}
                                     {item.weight > 0 && item.value > 0 && ' • '}
                                     {item.value > 0 && `${item.value}po`}
+                                    {item.damage && ` • ⚔️ ${item.damage}${item.damage2 ? `/${item.damage2}` : ''}`}
                                 </div>
                             )}
                         </div>
@@ -337,6 +357,7 @@ export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 
                                     searchTerm={searchTerm}
                                     onSearchChange={setSearchTerm}
                                     onSelect={handleSelectStandardItem}
+                                    availableItems={availableItems}
                                 />
                             ) : (
                                 <CreateItemTab
@@ -355,7 +376,7 @@ export default function InventoryManager({ inventory = [], money = { gp: 0, sp: 
 }
 
 // Sub-component for the "Choose" tab to keep main component clean
-function ItemSelectortab({ searchTerm, onSearchChange, onSelect }) {
+function ItemSelectortab({ searchTerm, onSearchChange, onSelect, availableItems }) {
     const [filterCategory, setFilterCategory] = useState('all');
 
     const categories = [
@@ -367,7 +388,7 @@ function ItemSelectortab({ searchTerm, onSearchChange, onSelect }) {
         { id: 'objet', label: 'Divers' }
     ];
 
-    const filteredItems = STANDARD_ITEMS.filter(item => {
+    const filteredItems = availableItems.filter(item => {
         const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             item.type.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -408,8 +429,8 @@ function ItemSelectortab({ searchTerm, onSearchChange, onSelect }) {
                         key={cat.id}
                         onClick={() => setFilterCategory(cat.id)}
                         className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors border ${filterCategory === cat.id
-                                ? 'bg-stone-800 text-white border-stone-800'
-                                : 'bg-white text-stone-600 border-stone-300 hover:bg-stone-100'
+                            ? 'bg-stone-800 text-white border-stone-800'
+                            : 'bg-white text-stone-600 border-stone-300 hover:bg-stone-100'
                             }`}
                     >
                         {cat.label}
@@ -431,7 +452,7 @@ function ItemSelectortab({ searchTerm, onSearchChange, onSelect }) {
                                 <span className="text-[10px] uppercase font-bold text-stone-400 bg-stone-100 px-1.5 rounded">{item.type}</span>
                             </div>
                             <div className="text-xs text-stone-500 space-y-0.5">
-                                {item.damage && <div>⚔️ {item.damage}</div>}
+                                {item.damage && <div>⚔️ {item.damage} {item.damage2 ? `/ ${item.damage2}` : ''}</div>}
                                 {(item.weight > 0 || item.value > 0) && (
                                     <div className="flex gap-2">
                                         {item.weight > 0 && <span>⚖️ {item.weight}kg</span>}
@@ -494,13 +515,22 @@ function CreateItemTab({ newItem, setNewItem, onCancel, onAdd }) {
                     </div>
                     <div>
                         <label className="block text-xs uppercase font-bold text-stone-500 mb-1">Dégâts / CA (Optionnel)</label>
-                        <input
-                            type="text"
-                            value={newItem.damage}
-                            onChange={(e) => setNewItem({ ...newItem, damage: e.target.value })}
-                            className="w-full bg-white border border-stone-300 rounded p-3 text-stone-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm"
-                            placeholder="Ex: 1d8 / +2"
-                        />
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={newItem.damage}
+                                onChange={(e) => setNewItem({ ...newItem, damage: e.target.value })}
+                                className="w-full bg-white border border-stone-300 rounded p-3 text-stone-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm"
+                                placeholder="1d8"
+                            />
+                            <input
+                                type="text"
+                                value={newItem.damage2}
+                                onChange={(e) => setNewItem({ ...newItem, damage2: e.target.value })}
+                                className="w-full bg-white border border-stone-300 rounded p-3 text-stone-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm"
+                                placeholder="Dégâts 2"
+                            />
+                        </div>
                     </div>
                 </div>
 

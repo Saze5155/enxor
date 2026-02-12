@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dataService from '../../services/dataService';
 
 const HIT_DICE = ["d6", "d8", "d10", "d12"];
 
-export default function ClassCreator() {
+export default function ClassCreator({ initialData, onCancel, onSuccess }) {
     const [classData, setClassData] = useState({
         nom: '',
         de_vie: 'd8',
@@ -18,6 +19,36 @@ export default function ClassCreator() {
         capacites_par_niveau: JSON.stringify({}, null, 4),
         visible: true
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setClassData({
+                nom: initialData.nom,
+                de_vie: initialData.de_vie,
+                maitrises: typeof initialData.maitrises === 'string' ? initialData.maitrises : JSON.stringify(initialData.maitrises, null, 4),
+                equipement_depart: typeof initialData.equipement_depart === 'string' ? initialData.equipement_depart : JSON.stringify(initialData.equipement_depart, null, 4),
+                capacites_par_niveau: typeof initialData.capacites_par_niveau === 'string' ? initialData.capacites_par_niveau : JSON.stringify(initialData.capacites_par_niveau, null, 4),
+                visible: initialData.visible !== false
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            setClassData({
+                nom: '',
+                de_vie: 'd8',
+                maitrises: JSON.stringify({
+                    armures: [],
+                    armes: [],
+                    outils: [],
+                    jets_de_sauvegarde: [],
+                    nombre_competences: 2,
+                    liste_competences: []
+                }, null, 4),
+                equipement_depart: JSON.stringify({ choix: [] }, null, 4),
+                capacites_par_niveau: JSON.stringify({}, null, 4),
+                visible: true
+            });
+        }
+    }, [initialData]);
 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
@@ -49,34 +80,44 @@ export default function ClassCreator() {
                 capacites_par_niveau
             };
 
-            const response = await fetch('http://localhost:3000/api/data/classes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...newClass, visible: classData.visible })
-            });
+            if (initialData) {
+                // Update
+                await dataService.updateClass({ ...newClass, visible: classData.visible });
+                setMessage({ type: 'success', text: 'Classe mise à jour avec succès !' });
+            } else {
+                // Create
+                const response = await fetch('http://localhost:3000/api/data/classes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...newClass, visible: classData.visible })
+                });
 
-            if (response.ok) {
+                if (!response.ok) throw new Error('Erreur création');
                 setMessage({ type: 'success', text: 'Classe créée avec succès !' });
+            }
+
+            if (onSuccess) onSuccess();
+            if (!initialData) {
                 // Reset (keep JSON templates)
                 setClassData({
                     ...classData,
                     nom: ''
                 });
-            } else {
-                setMessage({ type: 'error', text: 'Erreur lors de la création.' });
             }
         } catch (error) {
             console.error(error);
-            setMessage({ type: 'error', text: 'Erreur réseau.' });
+            setMessage({ type: 'error', text: 'Erreur lors de l\'opération.' });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} className={`space-y-6 max-w-4xl mx-auto p-4 rounded-lg border ${initialData ? 'bg-stone-800 border-amber-500/50' : ''}`}>
             <div className="flex justify-between items-start">
-                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">Nouvelle Classe</h2>
+                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">
+                    {initialData ? `Modifier: ${initialData.nom}` : 'Nouvelle Classe'}
+                </h2>
                 <label className="flex items-center cursor-pointer ml-4">
                     <span className="mr-2 text-sm text-stone-400 font-bold">{classData.visible ? 'Visible Joueurs' : 'Caché (MJ)'}</span>
                     <div className="relative">
@@ -155,8 +196,17 @@ export default function ClassCreator() {
                     disabled={loading}
                     className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-lg transform transition active:scale-95 disabled:opacity-50"
                 >
-                    {loading ? 'Création...' : 'Créer la Classe'}
+                    {loading ? (initialData ? 'Modification...' : 'Création...') : (initialData ? 'Enregistrer les modifications' : 'Créer la Classe')}
                 </button>
+                {initialData && (
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="bg-stone-600 hover:bg-stone-500 text-white font-bold py-2 px-6 rounded shadow-lg ml-4 transition"
+                    >
+                        Annuler
+                    </button>
+                )}
             </div>
         </form>
     );

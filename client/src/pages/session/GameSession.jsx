@@ -8,6 +8,9 @@ import DiceOverlay from '../../components/dice/DiceOverlay'; // New Overlay
 import CharacterSheet from '../characters/CharacterSheet'; // Import CharacterSheet
 import campaignService from '../../services/campaignService';
 import characterService from '../../services/characterService';
+import enemyService from '../../services/enemyService';
+import EnemyInstanceCreator from '../../components/enemies/EnemyInstanceCreator';
+import EnemyInstanceMiniSheet from '../../components/enemies/EnemyInstanceMiniSheet';
 
 export default function GameSession() {
     const { id } = useParams(); // Campaign ID
@@ -19,6 +22,12 @@ export default function GameSession() {
 
     const [campaign, setCampaign] = useState(null);
     const [activeCharacter, setActiveCharacter] = useState(null);
+
+    // Enemy State
+    const [enemyInstances, setEnemyInstances] = useState([]);
+    const [enemyTypes, setEnemyTypes] = useState([]);
+    const [showEnemyCreator, setShowEnemyCreator] = useState(false);
+    const [isEnemyPanelOpen, setIsEnemyPanelOpen] = useState(false);
 
     // Slide-out Sheet State
     const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -67,49 +76,66 @@ export default function GameSession() {
             setActiveCharacter(prev => (prev && prev.id === parsedChar.id ? parsedChar : prev));
         };
 
+        // Socket Event Listeners
+        const handleEnemyUpdate = () => {
+            console.log("Enemy update detected, reloading list...");
+            loadEnemyData();
+        };
+
         if (socket) {
             socket.on('character_updated', handleCharUpdate);
+            socket.on('enemy_updated', handleEnemyUpdate);
         }
 
-        // Load campaign details
-        campaignService.getOne(id).then(data => {
-            console.log("Campaign Data:", data);
-            setCampaign(data);
+        const loadEnemyData = async () => {
+            try {
+                const instances = await enemyService.getEnemyInstances(id);
+                setEnemyInstances(instances);
+            } catch (err) {
+                console.error("Failed to load enemies", err);
+            }
+        };
 
-            // Access Control (Check if user is Player or GM)
-            const isGM = data.gmId === user.id;
+        const loadCampaign = async () => {
+            try {
+                const data = await campaignService.getOne(id);
+                setCampaign(data);
 
-            if (!isGM && !data.isSessionOpen) {
-                alert("La session n'est pas ouverte par le MJ.");
+                const isGM = data.gmId === user.id;
+                if (!isGM && !data.isSessionOpen) {
+                    alert("La session n'est pas ouverte par le MJ.");
+                    navigate('/dashboard');
+                }
+
+                if (isGM) {
+                    if (data.characters) {
+                        const parsedChars = data.characters.map(c => ({
+                            ...c,
+                            stats: tryParse(c.stats),
+                            skills: tryParse(c.skills),
+                            inventory: tryParse(c.inventory),
+                            spells: tryParse(c.spells),
+                            features: tryParse(c.features)
+                        }));
+                        setCampaignCharacters(parsedChars);
+                    }
+                    // Load enemy templates
+                    const types = await enemyService.getEnemyTypes();
+                    setEnemyTypes(types);
+                    loadEnemyData();
+                }
+            } catch (err) {
+                console.error("Failed to load campaign", err);
                 navigate('/dashboard');
             }
+        };
 
-            // If GM, use the characters ALREADY in `data` (included by backend)
-            // BUT backend returns raw JSON strings for stats/inventory in campaign include
-            // We need to parse them manually to match characterService format
-            if (isGM && data.characters) {
-                const parsedChars = data.characters.map(c => ({
-                    ...c,
-                    stats: tryParse(c.stats),
-                    skills: tryParse(c.skills),
-                    inventory: tryParse(c.inventory),
-                    spells: tryParse(c.spells),
-                    features: tryParse(c.features)
-                }));
-                setCampaignCharacters(parsedChars);
-            }
+        loadCampaign();
 
-        }).catch(err => {
-            console.error("Failed to load campaign", err);
-            navigate('/dashboard');
-        });
-
-        // Load Character details if Player selected one
         if (characterId) {
+            // ... (keep character loading)
             characterService.getOne(characterId).then(data => {
                 setActiveCharacter(data);
-                console.log("Active Character:", data);
-                // For player, the sheet to show is their own
                 setSelectedSheetId(data.id);
             }).catch(err => {
                 console.error("Failed to load character", err);
@@ -119,6 +145,7 @@ export default function GameSession() {
         return () => {
             if (socket) {
                 socket.off('character_updated', handleCharUpdate);
+                socket.off('enemy_updated', handleEnemyUpdate);
             }
         };
 
@@ -223,6 +250,14 @@ export default function GameSession() {
                     <span className="text-xs text-stone-500 uppercase font-bold border border-stone-600 px-2 py-0.5 rounded">
                         Session en cours
                     </span>
+                    {isGM && (
+                        <button
+                            onClick={() => setIsEnemyPanelOpen(!isEnemyPanelOpen)}
+                            className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-bold transition-colors ${isEnemyPanelOpen ? 'bg-red-600 text-white' : 'bg-stone-700 text-stone-300 hover:bg-stone-600'}`}
+                        >
+                            👹 Ennemis ({enemyInstances.length})
+                        </button>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -248,11 +283,58 @@ export default function GameSession() {
                 </div>
             </header>
 
-            {/* Game Area */}
-            <main className="flex-1 relative bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
-                <div className="absolute inset-0 flex items-center justify-center text-stone-700 font-serif text-2xl opacity-20 select-none pointer-events-none">
+            {/* Game Area & Sidebar */}
+            <main className="flex-1 flex overflow-hidden relative bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+
+                {/* ENEMY PANEL (Right Side MJ) */}
+                {isGM && isEnemyPanelOpen && (
+                    <div className="w-80 bg-stone-900 border-r border-stone-700 flex flex-col z-20 shadow-2xl animate-slideInRight">
+                        <div className="p-4 border-b border-stone-700 flex justify-between items-center bg-stone-950">
+                            <h3 className="font-bold text-amber-500 uppercase text-xs tracking-widest">Ennemis en Jeu</h3>
+                            <button
+                                onClick={() => setShowEnemyCreator(true)}
+                                className="bg-amber-600 hover:bg-amber-500 text-white px-2 py-1 rounded text-[10px] font-bold"
+                            >
+                                + Invoquer
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                            {enemyInstances.length === 0 ? (
+                                <div className="text-center text-stone-600 italic text-sm py-10">
+                                    Aucun ennemi sur le terrain.
+                                </div>
+                            ) : (
+                                enemyInstances.map(instance => (
+                                    <EnemyInstanceMiniSheet
+                                        key={instance.id}
+                                        instance={instance}
+                                        onUpdate={() => {/* Handled by socket ideally, but refresh for safety */ }}
+                                        onDelete={() => {/* Handled by socket */ }}
+                                    />
+                                ))
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                <div className="absolute inset-0 flex items-center justify-center text-stone-700 font-serif text-2xl opacity-20 select-none pointer-events-none z-0">
                     Plateau de Jeu (Phase Suivante)
                 </div>
+
+                {/* MODAL ENEMY CREATOR */}
+                {showEnemyCreator && (
+                    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                        <EnemyInstanceCreator
+                            campaignId={id}
+                            enemyTypes={enemyTypes}
+                            onCancel={() => setShowEnemyCreator(false)}
+                            onSuccess={() => {
+                                setShowEnemyCreator(false);
+                                // reload handled by socket? ideally yes.
+                            }}
+                        />
+                    </div>
+                )}
             </main>
 
             {/* Dice Dock (Fixed Bottom) */}

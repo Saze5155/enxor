@@ -12,7 +12,8 @@
         },
         "vitesse": 9,
         "traits": [],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Elfe",
@@ -27,7 +28,8 @@
             "Ascendance féerique",
             "Transe"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Nain",
@@ -42,7 +44,8 @@
             "Formation aux armes naines",
             "Maîtrise des outils"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Halfelin",
@@ -56,7 +59,8 @@
             "Brave",
             "Agilité halfeline"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Draconéide",
@@ -71,7 +75,8 @@
             "Souffle",
             "Résistance aux dégâts"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Gnome",
@@ -84,7 +89,8 @@
             "Vision dans le noir",
             "Ruse gnome"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Demi-Elfe",
@@ -98,7 +104,8 @@
             "Ascendance féerique",
             "Polyvalence"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Demi-Orc",
@@ -114,7 +121,8 @@
             "Endurance implacable",
             "Attaques sauvages"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "Tieffelin",
@@ -129,7 +137,8 @@
             "Résistance infernale",
             "Héritage infernal"
         ],
-        "visible": true
+        "visible": true,
+        "bras": 2
     },
     {
         "nom": "test",
@@ -146,6 +155,16 @@
         "traits": [
             "trop fort"
         ],
+        "visible": true,
+        "bras": 2
+    },
+    {
+        "nom": "test pieuvre",
+        "description": "fsfsgsr",
+        "bonus_caracteristiques": {},
+        "vitesse": 9,
+        "bras": 8,
+        "traits": [],
         "visible": true
     }
 ]

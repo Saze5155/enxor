@@ -1,0 +1,878 @@
+
+📋 CAHIER DES CHARGES COMPLET - SYSTÈME D'ENNEMIS
+
+🎯 VUE D'ENSEMBLE
+Système de gestion d'ennemis en 2 niveaux :
+
+TYPES d'ennemis (templates réutilisables)
+INSTANCES d'ennemis (créatures utilisées en combat)
+
+Chaque type peut générer un article d'encyclopédie (cachable aux joueurs).
+Les ennemis uniques/boss ont leur propre article.
+
+📦 1. TYPES D'ENNEMIS (Templates)
+1.1 Structure de Données
+typescriptinterface TypeEnnemi {
+  // Identifiant
+  id: string; // "goblin", "paladin_humain_archetype"
+  nom: string; // "Gobelin", "Paladin Humain"
+  
+  // Catégorie
+  categorie: "creature_basique" | "archetype_classe" | "creature_custom";
+  
+  // Infos D&D 5e
+  type_creature: "Aberration" | "Bête" | "Céleste" | "Construction" | 
+                 "Dragon" | "Élémentaire" | "Fée" | "Fiélon" | 
+                 "Géant" | "Humanoïde" | "Monstruosité" | "Mort-vivant" | 
+                 "Plante" | "Vase";
+  sous_type?: string; // "gobelinoïde", "elfe", etc.
+  taille: "TP" | "P" | "M" | "G" | "TG" | "Gig";
+  alignement: string; // "Neutre Mauvais", etc.
+  
+  // Stats de base
+  stats_base: {
+    ca: number;
+    pv_formule: string; // "2d6", "8d10+16"
+    pv_moyenne: number;
+    vitesse: {
+      marche: string; // "9m"
+      vol?: string;
+      nage?: string;
+      fouissement?: string;
+      escalade?: string;
+    };
+    
+    caracteristiques: {
+      force: number;
+      dexterite: number;
+      constitution: number;
+      intelligence: number;
+      sagesse: number;
+      charisme: number;
+    };
+    
+    jets_sauvegarde?: Record<string, string>; // {"dexterite": "+2"}
+    competences?: Record<string, string>; // {"discretion": "+6"}
+    
+    immunites_degats?: string[]; // ["feu", "poison"]
+    resistances_degats?: string[];
+    vulnerabilites_degats?: string[];
+    immunites_conditions?: string[]; // ["charmé", "empoisonné"]
+    
+    sens: {
+      vision_aveugle?: string; // "9m"
+      vision_dans_noir?: string; // "18m"
+      vision_vraie?: string;
+      perception_passive: number;
+    };
+    
+    langues: string[]; // ["Commun", "Gobelin"]
+    facteur_puissance: number; // 0.125, 0.25, 0.5, 1, 2, etc.
+    xp: number;
+  };
+  
+  // Actions
+  actions: Action[];
+  reactions?: Action[];
+  actions_legendaires?: ActionLegendaire[];
+  actions_legendaires_par_tour?: number;
+  
+  // Capacités spéciales
+  capacites_speciales?: CapaciteSpeciale[];
+  
+  // Pour les PNJ avec classe
+  est_pnj_classe?: boolean;
+  classe?: string; // "Paladin"
+  race?: string; // "Humain"
+  niveau_par_defaut?: number;
+  template_stats?: {
+    ca_formule?: string; // "16 + niveau/4"
+    pv_formule?: string; // "d10_par_niveau"
+    bonus_attaque_formule?: string; // "niveau/4 + 5"
+  };
+  equipement_type?: string[];
+  sorts_typiques?: string[];
+  capacites_classe?: string[];
+  
+  // Encyclopédie
+  description_encyclopedie: {
+    courte: string; // Pour la liste
+    longue: string; // Article complet
+    habitat?: string;
+    comportement?: string;
+    tactiques?: string;
+    butin?: string;
+    variantes?: string; // Pour archétypes
+  };
+  
+  image_url?: string;
+  encyclopedie_article_id: string;
+  
+  // Métadonnées
+  source: string; // "Player's Handbook", "Homebrew", "Importé"
+  tags?: string[];
+  created_by: string; // ID du MJ
+  created_at: Date;
+  updated_at: Date;
+}
+
+interface Action {
+  nom: string;
+  type: "attaque_corps_a_corps" | "attaque_distance" | "action_speciale";
+  description?: string;
+  
+  // Pour les attaques
+  bonus_attaque?: string; // "+4"
+  allonge?: string; // "1,50m"
+  portee?: string; // "24/96m"
+  cible?: string; // "une cible"
+  degats?: string; // "1d6+2 tranchants"
+  degats_supplementaires?: string; // "1d8 feu"
+  
+  // Pour actions spéciales
+  jet_sauvegarde?: {
+    type: string; // "dexterite"
+    dd: number;
+    effet_reussite?: string;
+    effet_echec?: string;
+  };
+  zone?: string; // "cône de 9m", "sphère de 6m"
+  recharge?: string; // "5-6", "1/jour"
+  utilisation?: {
+    type: "repos_court" | "repos_long" | "par_jour" | "recharge";
+    nombre?: number;
+    des_recharge?: string; // "5-6"
+  };
+}
+
+interface ActionLegendaire {
+  nom: string;
+  cout: number; // Coût en actions légendaires
+  description: string;
+}
+
+interface CapaciteSpeciale {
+  nom: string;
+  description: string;
+  utilisation?: {
+    type: string;
+    nombre?: number;
+  };
+}
+```
+
+---
+
+### **1.2 Création d'un Type d'Ennemi**
+
+**OPTION A : Création Manuelle Complète**
+```
+Interface avec formulaire multi-onglets :
+- Onglet "Infos de Base"
+- Onglet "Stats"
+- Onglet "Actions"
+- Onglet "Capacités Spéciales"
+- Onglet "Encyclopédie"
+OPTION B : Générateur Assisté (Procédural + IA optionnelle)
+javascript// 1. GÉNÉRATEUR PROCÉDURAL (toujours gratuit)
+function genererStatsProcedural(concept, fp, type_creature, taille) {
+  // Récupère les stats de base selon le FP (table DMG)
+  const statsBase = getStatsBaseParFP(fp);
+  
+  // Ajuste selon le type de créature
+  const ajustements = getAjustementsType(type_creature);
+  // Ex: Mort-vivant → immunité poison
+  // Ex: Dragon → résistance selon élément
+  
+  // Génère des attaques cohérentes
+  const attaques = genererAttaquesParFP(fp, type_creature, taille);
+  
+  // Ajoute capacités thématiques
+  const capacites = genererCapacitesThematiques(concept, type_creature);
+  
+  return {
+    stats_base: { ...statsBase, ...ajustements },
+    actions: attaques,
+    capacites_speciales: capacites
+  };
+}
+
+// 2. ENRICHISSEMENT IA (optionnel, utilise Claude)
+async function enrichirAvecIA(statsGeneres, concept) {
+  // ⚠️ ALERTE UTILISATEUR
+  const confirmation = await showAlert({
+    titre: "Enrichir avec l'IA",
+    message: "Cette fonctionnalité utilise Claude et compte dans votre quota d'abonnement. Continuer ?",
+    type: "warning",
+    boutons: ["Annuler", "Continuer"]
+  });
+  
+  if (confirmation === "Annuler") return statsGeneres;
+  
+  // Appel à Claude API
+  const lore = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1500,
+      messages: [{
+        role: "user",
+        content: `Tu es un maître du jeu D&D 5e. Génère une description détaillée et immersive pour cette créature :
+
+Nom : ${concept}
+Type : ${statsGeneres.type_creature}
+FP : ${statsGeneres.stats_base.facteur_puissance}
+
+Retourne UNIQUEMENT un JSON avec :
+{
+  "description_longue": "Description narrative de 2-3 paragraphes",
+  "habitat": "Où vit cette créature",
+  "comportement": "Comment elle agit",
+  "tactiques": "Sa stratégie de combat",
+  "butin": "Ce qu'on peut récupérer sur elle"
+}`
+      }]
+    })
+  });
+  
+  const data = await response.json();
+  const lore = JSON.parse(data.content[0].text);
+  
+  return {
+    ...statsGeneres,
+    description_encyclopedie: {
+      courte: lore.description_longue.substring(0, 150) + "...",
+      ...lore
+    }
+  };
+}
+```
+
+**Interface Générateur :**
+```
+┌─────────────────────────────────────────────────────┐
+│   GÉNÉRATEUR D'ENNEMI                               │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  Concept ou Nom :                                   │
+│  [Dragon de glace juvénile                       ]  │
+│                                                      │
+│  Facteur de Puissance (FP) :                        │
+│  [━━━━━━○━━━━━━━━━━] FP 5                         │
+│  ⚠️ FP 5 = Défi pour groupe niveau 5 (4 joueurs)   │
+│                                                      │
+│  Type de Créature :                                 │
+│  [Dropdown: Dragon ▼]                               │
+│                                                      │
+│  Taille :                                           │
+│  [Dropdown: Grande ▼]                               │
+│                                                      │
+│  Notes additionnelles (optionnel) :                 │
+│  [Crache de la glace, plutôt défensif           ]  │
+│                                                      │
+│  [⚡ Générer les Stats] ← Gratuit, instantané      │
+│                                                      │
+│  ─── Enrichissement Optionnel ───                   │
+│  ☐ Enrichir avec l'IA (Claude)                     │
+│     🤖 Génère description détaillée                 │
+│     ⚠️ Utilise votre quota Claude                   │
+│                                                      │
+│  [Créer le Type d'Ennemi]                           │
+└─────────────────────────────────────────────────────┘
+```
+
+**OPTION C : Depuis un Template Pré-fait**
+```
+Bibliothèque de créatures officielles D&D 5e :
+- Gobelin (FP 1/4)
+- Orc (FP 1/2)
+- Loup (FP 1/4)
+- Ogre (FP 2)
+- Dragon Rouge Adulte (FP 17)
+- etc. (50+ créatures de base)
+
+Action : [Utiliser tel quel] ou [Dupliquer et Modifier]
+OPTION D : Import JSON
+javascript// Format supporté : Standard D&D 5e JSON
+interface ImportedStatblock {
+  name: string;
+  size: string;
+  type: string;
+  // ... format standard des sites comme D&D Beyond, Homebrewery, etc.
+}
+
+function importerJSON(jsonFile) {
+  // Parser le JSON
+  const data = JSON.parse(jsonFile);
+  
+  // Convertir au format interne
+  const typeEnnemi = convertirVersFormatInterne(data);
+  
+  // Sauvegarder
+  return sauvegarderType(typeEnnemi);
+}
+```
+
+**Interface Import :**
+```
+┌─────────────────────────────────────────┐
+│   IMPORTER UN STATBLOCK                 │
+├─────────────────────────────────────────┤
+│                                          │
+│  Glissez un fichier JSON ou collez :    │
+│  ┌────────────────────────────────────┐ │
+│  │ {                                  │ │
+│  │   "name": "Goblin Boss",          │ │
+│  │   "size": "Small",                │ │
+│  │   "type": "humanoid",             │ │
+│  │   ...                             │ │
+│  │ }                                  │ │
+│  └────────────────────────────────────┘ │
+│                                          │
+│  Formats supportés :                     │
+│  • D&D 5e JSON Standard                 │
+│  • D&D Beyond Export                    │
+│  • Homebrewery Format                   │
+│                                          │
+│  [📤 Importer] [Annuler]                │
+└─────────────────────────────────────────┘
+
+🎭 2. INSTANCES D'ENNEMIS
+2.1 Structure de Données
+typescriptinterface InstanceEnnemi {
+  // Identifiant
+  instance_id: string;
+  type_base_id: string; // Référence au Type
+  
+  // Personnalisation
+  est_unique: boolean; // true = boss/PNJ nommé, false = basic
+  est_boss?: boolean;
+  est_pnj_classe?: boolean;
+  
+  nom_personnalise?: string; // "Grishnak le Sanguinaire"
+  titre?: string; // "Chef de la Tribu des Crânes"
+  
+  // Modifications (uniquement si est_unique = true)
+  modifications_stats?: {
+    ca?: string; // "+2", "=18"
+    pv_formule?: string;
+    pv_moyenne?: number;
+    caracteristiques?: Record<string, string>; // {"force": "+4"}
+    vitesse?: Partial<Vitesse>;
+  };
+  
+  capacites_supplementaires?: CapaciteSpeciale[];
+  equipement_special?: string[];
+  
+  // Pour PNJ classe
+  niveau?: number;
+  alignement?: string;
+  stats_calculees?: any; // Calculées selon niveau
+  sorts_prepares?: string[];
+  equipement?: string[];
+  
+  // Roleplay (pour ennemis uniques)
+  description_personnelle?: string;
+  personnalite?: string;
+  motivations?: string;
+  secrets?: string;
+  relation_joueurs?: string;
+  
+  // Combat
+  pv_actuels: number;
+  pv_max: number;
+  statut: "vivant" | "mort" | "inconscient" | "fuite";
+  conditions: string[]; // ["empoisonné", "étourdi"]
+  
+  // Tracking
+  recurrent: boolean; // Peut revenir dans plusieurs combats
+  apparitions: {
+    session: number;
+    date: Date;
+    resultat: "victoire_joueurs" | "fuite" | "mort" | "en_cours";
+  }[];
+  
+  // Encyclopédie
+  a_article_encyclopedie_propre: boolean;
+  encyclopedie_article_id?: string;
+  
+  // Métadonnées
+  created_at: Date;
+  utilise_dans_combats: string[]; // IDs des combats
+}
+```
+
+---
+
+### **2.2 Création d'une Instance**
+
+**CAS 1 : Ennemi Basique/Anonyme**
+```
+Workflow simple :
+1. Sélectionner un Type ("Gobelin")
+2. Indiquer la quantité (ex: 4)
+3. → Crée 4 instances : "Gobelin #1", "#2", "#3", "#4"
+4. Héritent des stats du Type
+5. PV trackés individuellement en combat
+```
+
+**CAS 2 : Ennemi Unique/Boss**
+```
+Workflow détaillé :
+1. Sélectionner Type de base
+2. Formulaire multi-onglets :
+   - Identité (nom, titre, boss?)
+   - Stats modifiées
+   - Capacités supplémentaires
+   - Équipement spécial
+   - Lore/RP
+3. Option : Créer article encyclopédie dédié
+4. Sauvegarder
+```
+
+**Interface Boss :**
+```
+┌──────────────────────────────────────────────────────┐
+│   CRÉER UN ENNEMI UNIQUE                             │
+├──────────────────────────────────────────────────────┤
+│                                                       │
+│  [Onglet: Identité] [Stats] [Capacités] [Lore]      │
+│                                                       │
+│  ─── IDENTITÉ ───                                    │
+│                                                       │
+│  Basé sur le type :                                  │
+│  [Rechercher... Gobelin ▼] [👁️ Voir stats de base] │
+│                                                       │
+│  Nom personnalisé :                                  │
+│  [Grishnak le Sanguinaire                        ]   │
+│                                                       │
+│  Titre (optionnel) :                                 │
+│  [Chef de la Tribu des Crânes                    ]   │
+│                                                       │
+│  ☑️ C'est un Boss                                    │
+│     → Peut avoir actions légendaires                 │
+│     → Article encyclopédie dédié                     │
+│                                                       │
+│  ☑️ Ennemi récurrent                                 │
+│     → Peut réapparaître dans plusieurs sessions      │
+│                                                       │
+│  [Onglet suivant: Stats →]                           │
+└──────────────────────────────────────────────────────┘
+```
+
+**CAS 3 : PNJ avec Classe**
+```
+Workflow spécialisé :
+1. Choisir Race + Classe + Niveau
+2. Le système calcule automatiquement :
+   - CA selon équipement
+   - PV selon dé de vie de classe
+   - Bonus attaque selon niveau
+   - DD sorts
+3. Sélectionner :
+   - Sous-classe
+   - Sorts préparés
+   - Dons (selon niveau)
+   - Équipement
+4. Ajouter infos RP
+5. Sauvegarder
+```
+
+**Interface PNJ Classe :**
+```
+┌──────────────────────────────────────────────────────┐
+│   CRÉER UN PNJ AVEC CLASSE                           │
+├──────────────────────────────────────────────────────┤
+│                                                       │
+│  [Onglet: Identité] [Build] [Équipement] [RP]       │
+│                                                       │
+│  ─── IDENTITÉ ───                                    │
+│                                                       │
+│  Nom : [Capitaine Aldric                         ]   │
+│  Titre : [Capitaine de la Garde Royale          ]   │
+│                                                       │
+│  Race : [Dropdown: Humain ▼]                         │
+│  Classe : [Dropdown: Paladin ▼]                      │
+│  Niveau : [━━━━━○━━━━━━━━━━] Niveau 8              │
+│                                                       │
+│  Alignement : [Dropdown: Loyal Bon ▼]               │
+│                                                       │
+│  ☐ C'est un boss                                     │
+│  ☑️ Ennemi récurrent                                 │
+│  ☑️ Allié potentiel                                  │
+│                                                       │
+│  ─── STATS CALCULÉES AUTOMATIQUEMENT ───            │
+│                                                       │
+│  CA : 18 (Harnois + Dex)                            │
+│  PV : 72 (8d10+16)                                   │
+│  Bonus Attaque : +7                                  │
+│  DD Sorts : 15                                       │
+│                                                       │
+│  [Onglet suivant: Build →]                           │
+└──────────────────────────────────────────────────────┘
+
+📖 3. SYSTÈME D'ENCYCLOPÉDIE
+3.1 Article pour Type de Base
+markdown# Gobelin
+*Petite créature, Neutre Mauvais*
+
+[Image d'un gobelin générique]
+
+Les gobelins sont de petits humanoïdes malveillants qui vivent en tribus dans les cavernes...
+
+## Habitat
+Cavernes, ruines, forêts sombres
+
+## Comportement  
+Lâches individuellement, dangereux en meute. Fuient si leurs pertes sont lourdes.
+
+## Tactiques de Combat
+Embuscades, attaques surprises, utilisation du terrain
+
+## Butin Typique
+5-15 pièces de cuivre, armes de mauvaise qualité
+
+---
+
+### 👑 Interface MJ uniquement :
+
+[📊 Voir Statblock Complet]
+[➕ Créer Instance de Combat]
+[✏️ Modifier ce Type]
+
+**Statistiques d'utilisation :**
+- Utilisé dans 12 combats
+- 2 ennemis uniques basés sur ce type
+Visibilité :
+
+☑️ Visible par les joueurs (lore uniquement)
+🔒 Caché (invisible aux joueurs)
+👁️ Partiel (description visible, stats cachées)
+
+
+3.2 Article pour Ennemi Unique
+markdown# Grishnak le Sanguinaire
+*Chef de la Tribu des Crânes*
+
+[Image personnalisée]
+
+## 🚨 SPOILER - Visible MJ uniquement
+
+Grishnak est un gobelin exceptionnellement grand et cruel qui a unifié trois tribus gobelinoïdes...
+
+## Apparence
+Couvert de cicatrices de bataille, porte les crânes de ses ennemis en trophées autour de son cou...
+
+## Personnalité
+Cruel, calculateur, respecte uniquement la force brute
+
+## Histoire
+Fils du précédent chef, a tué son père pour prendre le pouvoir...
+
+## Motivations
+Conquérir la région, établir un royaume gobelin
+
+## Secrets
+[Caché aux joueurs] Possède un artefact magique volé...
+
+---
+
+### 👑 Interface MJ :
+
+[📊 Voir Statblock]
+[⚔️ Ajouter au Combat Actuel]
+[✏️ Modifier]
+[👁️ Révéler aux Joueurs]
+
+**Historique d'apparitions :**
+- Session 3 (15 Jan 2026) : Combat dans les mines - Fuite à 10 PV
+- Session 7 (12 Fév 2026) : Embuscade sur la route - En cours
+
+**Liens :**
+- 🔗 Tribu des Crânes
+- 🔗 Mines Abandonnées de Karak
+- 🔗 Artefact : Amulette de l'Ombre
+
+📥 4. SYSTÈME D'IMPORT/EXPORT
+4.1 Import JSON
+Formats supportés :
+
+Format Standard D&D 5e (le plus courant)
+D&D Beyond Export
+Homebrewery Format
+Improved Initiative Format
+
+Parser JSON :
+javascriptfunction importerStatblock(jsonData) {
+  // Détecter le format
+  const format = detecterFormat(jsonData);
+  
+  // Convertir vers format interne
+  let typeEnnemi;
+  switch(format) {
+    case "standard":
+      typeEnnemi = convertirDepuisStandard(jsonData);
+      break;
+    case "dndbeyond":
+      typeEnnemi = convertirDepuisDnDBeyond(jsonData);
+      break;
+    case "homebrewery":
+      typeEnnemi = convertirDepuisHomebrewery(jsonData);
+      break;
+    default:
+      throw new Error("Format non reconnu");
+  }
+  
+  // Valider les données
+  const erreurs = validerTypeEnnemi(typeEnnemi);
+  if (erreurs.length > 0) {
+    return { erreurs, typeEnnemi: null };
+  }
+  
+  // Sauvegarder
+  typeEnnemi.source = "Importé";
+  typeEnnemi.created_by = currentUserId;
+  
+  return { erreurs: [], typeEnnemi };
+}
+```
+
+**Interface Import :**
+```
+┌─────────────────────────────────────────────────────┐
+│   IMPORTER UN STATBLOCK                             │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  Méthode 1 : Glisser-déposer                        │
+│  ┌─────────────────────────────────────────────┐   │
+│  │                                              │   │
+│  │   📄 Glissez votre fichier JSON ici         │   │
+│  │      ou cliquez pour parcourir               │   │
+│  │                                              │   │
+│  └─────────────────────────────────────────────┘   │
+│                                                      │
+│  Méthode 2 : Coller le JSON                         │
+│  ┌─────────────────────────────────────────────┐   │
+│  │ {                                            │   │
+│  │   "name": "Goblin Boss",                    │   │
+│  │   "size": "Small",                          │   │
+│  │   ...                                        │   │
+│  │ }                                            │   │
+│  └─────────────────────────────────────────────┘   │
+│                                                      │
+│  Formats détectés automatiquement :                 │
+│  ✓ D&D 5e JSON Standard                            │
+│  ✓ D&D Beyond Export                               │
+│  ✓ Homebrewery                                     │
+│  ✓ Improved Initiative                             │
+│                                                      │
+│  [📤 Importer et Prévisualiser]                    │
+└─────────────────────────────────────────────────────┘
+```
+
+**Prévisualisation après import :**
+```
+┌─────────────────────────────────────────────────────┐
+│   PRÉVISUALISATION DE L'IMPORT                      │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  ✅ Import réussi !                                 │
+│                                                      │
+│  Créature importée : Goblin Boss                    │
+│  Type : Humanoïde (gobelinoïde)                    │
+│  FP : 1                                             │
+│  Source détectée : D&D Beyond                       │
+│                                                      │
+│  [Afficher le Statblock Complet ▼]                 │
+│                                                      │
+│  Voulez-vous :                                      │
+│  ○ Sauvegarder tel quel                            │
+│  ○ Modifier avant de sauvegarder                   │
+│                                                      │
+│  [💾 Sauvegarder] [✏️ Modifier] [❌ Annuler]      │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+### **4.2 Export**
+
+**Formats d'export :**
+1. **JSON** (pour partage/backup)
+2. **Markdown** (pour impression)
+3. **Image PNG** (statblock stylisé D&D)
+4. **PDF** (fiche imprimable)
+
+**Interface Export :**
+```
+┌─────────────────────────────────────────┐
+│   EXPORTER : Grishnak le Sanguinaire    │
+├─────────────────────────────────────────┤
+│                                          │
+│  Format :                                │
+│  ○ JSON (partage/backup)                │
+│  ○ Markdown (impression simple)         │
+│  ○ Image PNG (statblock stylisé)       │
+│  ○ PDF (fiche complète)                 │
+│                                          │
+│  Options :                               │
+│  ☑️ Inclure l'image                     │
+│  ☑️ Inclure le lore                     │
+│  ☐ Inclure les notes privées MJ        │
+│                                          │
+│  [📥 Télécharger]                       │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## ⚔️ **5. UTILISATION EN COMBAT**
+
+### **5.1 Ajouter des ennemis au combat**
+```
+Interface MJ pendant un combat :
+
+┌─────────────────────────────────────────┐
+│   AJOUTER DES ENNEMIS AU COMBAT         │
+├─────────────────────────────────────────┤
+│                                          │
+│  [🔍 Rechercher un ennemi...]           │
+│                                          │
+│  Types fréquents :                       │
+│  • Gobelin (FP 1/4)        [+1] [+5]   │
+│  • Orc (FP 1/2)            [+1] [+5]   │
+│  • Loup (FP 1/4)           [+1] [+5]   │
+│                                          │
+│  Ennemis uniques :                       │
+│  • Grishnak le Sanguinaire [Ajouter]    │
+│  • Capitaine Aldric        [Ajouter]    │
+│                                          │
+│  ─── Panier ───                          │
+│  3× Gobelin                              │
+│  1× Grishnak le Sanguinaire             │
+│                                          │
+│  Difficulté estimée : Moyenne            │
+│  (4 joueurs niveau 5)                    │
+│                                          │
+│  [⚔️ Lancer le Combat]                  │
+└─────────────────────────────────────────┘
+```
+
+### **5.2 Tracking pendant le combat**
+```
+Tracker d'initiative avec ennemis :
+
+┌─────────────────────────────────────────┐
+│   ORDRE D'INITIATIVE - Round 2          │
+├─────────────────────────────────────────┤
+│                                          │
+│  [23] 🎯 Strix (Joueur)                │
+│       82/82 PV                           │
+│                                          │
+│  [19] 👹 Grishnak le Sanguinaire        │
+│       12/36 PV ████░░░░░░░ (33%)        │
+│       🔥 En feu (1d6/tour)              │
+│       [Actions ▼] [Conditions ▼]        │
+│                                          │
+│  [15] 👤 Elara (Joueur)                │
+│       45/58 PV                           │
+│                                          │
+│  [12] 👹 Gobelin #1                     │
+│       7/7 PV ██████████ (100%)          │
+│                                          │
+│  [12] 👹 Gobelin #2                     │
+│       3/7 PV ████░░░░░░ (43%)          │
+│                                          │
+│  [10] 👹 Gobelin #3                     │
+│       💀 Mort                            │
+│                                          │
+│  [8] 👤 Thorin (Joueur)                │
+│      28/65 PV                            │
+│                                          │
+│  [Tour Suivant →]                        │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## 📊 **6. BASE DE DONNÉES INITIALE**
+
+### **6.1 Créatures Officielles Pré-chargées**
+
+**Liste minimale (50 créatures de base) :**
+```
+FP 0:
+- Rat, Chat, Crabe, etc.
+
+FP 1/8:
+- Bandit, Garde, Cultiste
+
+FP 1/4:
+- Gobelin, Squelette, Loup, Zombi
+
+FP 1/2:
+- Orc, Hobgobelin, Gnoll
+
+FP 1:
+- Goule, Loup Sanguinaire, Espion
+
+FP 2:
+- Ogre, Minotaure, Ettercap
+
+FP 3:
+- Chevalier, Vétéran, Basilic
+
+FP 4:
+- Étrangeur, Élémentaire (Terre/Eau)
+
+FP 5:
+- Élémentaire (Air/Feu), Troll, Gorgone
+
+FP 8-10:
+- Géant, Jeune Dragon
+
+FP 15-20:
+- Dragon Adulte, Balor, Golem
+
+FP 20+:
+- Dragon Ancien, Liche, Tarrasque
+Je vais créer un fichier JSON avec ces créatures de base !
+
+✅ RÉCAPITULATIF FINAL
+Le système permet :
+
+✅ Créer des Types d'ennemis (templates)
+
+Manuellement
+Via générateur procédural (gratuit)
+Enrichi par IA (optionnel, avec alerte)
+Depuis templates pré-faits
+Via import JSON
+
+
+✅ Créer des Instances (ennemis de combat)
+
+Basiques/Anonymes (Gobelin #1, #2...)
+Uniques/Boss (Grishnak...)
+PNJ avec classe (Capitaine Aldric...)
+
+
+✅ Encyclopédie auto-générée
+
+Article par Type (générique)
+Article par Ennemi Unique (personnalisé)
+Visibilité contrôlée (MJ/Joueurs)
+
+
+✅ Import/Export
+
+Import JSON (multiple formats)
+Export JSON/Markdown/Image/PDF
+
+
+✅ Utilisation en combat
+
+Ajout facile au combat
+Tracking PV/Conditions
+Initiative automatique

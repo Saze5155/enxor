@@ -17,7 +17,7 @@ export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate
 
     const renderTabContent = () => {
         switch (activeTab) {
-            case 'combat': return <CombatTab character={character} />;
+            case 'combat': return <CombatTab character={character} onUpdate={onInventoryUpdate} />;
             case 'equipment': return <EquipmentTab character={character} onUpdate={onInventoryUpdate} />;
             case 'spells': return <SpellsTab character={character} onUpdate={onInventoryUpdate} />;
             case 'inventory': return <InventoryTab character={character} onUpdate={onInventoryUpdate} />;
@@ -39,6 +39,7 @@ export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate
                     <CharacterHeader
                         character={character}
                         onLevelUp={onLevelUp}
+                        onUpdate={onInventoryUpdate}
                     />
 
                     {/* Main Layout: Sidebar + Content */}
@@ -46,7 +47,7 @@ export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate
 
                         {/* Sidebar (Mobile: Stacked on top or hidden? Let's stack for now) */}
                         <div className="md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-stone-400">
-                            <CharacterSidebar character={character} />
+                            <CharacterSidebar character={character} onUpdate={onInventoryUpdate} />
                         </div>
 
                         {/* Main Content Area */}

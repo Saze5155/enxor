@@ -20,6 +20,8 @@ model User {
 
   characters Character[]
   campaigns  Campaign[] @relation("CampaignPlayers")
+  createdEnemies EnemyType[] @relation("CreatedEnemies")
+  createdNPCs NPC[] @relation("CreatedNPCs")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,7 +48,8 @@ model Character {
   
   // Statistiques (stockées en JSON String pour SQLite)
   stats     String   @default("{\"strength\":10,\"dexterity\":10,\"constitution\":10,\"intelligence\":10,\"wisdom\":10,\"charisma\":10}")
-  
+  statsOverrides String @default("{}") // Surcharges manuelles (Force, Dex, PV Max, CA...)
+
   // Combat
   hpCurrent Int      @default(10)
   hpMax     Int      @default(10)
@@ -61,6 +64,9 @@ model Character {
   deathSavesSuccess Int @default(0)
   deathSavesFailures Int @default(0)
   
+  customCombatLabel String @default("Notes Combat")
+  customCombatValue String?
+
   // Données Complexes (JSON String)
   // Stockage JSON pour SQLite : simple et flexible
   skills    String   @default("[]") // Liste des compétences et expertises
@@ -101,6 +107,7 @@ model CharacterItem {
   
   // Propriétés spécifiques
   damage      String?   // Dégâts (ex: "1d8", "2d6")
+  damage2     String?   // Dégâts secondaires (ex: "1d10")
   properties  String?   // Propriétés (ex: "Finesse, Légère")
   
   notes       String?
@@ -191,9 +198,134 @@ model Campaign {
   // Relations
   players   User[]   @relation("CampaignPlayers")
   characters Character[]
+  enemyInstances EnemyInstance[]
 
   isSessionOpen Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// --- SYSTÈME D'ENNEMIS ---
+
+model EnemyType {
+  id String @id @default(uuid())
+  
+  // Identité
+  name     String
+  category String // "creature_basique", "archetype_classe", "creature_custom"
+  
+  // Infos D&D 5e
+  creatureType String // "Aberration", "Bête", etc.
+  subType      String?
+  size         String // "TP", "P", "M", "G", "TG", "Gig"
+  alignment    String 
+  
+  // Données Techniques (JSON)
+  stats             String @default("{}") // CA, PV formule, Vitesses, Caracs, Skills, Saves...
+  actions           String @default("[]") // Attaques et actions spéciales
+  reactions         String @default("[]")
+  legendaryActions  String @default("[]")
+  specialAbilities  String @default("[]")
+  
+  // Métadonnées Classe/Race (pour les PNJ avec classe)
+  classInfo         String @default("{}") // classe, race, niveau default...
+  
+  // Encyclopédie & Lore (JSON)
+  encyclopedia      String @default("{}") // description courte/longue, habitat, tactiques...
+  imageUrl          String?
+  
+  // Relations & Meta
+  source    String @default("Homebrew")
+  tags      String @default("[]") // JSON array of strings
+  
+  authorId  String?
+  author    User?   @relation("CreatedEnemies", fields: [authorId], references: [id])
+  
+  instances EnemyInstance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EnemyInstance {
+  id String @id @default(uuid())
+  
+  enemyTypeId String
+  enemyType   EnemyType @relation(fields: [enemyTypeId], references: [id])
+  
+  // Personnalisation
+  name      String // Nom personnalisé ou identique au type
+  isUnique  Boolean @default(false)
+  isBoss    Boolean @default(false)
+  
+  // État Combat
+  hpCurrent Int
+  hpMax     Int
+  tempHp    Int @default(0)
+  status    String @default("vivant") // vivant, mort, inconscient, fuite
+  conditions String @default("[]") // JSON list of conditions
+  
+  // Surcharges (JSON)
+  statsOverrides String @default("{}") // Modifications de stats par rapport au Type
+  
+  // Tracking
+  campaignId String?
+  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  
+  notes     String? // Notes privées MJ
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- SYSTÈME DE PNJ ---
+
+model NPC {
+  id          String   @id @default(uuid())
+  name        String
+  role        String   // Rôle du PNJ (Marchand, Noble, Garde, etc.)
+  race        String   // Race du PNJ
+  class       String?  // Classe si applicable
+  level       Int      @default(1)
+  
+  // Apparence
+  age         String?
+  appearance  String?  // Description physique
+  
+  // Personnalité
+  personality String?  // Traits de personnalité
+  ideals      String?
+  bonds       String?
+  flaws       String?
+  
+  // Background
+  background  String?  // Histoire du PNJ
+  occupation  String?
+  location    String?  // Où se trouve le PNJ
+  
+  // Stats (optionnel, pour PNJ combattants) - JSON
+  stats       String?  // { force, dex, con, int, sag, cha, ac, hp }
+  
+  // Relations
+  faction     String?
+  allies      String?
+  enemies     String?
+  
+  // Détails supplémentaires
+  quirks      String?  // Particularités/Tics
+  voice       String?  // Façon de parler
+  goals       String?  // Objectifs actuels
+  
+  // Méta
+  isImportant Boolean  @default(false) // PNJ important/récurrent
+  isAlive     Boolean  @default(true)
+  notes       String?  // Notes du MJ
+  imageUrl    String?
+  
+  authorId    String
+  author      User     @relation("CreatedNPCs", fields: [authorId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

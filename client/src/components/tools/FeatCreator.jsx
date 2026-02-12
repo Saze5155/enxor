@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dataService from '../../services/dataService';
 
-export default function FeatCreator() {
+export default function FeatCreator({ initialData, onCancel, onSuccess }) {
     const [feat, setFeat] = useState({
         nom: '',
         description: '',
@@ -8,6 +9,26 @@ export default function FeatCreator() {
         effets: [''],
         visible: true
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setFeat({
+                ...initialData,
+                prerequis: initialData.prerequis || '',
+                effets: initialData.effets && initialData.effets.length > 0 ? initialData.effets : [''],
+                visible: initialData.visible !== false
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            setFeat({
+                nom: '',
+                description: '',
+                prerequis: '',
+                effets: [''],
+                visible: true
+            });
+        }
+    }, [initialData]);
 
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
@@ -40,35 +61,45 @@ export default function FeatCreator() {
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/data/feats', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(cleanedFeat)
-            });
+            if (initialData) {
+                // Update
+                await dataService.updateFeat(cleanedFeat);
+                setMessage({ type: 'success', text: 'Don mis à jour avec succès !' });
+            } else {
+                // Create
+                const response = await fetch('http://localhost:3000/api/data/feats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cleanedFeat)
+                });
 
-            if (response.ok) {
+                if (!response.ok) throw new Error('Erreur création');
                 setMessage({ type: 'success', text: 'Don créé avec succès !' });
+            }
+
+            if (onSuccess) onSuccess();
+            if (!initialData) {
                 setFeat({
                     nom: '',
                     description: '',
                     prerequis: '',
                     effets: ['']
                 });
-            } else {
-                setMessage({ type: 'error', text: 'Erreur lors de la création.' });
             }
         } catch (error) {
             console.error(error);
-            setMessage({ type: 'error', text: 'Erreur réseau.' });
+            setMessage({ type: 'error', text: 'Erreur lors de l\'opération.' });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className={`space-y-6 max-w-2xl mx-auto p-4 rounded-lg border ${initialData ? 'bg-stone-800 border-amber-500/50' : ''}`}>
             <div className="flex justify-between items-start">
-                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">Nouveau Don (Capacité)</h2>
+                <h2 className="text-xl font-bold text-stone-200 border-b border-stone-600 pb-2 flex-grow">
+                    {initialData ? `Modifier: ${initialData.nom}` : 'Nouveau Don (Capacité)'}
+                </h2>
                 <label className="flex items-center cursor-pointer ml-4">
                     <span className="mr-2 text-sm text-stone-400 font-bold">{feat.visible ? 'Visible Joueurs' : 'Caché (MJ)'}</span>
                     <div className="relative">
@@ -155,8 +186,17 @@ export default function FeatCreator() {
                     disabled={loading}
                     className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded shadow-lg transform transition active:scale-95 disabled:opacity-50"
                 >
-                    {loading ? 'Création...' : 'Créer le Don'}
+                    {loading ? (initialData ? 'Modification...' : 'Création...') : (initialData ? 'Enregistrer les modifications' : 'Créer le Don')}
                 </button>
+                {initialData && (
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="bg-stone-600 hover:bg-stone-500 text-white font-bold py-2 px-6 rounded shadow-lg ml-4 transition"
+                    >
+                        Annuler
+                    </button>
+                )}
             </div>
         </form>
     );

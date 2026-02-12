@@ -6,28 +6,51 @@ import FeatCreator from '../../components/tools/FeatCreator';
 import SpellCreator from '../../components/tools/SpellCreator';
 import ClassCreator from '../../components/tools/ClassCreator';
 import DataManager from '../../components/tools/DataManager';
+import EnemyTypeCreator from '../../components/enemies/EnemyTypeCreator';
+import NPCCreator from '../../components/npcs/NPCCreator';
+import NPCList from '../../components/npcs/NPCList';
 import dataService from '../../services/dataService';
+import enemyService from '../../services/enemyService';
+import npcService from '../../services/npcService';
 
 export default function MJTools() {
     const [activeTab, setActiveTab] = useState('races');
-    const [data, setData] = useState({ races: [], classes: [], items: [], spells: [], feats: [] });
+    const [data, setData] = useState({ races: [], classes: [], items: [], spells: [], feats: [], enemies: [], npcs: [] });
     const [loading, setLoading] = useState(true);
+    const [editingItem, setEditingItem] = useState(null);
+
+    const handleEdit = (item) => {
+        setEditingItem(item);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingItem(null);
+    };
+
+    const handleSuccess = () => {
+        loadData();
+        setEditingItem(null);
+    };
 
     const loadData = async () => {
         try {
-            const [races, classes, items, spells, feats] = await Promise.all([
+            const [races, classes, items, spells, feats, enemies, npcs] = await Promise.all([
                 dataService.getRaces(),
                 dataService.getClasses(),
                 dataService.getItems(),
                 dataService.getSpells(),
-                dataService.getFeats()
+                dataService.getFeats(),
+                enemyService.getEnemyTypes(),
+                npcService.getNPCs()
             ]);
             setData({
                 races: Array.isArray(races) ? races : [],
                 classes: Array.isArray(classes) ? classes : (classes.classes || []),
                 items: Array.isArray(items) ? items : [],
                 spells: Array.isArray(spells) ? spells : [],
-                feats: Array.isArray(feats) ? feats : []
+                feats: Array.isArray(feats) ? feats : [],
+                enemies: Array.isArray(enemies) ? enemies : [],
+                npcs: Array.isArray(npcs) ? npcs : []
             });
         } catch (error) {
             console.error("Error loading data", error);
@@ -122,6 +145,44 @@ export default function MJTools() {
                         </div>
                     </div>
                 );
+            case 'enemies':
+                return (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Bestiaire (Templates)</h2>
+                            <DataManager
+                                title="Ennemis"
+                                data={data.enemies}
+                                type="enemies"
+                                onUpdate={(item, val) => handleUpdate('enemies', item, val)}
+                                onEdit={handleEdit}
+                            />
+                        </div>
+                        <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
+                            <EnemyTypeCreator
+                                initialData={editingItem}
+                                onCancel={handleCancelEdit}
+                                onSuccess={handleSuccess}
+                            />
+                        </div>
+                    </div>
+                );
+            case 'npcs':
+                return (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Liste des PNJ</h2>
+                            <NPCList onEdit={handleEdit} />
+                        </div>
+                        <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
+                            <NPCCreator
+                                initialData={editingItem}
+                                onCancel={handleCancelEdit}
+                                onSuccess={handleSuccess}
+                            />
+                        </div>
+                    </div>
+                );
             case 'import': return <JsonImporter />;
             default: return <RaceCreator />;
         }
@@ -143,6 +204,8 @@ export default function MJTools() {
                     <TabButton active={activeTab === 'classes'} onClick={() => setActiveTab('classes')} label="Classes" icon="🛡️" />
                     <TabButton active={activeTab === 'spells'} onClick={() => setActiveTab('spells')} label="Sorts" icon="✨" />
                     <TabButton active={activeTab === 'feats'} onClick={() => setActiveTab('feats')} label="Dons" icon="🏅" />
+                    <TabButton active={activeTab === 'enemies'} onClick={() => setActiveTab('enemies')} label="Ennemis" icon="👹" />
+                    <TabButton active={activeTab === 'npcs'} onClick={() => setActiveTab('npcs')} label="PNJ" icon="👤" />
                     <TabButton active={activeTab === 'import'} onClick={() => setActiveTab('import')} label="Import JSON" icon="📥" />
                 </div>
 

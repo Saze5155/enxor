@@ -10,6 +10,118 @@ const parseJSON = (str) => {
 const { readJsonFile } = require('../utils/dataLoader');
 const { calculateSpellSlots } = require('../utils/spellSlots');
 
+// Database of items stats for starting equipment
+const STARTING_GEAR_STATS = {
+    // Weapons
+    'arme de guerre': { damage: '1d8', damage2: '1d10', properties: 'Polyvalente (1d10)', type: 'arme' },
+    'arme courante': { damage: '1d6', damage2: '', properties: '', type: 'arme' },
+    'épée à deux mains': { damage: '2d6', damage2: '', properties: 'Lourde, Deux mains', type: 'arme' },
+    'épée longue': { damage: '1d8', damage2: '1d10', properties: 'Polyvalente (1d10)', type: 'arme' },
+    'épée courte': { damage: '1d6', damage2: '', properties: 'Finesse, Légère', type: 'arme' },
+    'dague': { damage: '1d4', damage2: '', properties: 'Finesse, Légère, Lancer (portée 6/18)', type: 'arme' },
+    'hache à deux mains': { damage: '1d12', damage2: '', properties: 'Lourde, Deux mains', type: 'arme' },
+    'hache d\'armes': { damage: '1d8', damage2: '1d10', properties: 'Polyvalente (1d10)', type: 'arme' },
+    'hachette': { damage: '1d6', damage2: '', properties: 'Légère, Lancer (portée 6/18)', type: 'arme' },
+    'masse d\'armes': { damage: '1d6', damage2: '', properties: '', type: 'arme' },
+    'marteau de guerre': { damage: '1d8', damage2: '1d10', properties: 'Polyvalente (1d10)', type: 'arme' },
+    'bâton': { damage: '1d6', damage2: '1d8', properties: 'Polyvalente (1d8)', type: 'arme' },
+    'lance': { damage: '1d6', damage2: '1d8', properties: 'Lancer (portée 6/18), Polyvalente (1d8)', type: 'arme' },
+    'javelot': { damage: '1d6', damage2: '', properties: 'Lancer (portée 9/36)', type: 'arme' },
+    'arc long': { damage: '1d8', damage2: '', properties: 'Munitions (portée 45/180), Lourde, Deux mains', type: 'arme' },
+    'arc court': { damage: '1d6', damage2: '', properties: 'Munitions (portée 24/96), Deux mains', type: 'arme' },
+    'arbalète légère': { damage: '1d8', damage2: '', properties: 'Munitions (portée 24/96), Chargement, Deux mains', type: 'arme' },
+    'arbalète lourde': { damage: '1d10', damage2: '', properties: 'Munitions (portée 30/120), Chargement, Deux mains', type: 'arme' },
+    'fronde': { damage: '1d4', damage2: '', properties: 'Munitions (portée 9/36)', type: 'arme' },
+    'rapière': { damage: '1d8', damage2: '', properties: 'Finesse', type: 'arme' },
+    'cimeterre': { damage: '1d6', damage2: '', properties: 'Finesse, Légère', type: 'arme' },
+    'gourdin': { damage: '1d4', damage2: '', properties: 'Légère', type: 'arme' },
+    'massue': { damage: '1d8', damage2: '', properties: 'Deux mains', type: 'arme' },
+    
+    // Armor & Shields
+    'armure de cuir': { type: 'armure', properties: 'Légère, CA 11 + Dex' },
+    'armure de cuir clouté': { type: 'armure', properties: 'Légère, CA 12 + Dex' },
+    'chemise de mailles': { type: 'armure', properties: 'Intermédiaire, CA 13 + Dex (max 2)' },
+    'cotte de mailles': { type: 'armure', properties: 'Lourde, CA 16, Discrétion désavantagée, For 13' },
+    'harnois': { type: 'armure', properties: 'Lourde, CA 18, Discrétion désavantagée, For 15' },
+    'bouclier': { type: 'bouclier', properties: '+2 CA' },
+    'robe': { type: 'armure', properties: 'Pas d\'armure' },
+
+    // New Items
+    'casque': { type: 'tête', properties: '' },
+    'bottes': { type: 'pieds', properties: '' },
+    'cape': { type: 'dos', properties: '' },
+    'anneau': { type: 'accessoire', properties: '' },
+    'collier': { type: 'cou', properties: '' },
+    'amulette': { type: 'cou', properties: '' },
+    'potion': { type: 'consommable', properties: 'Usage unique' },
+    'trousse': { type: 'outil', properties: '' },
+    'kit': { type: 'outil', properties: '' },
+    'sac': { type: 'conteneur', properties: '' }
+};
+
+const resolveItemStats = (itemStr) => {
+    let name = itemStr;
+    let quantity = 1;
+    
+    // Parse quantity e.g. "Flèches (20)" or "2 Dagues"
+    // Case 1: "Flèches (20)"
+    const parenQtyMatch = itemStr.match(/(.*)\s\((\d+)\)$/);
+    if (parenQtyMatch) {
+        name = parenQtyMatch[1];
+        quantity = parseInt(parenQtyMatch[2]);
+    } else {
+        // Case 2: "2 Dagues"
+        const prefixQtyMatch = itemStr.match(/^(\d+)\s+(.*)/);
+        if (prefixQtyMatch) {
+            quantity = parseInt(prefixQtyMatch[1]);
+            name = prefixQtyMatch[2];
+        }
+    }
+
+    // Clean name prefixes
+    const cleanName = name.replace(/^(un |une |des |le |la |les )/i, '').trim();
+    const lowerName = cleanName.toLowerCase();
+
+    let type = "objet";
+    let damage = "";
+    let damage2 = "";
+    let properties = "";
+
+    // 1. Exact match lookup (longest keys first)
+    const sortedKeys = Object.keys(STARTING_GEAR_STATS).sort((a, b) => b.length - a.length);
+    const matchedKey = sortedKeys.find(key => lowerName.includes(key));
+    
+    if (matchedKey) {
+        const stats = STARTING_GEAR_STATS[matchedKey];
+        type = stats.type;
+        damage = stats.damage || "";
+        damage2 = stats.damage2 || "";
+        properties = stats.properties || "";
+    } else {
+        // Fallback logic by keywords
+        const weaponKeywords = ['épée', 'hache', 'dague', 'arc', 'arbalète', 'marteau', 'glaive', 'bâton', 'masse', 'lance', 'javeline', 'trident', 'fouet', 'fléau', 'morningstar', 'pique', 'rapière', 'cimeterre', 'fronde', 'dard', 'arme'];
+        const armorKeywords = ['armure', 'cotte', 'bouclier', 'robe', 'gilet', 'cuir', 'plaques', 'chemise', 'maille', 'casque', 'bottes', 'cape', 'tunique'];
+        const consumableKeywords = ['potion', 'parchemin', 'kit', 'trousse', 'ration', 'repas'];
+
+        if (weaponKeywords.some(t => lowerName.includes(t))) type = "arme";
+        else if (armorKeywords.some(t => lowerName.includes(t))) type = "armure";
+        else if (consumableKeywords.some(t => lowerName.includes(t))) type = "consommable";
+    }
+
+    // Manual overrides for generic items often found in start gear
+    if (lowerName.includes('sac à dos')) type = "conteneur";
+
+    return { 
+        name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1), // Capitalize
+        quantity, 
+        type, 
+        damage,
+        damage2, 
+        properties, 
+        isEquipped: false 
+    };
+};
+
 // CREATE
 exports.createCharacter = async (req, res) => {
     try {
@@ -109,6 +221,7 @@ exports.createCharacter = async (req, res) => {
         const itemsToCreate = [];
         const startingEquipment = req.body.startingEquipment || {};
 
+        // Class Equipment
         if (classRef && classRef.equipement_depart && classRef.equipement_depart.choix) {
             classRef.equipement_depart.choix.forEach((choice, index) => {
                 let optionIndex = -1;
@@ -117,119 +230,22 @@ exports.createCharacter = async (req, res) => {
                 if (choice.options.length === 1) {
                     optionIndex = 0;
                 } else if (startingEquipment[index] !== undefined) {
-                    // Start counting from 0
                     optionIndex = parseInt(startingEquipment[index]);
                 }
 
                 if (optionIndex >= 0 && choice.options[optionIndex]) {
-                    const selectedItems = choice.options[optionIndex]; // Array of strings e.g. ["Cotte de mailles"]
-                    
+                    const selectedItems = choice.options[optionIndex];
                     selectedItems.forEach(itemStr => {
-                        let name = itemStr;
-                        let quantity = 1;
-                        
-                        // Parse quantity e.g. "Flèches (20)"
-                        const qtyMatch = itemStr.match(/(.*)\s\((\d+)\)$/);
-                        if (qtyMatch) {
-                            name = qtyMatch[1];
-                            quantity = parseInt(qtyMatch[2]);
-                        }
-
-                        // Determine type (improved)
-                        let type = "objet";
-                        let damage = "";
-                        let properties = "";
-                        const lowerName = name.toLowerCase();
-                        
-                        // Item Stats Database (Partial)
-                        const ITEM_STATS = {
-                            // Generic weapons (for placeholder names)
-                            'arme de guerre': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
-                            'arme courante': { damage: '1d6', properties: '', type: 'arme' },
-                            
-                            // Specific weapons
-                            'épée à deux mains': { damage: '2d6', properties: 'Lourde, Deux mains', type: 'arme' },
-                            'épée longue': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
-                            'épée courte': { damage: '1d6', properties: 'Finesse, Légère', type: 'arme' },
-                            'dague': { damage: '1d4', properties: 'Finesse, Légère, Lancer (portée 6/18)', type: 'arme' },
-                            'hache à deux mains': { damage: '1d12', properties: 'Lourde, Deux mains', type: 'arme' },
-                            'hache d\'armes': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
-                            'hachette': { damage: '1d6', properties: 'Légère, Lancer (portée 6/18)', type: 'arme' },
-                            'masse d\'armes': { damage: '1d6', properties: '', type: 'arme' },
-                            'marteau de guerre': { damage: '1d8', properties: 'Polyvalente (1d10)', type: 'arme' },
-                            'bâton': { damage: '1d6', properties: 'Polyvalente (1d8)', type: 'arme' },
-                            'lance': { damage: '1d6', properties: 'Lancer (portée 6/18), Polyvalente (1d8)', type: 'arme' },
-                            'javelot': { damage: '1d6', properties: 'Lancer (portée 9/36)', type: 'arme' },
-                            'arc long': { damage: '1d8', properties: 'Munitions (portée 45/180), Lourde, Deux mains', type: 'arme' },
-                            'arc court': { damage: '1d6', properties: 'Munitions (portée 24/96), Deux mains', type: 'arme' },
-                            'arbalète légère': { damage: '1d8', properties: 'Munitions (portée 24/96), Chargement, Deux mains', type: 'arme' },
-                            'arbalète lourde': { damage: '1d10', properties: 'Munitions (portée 30/120), Chargement, Deux mains', type: 'arme' },
-                            'fronde': { damage: '1d4', properties: 'Munitions (portée 9/36)', type: 'arme' },
-                            'rapière': { damage: '1d8', properties: 'Finesse', type: 'arme' },
-                            'cimeterre': { damage: '1d6', properties: 'Finesse, Légère', type: 'arme' },
-                            'gourdin': { damage: '1d4', properties: 'Légère', type: 'arme' },
-                            'massue': { damage: '1d8', properties: 'Deux mains', type: 'arme' },
-                            
-                            // Armor
-                            'armure de cuir': { type: 'armure', properties: 'Légère, CA 11 + Dex' },
-                            'armure de cuir clouté': { type: 'armure', properties: 'Légère, CA 12 + Dex' },
-                            'chemise de mailles': { type: 'armure', properties: 'Intermédiaire, CA 13 + Dex (max 2)' },
-                            'cotte de mailles': { type: 'armure', properties: 'Lourde, CA 16, Discrétion désavantagée, For 13' },
-                            'harnois': { type: 'armure', properties: 'Lourde, CA 18, Discrétion désavantagée, For 15' },
-                            'bouclier': { type: 'bouclier', properties: '+2 CA' },
-                            'robe': { type: 'armure', properties: 'Pas d\'armure' }
-                        };
-
-                        // 1. Exact match lookup
-                        // 2. Partial match lookup if not found
-                        let stats = null;
-                        
-                        // Try to find a key that is included in the item name
-                        // e.g. item name "Une épée longue" -> matches key "épée longue"
-                        // longer keys first to match specific checks
-                        const sortedKeys = Object.keys(ITEM_STATS).sort((a, b) => b.length - a.length);
-                        const matchedKey = sortedKeys.find(key => lowerName.includes(key));
-                        
-                        if (matchedKey) {
-                            stats = ITEM_STATS[matchedKey];
-                            type = stats.type;
-                            damage = stats.damage || "";
-                            properties = stats.properties || "";
-                        } else {
-                            // Fallback logic
-                            // Weapon keywords
-                            const weaponKeywords = [
-                                'épée', 'hache', 'dague', 'arc', 'arbalète', 'marteau', 'glaive', 'bâton', 'masse', 
-                                'lance', 'javeline', 'trident', 'fouet', 'fléau', 'morningstar', 'pique', 'rapière', 'cimeterre',
-                                'fronde', 'dard', 'arme' 
-                            ];
-
-                            // Armor keywords
-                            const armorKeywords = ['armure', 'cotte', 'bouclier', 'robe', 'gilet', 'cuir', 'plaques', 'chemise', 'maille'];
-
-                            if (weaponKeywords.some(t => lowerName.includes(t))) type = "arme";
-                            else if (armorKeywords.some(t => lowerName.includes(t))) type = "armure";
-                            else if (['potion', 'parchemin', 'kit', 'trousse'].some(t => lowerName.includes(t))) type = "consommable";
-                        }
-
-                        itemsToCreate.push({
-                            name: name,
-                            quantity: quantity,
-                            type: type,
-                            damage: damage,
-                            properties: properties,
-                            isEquipped: false 
-                        });
+                        itemsToCreate.push(resolveItemStats(itemStr));
                     });
                 }
             });
         }
         
-        // Add Background Equipment if defined (Simulated for now as specific items might not be in JSON yet)
+        // Background Equipment
         if (bgRef && bgRef.equipement) {
              bgRef.equipement.forEach(itemStr => {
-                 // Reuse parsing logic if needed or just push
-                  itemsToCreate.push({ name: itemStr, quantity: 1, type: 'objet' });
+                 itemsToCreate.push(resolveItemStats(itemStr));
              });
         }
 
@@ -330,12 +346,16 @@ exports.getCharacter = async (req, res) => {
         }
 
         // Parse JSON fields
+        const racesData = readJsonFile('races.json');
+        const raceRef = racesData.find(r => r.nom === character.race);
+
         const parsedChar = {
             ...character,
             stats: parseJSON(character.stats),
             skills: parseJSON(character.skills),
             proficiencies: parseJSON(character.proficiencies),
-            wallet: parseJSON(character.wallet)
+            wallet: parseJSON(character.wallet),
+            raceData: raceRef || null
         };
 
         res.json(parsedChar);

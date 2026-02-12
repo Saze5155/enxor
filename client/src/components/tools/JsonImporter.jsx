@@ -24,7 +24,12 @@ export default function JsonImporter() {
 
             // Support both single object and array of objects
             const itemsToImport = Array.isArray(parsedData) ? parsedData : [parsedData];
-            const endpoint = `http://localhost:3000/api/data/${targetType}`;
+            let endpoint = `http://localhost:3000/api/data/${targetType}`;
+
+            // Special case for enemies import with parser
+            if (targetType === 'enemies') {
+                endpoint = `http://localhost:3000/api/enemies/types/import`;
+            }
 
             let successCount = 0;
             let errors = 0;
@@ -72,7 +77,7 @@ export default function JsonImporter() {
             <div>
                 <label className="block text-sm font-bold text-stone-400 mb-2">Type de données</label>
                 <div className="flex gap-4">
-                    {['races', 'items', 'classes', 'spells', 'feats'].map(type => (
+                    {['races', 'items', 'classes', 'spells', 'feats', 'enemies'].map(type => (
                         <label key={type} className="flex items-center gap-2 cursor-pointer bg-stone-700/50 p-2 rounded hover:bg-stone-700">
                             <input
                                 type="radio"
