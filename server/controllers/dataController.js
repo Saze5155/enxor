@@ -185,15 +185,19 @@ exports.createSpell = async (req, res) => {
 exports.updateRace = async (req, res) => {
     try {
         const races = readJsonFile('races.json');
-        const { name } = req.params; 
-        const updatedRace = { ...req.body, visible: req.body.visible !== false };
-        
+        const { name } = req.params;
         const index = races.findIndex(r => r.nom === name);
         
         if (index !== -1) {
+            // Merge existing data with updates
+            const updatedRace = { ...races[index], ...req.body, visible: req.body.visible !== false };
             races[index] = updatedRace;
             if (writeJsonFile('races.json', races)) {
-                await updateWikiArticle(name, updatedRace.nom, formatRace(updatedRace), 'Races & Peuples', updatedRace.visible);
+                try {
+                    await updateWikiArticle(name, updatedRace.nom, formatRace(updatedRace), 'Races & Peuples', updatedRace.visible);
+                } catch (wikiError) {
+                    console.error('Wiki update failed:', wikiError);
+                }
                 res.json({ message: 'Race updated', race: updatedRace });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
@@ -209,16 +213,24 @@ exports.updateRace = async (req, res) => {
 
 exports.updateClass = async (req, res) => {
     try {
-        const classes = readJsonFile('classes.json');
+        const data = readJsonFile('classes.json');
+        const classes = data.classes || data; // Handle both wrapper and direct array
         const { name } = req.params;
-        const updatedClass = { ...req.body, visible: req.body.visible !== false };
-
         const index = classes.findIndex(c => c.nom === name);
-        
+
         if (index !== -1) {
+            // Merge existing data with updates
+            const updatedClass = { ...classes[index], ...req.body, visible: req.body.visible !== false };
             classes[index] = updatedClass;
-            if (writeJsonFile('classes.json', classes)) {
-                await updateWikiArticle(name, updatedClass.nom, formatClass(updatedClass), 'Classes', updatedClass.visible);
+            
+            // Write back the whole structure
+            const dataToWrite = data.classes ? { ...data, classes } : classes;
+            if (writeJsonFile('classes.json', dataToWrite)) {
+                try {
+                    await updateWikiArticle(name, updatedClass.nom, formatClass(updatedClass), 'Classes', updatedClass.visible);
+                } catch (wikiError) {
+                    console.error('Wiki update failed:', wikiError);
+                }
                 res.json({ message: 'Class updated', class: updatedClass });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
@@ -236,14 +248,18 @@ exports.updateItem = async (req, res) => {
     try {
         const items = readJsonFile('items.json');
         const { name } = req.params;
-        const updatedItem = { ...req.body, visible: req.body.visible !== false };
-
         const index = items.findIndex(i => i.name === name);
-        
+
         if (index !== -1) {
+            // Merge existing data with updates
+            const updatedItem = { ...items[index], ...req.body, visible: req.body.visible !== false };
             items[index] = updatedItem;
             if (writeJsonFile('items.json', items)) {
-                await updateWikiArticle(name, updatedItem.name, formatItem(updatedItem), 'Objets & Artefacts', updatedItem.visible);
+                try {
+                    await updateWikiArticle(name, updatedItem.name, formatItem(updatedItem), 'Objets & Artefacts', updatedItem.visible);
+                } catch (wikiError) {
+                    console.error('Wiki update failed:', wikiError);
+                }
                 res.json({ message: 'Item updated', item: updatedItem });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
@@ -261,14 +277,18 @@ exports.updateSpell = async (req, res) => {
     try {
         const spells = readJsonFile('spells.json');
         const { name } = req.params;
-        const updatedSpell = { ...req.body, visible: req.body.visible !== false };
-
         const index = spells.findIndex(s => s.nom === name);
-        
+
         if (index !== -1) {
+            // Merge existing data with updates
+            const updatedSpell = { ...spells[index], ...req.body, visible: req.body.visible !== false };
             spells[index] = updatedSpell;
             if (writeJsonFile('spells.json', spells)) {
-                await updateWikiArticle(name, updatedSpell.nom, formatSpell(updatedSpell), 'Magie & Systèmes', updatedSpell.visible);
+                try {
+                    await updateWikiArticle(name, updatedSpell.nom, formatSpell(updatedSpell), 'Magie & Systèmes', updatedSpell.visible);
+                } catch (wikiError) {
+                    console.error('Wiki update failed:', wikiError);
+                }
                 res.json({ message: 'Spell updated', spell: updatedSpell });
             } else {
                  res.status(500).json({ message: 'Failed to write' });
@@ -286,14 +306,18 @@ exports.updateFeat = async (req, res) => {
     try {
         const feats = readJsonFile('feats.json');
         const { name } = req.params;
-        const updatedFeat = { ...req.body, visible: req.body.visible !== false };
-
         const index = feats.findIndex(f => f.nom === name);
-        
+
         if (index !== -1) {
+            // Merge existing data with updates
+            const updatedFeat = { ...feats[index], ...req.body, visible: req.body.visible !== false };
             feats[index] = updatedFeat;
             if (writeJsonFile('feats.json', feats)) {
-                await updateWikiArticle(name, updatedFeat.nom, formatFeat(updatedFeat), 'Magie & Systèmes', updatedFeat.visible);
+                try {
+                    await updateWikiArticle(name, updatedFeat.nom, formatFeat(updatedFeat), 'Magie & Systèmes', updatedFeat.visible);
+                } catch (wikiError) {
+                    console.error('Wiki update failed:', wikiError);
+                }
                 res.json({ message: 'Feat updated', feat: updatedFeat });
             } else {
                  res.status(500).json({ message: 'Failed to write' });

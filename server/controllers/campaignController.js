@@ -98,7 +98,28 @@ exports.getCampaign = async (req, res) => {
                 players: {
                     select: { id: true, username: true, role: true }
                 },
-                characters: true
+                characters: true,
+                combats: {
+                    where: {
+                        statut: { not: 'terminé' }
+                    },
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 1,
+                    include: {
+                        participants: {
+                            include: {
+                                character: true,
+                                enemyInstance: {
+                                    include: {
+                                        enemyType: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         });
         

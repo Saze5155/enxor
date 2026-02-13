@@ -38,6 +38,7 @@ const campaignRoutes = require('./routes/campaignRoute');
 const dataRoutes = require('./routes/dataRoute');
 const enemyRoutes = require('./routes/enemyRoute');
 const npcRoutes = require('./routes/npcRoute');
+const combatRoutes = require('./routes/combatRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/wiki', wikiRoutes);
@@ -47,6 +48,7 @@ app.use('/api/campaigns', campaignRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/enemies', enemyRoutes);
 app.use('/api/npcs', npcRoutes);
+app.use('/api/combats', combatRoutes);
 
 // Routes Placeholder
 app.get('/', (req, res) => {

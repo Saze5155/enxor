@@ -10,7 +10,7 @@ import SpellsTab from './SpellsTab';
 import FeaturesTab from './FeaturesTab';
 import BioTab from './BioTab';
 
-export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate }) {
+export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate, isGM }) {
     const [activeTab, setActiveTab] = useState('combat');
 
     if (!character) return <div className="p-8 text-center text-stone-500">Chargement du grimoire...</div>;
@@ -38,6 +38,7 @@ export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate
                     {/* Header */}
                     <CharacterHeader
                         character={character}
+                        isGM={isGM}
                         onLevelUp={onLevelUp}
                         onUpdate={onInventoryUpdate}
                     />
@@ -47,7 +48,7 @@ export default function CharacterSheet({ character, onLevelUp, onInventoryUpdate
 
                         {/* Sidebar (Mobile: Stacked on top or hidden? Let's stack for now) */}
                         <div className="md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-stone-400">
-                            <CharacterSidebar character={character} onUpdate={onInventoryUpdate} />
+                            <CharacterSidebar character={character} isGM={isGM} onUpdate={onInventoryUpdate} />
                         </div>
 
                         {/* Main Content Area */}

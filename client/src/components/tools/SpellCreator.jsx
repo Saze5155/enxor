@@ -77,7 +77,7 @@ export default function SpellCreator({ initialData, onCancel, onSuccess }) {
         try {
             if (initialData) {
                 // Update
-                await dataService.updateSpell(cleanedSpell);
+                await dataService.updateSpell(initialData.nom, cleanedSpell);
                 setMessage({ type: 'success', text: 'Sort mis à jour avec succès !' });
             } else {
                 // Create

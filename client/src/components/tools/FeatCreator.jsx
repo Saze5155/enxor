@@ -63,7 +63,7 @@ export default function FeatCreator({ initialData, onCancel, onSuccess }) {
         try {
             if (initialData) {
                 // Update
-                await dataService.updateFeat(cleanedFeat);
+                await dataService.updateFeat(initialData.nom, cleanedFeat);
                 setMessage({ type: 'success', text: 'Don mis à jour avec succès !' });
             } else {
                 // Create

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { CombatProvider } from './context/CombatContext';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/CampaignDashboard';
 import MainLayout from './components/MainLayout';
@@ -67,7 +68,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppRoutes />
+        <CombatProvider>
+          <AppRoutes />
+        </CombatProvider>
       </AuthProvider>
     </Router>
   );

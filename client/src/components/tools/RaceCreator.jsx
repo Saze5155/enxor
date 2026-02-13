@@ -81,7 +81,7 @@ export default function RaceCreator({ initialData, onCancel, onSuccess }) {
         try {
             if (initialData) {
                 // Update
-                await dataService.updateRace(cleanedRace);
+                await dataService.updateRace(initialData.nom, cleanedRace);
                 setMessage({ type: 'success', text: 'Race mise à jour avec succès !' });
             } else {
                 // Create

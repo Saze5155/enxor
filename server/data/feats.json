@@ -1,13 +1,14 @@
 [
     {
-        "nom": "Alerte",
+        "nom": "Alert",
         "description": "Toujours à l'affût du danger, vous gagnez les avantages suivants :",
         "prerequis": null,
         "effets": [
             "Vous ne pouvez pas être surpris tant que vous êtes conscient",
             "Vous gagnez un bonus de +5 à l'initiative",
             "Les créatures que vous ne voyez pas n'ont pas l'avantage aux jets d'attaque contre vous"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Athlète",

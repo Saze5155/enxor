@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import npcService from '../../services/npcService';
 import NPCCard from './NPCCard';
 
-export default function NPCList({ onEdit }) {
+export default function NPCList({ onEdit, refreshTrigger }) {
     const [npcs, setNPCs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({ role: '', race: '', important: false });
 
     useEffect(() => {
         loadNPCs();
-    }, []);
+    }, [refreshTrigger]);
 
     const loadNPCs = async () => {
         setLoading(true);

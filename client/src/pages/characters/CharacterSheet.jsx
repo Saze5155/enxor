@@ -15,32 +15,45 @@ import LevelUpModal from '../../components/character/LevelUpModal';
 // ... imports
 
 export default function CharacterSheetPage({ character: propCharacter = null, isGM = false }) {
-    const { id } = useParams();
+    const { id: paramId } = useParams();
+    const effectiveId = propCharacter?.id || paramId;
+
     const [char, setChar] = useState(propCharacter);
     const [loading, setLoading] = useState(!propCharacter);
+    const [error, setError] = useState(null);
     const [showLevelUpModal, setShowLevelUpModal] = useState(false);
 
     useEffect(() => {
-        // If propCharacter has features (full details), use it.
-        // Otherwise, if we have an ID, fetch the full character.
         if (propCharacter && propCharacter.features) {
             setChar(propCharacter);
             setLoading(false);
             return;
         }
 
-        if (id) {
-            loadCharacter();
+        if (effectiveId) {
+            // Load using the correct ID (character ID, not campaign ID from URL)
+            loadCharacter(effectiveId);
         }
-    }, [id, propCharacter]);
+    }, [effectiveId, propCharacter]);
 
-    const loadCharacter = async () => {
+    const loadCharacter = async (targetId) => {
         try {
-            const data = await characterService.getOne(id);
-            setChar(data);
+            console.log(`[DEBUG UI] Loading character ${targetId}...`);
+            const data = await characterService.getOne(targetId);
+            console.log("[DEBUG UI] Character data received:", data);
+
+            if (data) {
+                setChar(data);
+                if (data.inventory) {
+                    console.log(`[DEBUG UI] Inventory size: ${data.inventory.length}`);
+                } else {
+                    console.warn("[DEBUG UI] Inventory is MISSING in response!");
+                }
+            }
             setLoading(false);
         } catch (error) {
-            console.error(error);
+            console.error("[DEBUG UI] Error loading character:", error);
+            setError("Erreur lors du chargement des données complètes du personnage.");
             setLoading(false);
         }
     };
@@ -90,8 +103,21 @@ export default function CharacterSheetPage({ character: propCharacter = null, is
 
     return (
         <>
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 mx-4 z-50">
+                    <strong className="font-bold">Erreur :</strong>
+                    <span className="block sm:inline"> {error}</span>
+                </div>
+            )}
+
+            {isGM && char && (!char.inventory || char.inventory.length === 0) && (
+                <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded relative text-xs mx-4 text-center z-50">
+                    <span className="font-bold">Note MJ :</span> L'inventaire est vide ou n'a pas pu être chargé completement.
+                </div>
+            )}
             <CharacterSheetComponent
                 character={char}
+                isGM={isGM}
                 onLevelUp={handleLevelUpClick}
                 onInventoryUpdate={handleInventoryUpdate}
             />

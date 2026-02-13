@@ -82,7 +82,7 @@ export default function ClassCreator({ initialData, onCancel, onSuccess }) {
 
             if (initialData) {
                 // Update
-                await dataService.updateClass({ ...newClass, visible: classData.visible });
+                await dataService.updateClass(initialData.nom, { ...newClass, visible: classData.visible });
                 setMessage({ type: 'success', text: 'Classe mise à jour avec succès !' });
             } else {
                 // Create

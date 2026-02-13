@@ -13,7 +13,8 @@ const DICE_TYPES = [
     { type: 'd100', max: 100, label: 'D100' },
 ];
 
-export default function DiceDock({ campaignId, players = [], activeCharacter = null, senderName = null }) {
+export default function DiceDock({ campaignId, players = [], activeCharacter = null, senderName = null, targetParticipantId = null }) {
+
     const { socket } = useSocket();
     const { user } = useAuth();
     const [rolling, setRolling] = useState(false);
@@ -106,6 +107,9 @@ export default function DiceDock({ campaignId, players = [], activeCharacter = n
             socket.emit('dice_roll', {
                 campaignId,
                 rollerName: rollerName,
+                userId: user.id,
+                characterId: activeCharacter?.id,
+                targetParticipantId: targetParticipantId,
                 diceType,
                 result: total,
                 rawResult, // Original die roll

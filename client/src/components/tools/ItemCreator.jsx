@@ -43,7 +43,7 @@ export default function ItemCreator({ initialData, onCancel, onSuccess }) {
             let response;
             if (initialData) {
                 // Update
-                await dataService.updateItem(item);
+                await dataService.updateItem(initialData.name, item);
                 setMessage({ type: 'success', text: 'Objet mis à jour avec succès !' });
             } else {
                 // Create

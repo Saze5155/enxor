@@ -78,6 +78,7 @@ model Character {
   inventory CharacterItem[]
   spells    CharacterSpell[]
   features  CharacterFeature[]
+  combatParticipants CombatParticipant[]
   
   // Meta
   avatarUrl String?
@@ -199,6 +200,7 @@ model Campaign {
   players   User[]   @relation("CampaignPlayers")
   characters Character[]
   enemyInstances EnemyInstance[]
+  combats   Combat[]
 
   isSessionOpen Boolean @default(false)
 
@@ -272,6 +274,7 @@ model EnemyInstance {
   // Tracking
   campaignId String?
   campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  combatParticipants CombatParticipant[]
   
   notes     String? // Notes privées MJ
   
@@ -329,3 +332,76 @@ model NPC {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// --- SYSTÈME DE COMBAT ---
+
+model Combat {
+  id                String   @id @default(uuid())
+  campaignId        String
+  campaign          Campaign @relation(fields: [campaignId], references: [id])
+  
+  dateDebut         DateTime @default(now())
+  dateFin           DateTime?
+  statut            String   // "en_cours" | "terminé" | "pause"
+  roundActuel       Int      @default(1)
+  tourActuelIndex   Int      @default(0)
+  
+  participants      CombatParticipant[]
+  ordreInitiative   String   @default("[]") // JSON array of participant IDs in order
+  parametres        String   @default("{}") // JSON: { surprise: boolean, difficulte: string }
+  historiqueActions String   @default("[]") // JSON array of actions
+  statistiques      String   @default("{}") // JSON: combat stats
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([campaignId])
+  @@index([statut])
+}
+
+model CombatParticipant {
+  id                  String  @id @default(uuid())
+  combatId            String
+  combat              Combat  @relation(fields: [combatId], references: [id], onDelete: Cascade)
+  
+  type                String  // "joueur" | "ennemi" | "pnj"
+  nom                 String
+  
+  // Références
+  characterId         String?
+  character           Character? @relation(fields: [characterId], references: [id])
+  enemyInstanceId     String?
+  enemyInstance       EnemyInstance? @relation(fields: [enemyInstanceId], references: [id])
+  
+  // Stats de combat
+  initiative          Int?     // Nullable until rolled
+  pvActuels           Int
+  pvMax               Int
+  pvTemporaires       Int      @default(0)
+  ca                  Int
+  
+  // État
+  conditions          String   @default("[]") // JSON array
+  effetsTemporaires   String   @default("[]") // JSON array
+  position            String?  // JSON: { x: number, y: number }
+  
+  estConscient        Boolean  @default(true)
+  mort                Boolean  @default(false)
+  concentreSur        String?  // Sort ID ou nom
+  
+  // Statistiques individuelles
+  degatsInfliges      Int      @default(0)
+  degatsRecus         Int      @default(0)
+  soinsProdigues      Int      @default(0)
+  sortsLances         Int      @default(0)
+  jetsCritiques       Int      @default(0)
+  jetsEchecsCritiques Int      @default(0)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([combatId])
+  @@index([characterId])
+  @@index([enemyInstanceId])
+}
+

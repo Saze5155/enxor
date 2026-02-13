@@ -4,11 +4,14 @@ import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import ChatSystem from '../../components/chat/ChatSystem';
 import DiceDock from '../../components/dice/DiceDock';
-import DiceOverlay from '../../components/dice/DiceOverlay'; // New Overlay
-import CharacterSheet from '../characters/CharacterSheet'; // Import CharacterSheet
+import DiceOverlay from '../../components/dice/DiceOverlay';
+import CharacterSheet from '../characters/CharacterSheet';
+import CombatLauncher from '../../components/combat/CombatLauncher';
+import InitiativeTracker from '../../components/combat/InitiativeTracker';
 import campaignService from '../../services/campaignService';
 import characterService from '../../services/characterService';
 import enemyService from '../../services/enemyService';
+import PlayerActionPanel from '../../components/combat/PlayerActionPanel';
 import EnemyInstanceCreator from '../../components/enemies/EnemyInstanceCreator';
 import EnemyInstanceMiniSheet from '../../components/enemies/EnemyInstanceMiniSheet';
 
@@ -28,6 +31,11 @@ export default function GameSession() {
     const [enemyTypes, setEnemyTypes] = useState([]);
     const [showEnemyCreator, setShowEnemyCreator] = useState(false);
     const [isEnemyPanelOpen, setIsEnemyPanelOpen] = useState(false);
+
+    // Combat State
+    const [showCombatLauncher, setShowCombatLauncher] = useState(false);
+    const [activeCombat, setActiveCombat] = useState(null);
+    const [initiativeTarget, setInitiativeTarget] = useState(null);
 
     // Slide-out Sheet State
     const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -82,9 +90,30 @@ export default function GameSession() {
             loadEnemyData();
         };
 
+        const handleCombatStarted = (data) => {
+            console.log('🎲 Combat started via socket:', data);
+            if (data.campaignId === id) {
+                setActiveCombat(data.combat);
+                setShowCombatLauncher(false); // Close launcher if open
+            }
+        };
+
         if (socket) {
             socket.on('character_updated', handleCharUpdate);
             socket.on('enemy_updated', handleEnemyUpdate);
+            socket.on('combat_started', handleCombatStarted);
+            socket.on('combat_ended', (data) => {
+                console.log('🏁 Combat ended via socket', data);
+                setActiveCombat(null);
+                setInitiativeTarget(null);
+            });
+
+            socket.on('initiative_updated', (data) => {
+                console.log('🎲 Initiative updated via socket, waiting for animation...', data);
+                setTimeout(() => {
+                    loadCampaign();
+                }, 3000);
+            });
         }
 
         const loadEnemyData = async () => {
@@ -100,6 +129,12 @@ export default function GameSession() {
             try {
                 const data = await campaignService.getOne(id);
                 setCampaign(data);
+
+                // Set active combat if exists
+                if (data.combats && data.combats.length > 0) {
+                    console.log("Restoring active combat:", data.combats[0]);
+                    setActiveCombat(data.combats[0]);
+                }
 
                 const isGM = data.gmId === user.id;
                 if (!isGM && !data.isSessionOpen) {
@@ -146,6 +181,8 @@ export default function GameSession() {
             if (socket) {
                 socket.off('character_updated', handleCharUpdate);
                 socket.off('enemy_updated', handleEnemyUpdate);
+                socket.off('combat_started', handleCombatStarted);
+                socket.off('initiative_updated');
             }
         };
 
@@ -243,6 +280,23 @@ export default function GameSession() {
             {/* Overlay for Dice Animations */}
             <DiceOverlay socket={socket} isGM={isGM} />
 
+            {/* Initiative Tracker */}
+            {activeCombat && (
+                <InitiativeTracker
+                    combat={activeCombat}
+                    isGM={isGM}
+                    currentUserId={user.id}
+                    socket={socket}
+                    campaignId={id}
+                    initiativeTarget={initiativeTarget}
+                    setInitiativeTarget={setInitiativeTarget}
+                    onInitiativeComplete={() => {
+                        console.log('All initiatives rolled!');
+                        // TODO: Auto-sort and start first turn
+                    }}
+                />
+            )}
+
             {/* Top Bar */}
             <header className="bg-stone-800 border-b border-stone-700 p-2 flex justify-between items-center shadow-md z-10">
                 <div className="flex items-center gap-4">
@@ -251,12 +305,30 @@ export default function GameSession() {
                         Session en cours
                     </span>
                     {isGM && (
-                        <button
-                            onClick={() => setIsEnemyPanelOpen(!isEnemyPanelOpen)}
-                            className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-bold transition-colors ${isEnemyPanelOpen ? 'bg-red-600 text-white' : 'bg-stone-700 text-stone-300 hover:bg-stone-600'}`}
-                        >
-                            👹 Ennemis ({enemyInstances.length})
-                        </button>
+                        <>
+                            <button
+                                onClick={() => setShowCombatLauncher(true)}
+                                disabled={activeCombat !== null}
+                                className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-bold transition-colors ${activeCombat
+                                    ? 'bg-stone-600 text-stone-400 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white shadow-lg'
+                                    }`}
+                            >
+                                ⚔️ Lancer Combat
+                            </button>
+                            <button
+                                onClick={() => setIsEnemyPanelOpen(!isEnemyPanelOpen)}
+                                className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-bold transition-colors ${isEnemyPanelOpen ? 'bg-red-600 text-white' : 'bg-stone-700 text-stone-300 hover:bg-stone-600'}`}
+                            >
+                                👹 Ennemis ({enemyInstances.length})
+                            </button>
+                            <button
+                                onClick={() => setIsSheetOpen(true)}
+                                className="bg-stone-700 hover:bg-stone-600 text-stone-300 px-3 py-1 rounded text-xs font-bold transition"
+                            >
+                                📜 Personnages
+                            </button>
+                        </>
                     )}
                 </div>
 
@@ -335,7 +407,31 @@ export default function GameSession() {
                         />
                     </div>
                 )}
+
+                {/* MODAL COMBAT LAUNCHER */}
+                {showCombatLauncher && (
+                    <CombatLauncher
+                        campaignId={id}
+                        availableCharacters={campaignCharacters}
+                        availableEnemies={enemyInstances}
+                        onCombatStarted={(combat) => {
+                            console.log('Combat started:', combat);
+                            setActiveCombat(combat);
+                            setShowCombatLauncher(false);
+                            // TODO: Navigate to combat tracker or display combat UI
+                        }}
+                        onCancel={() => setShowCombatLauncher(false)}
+                    />
+                )}
             </main>
+
+            {/* Player Action Panel */}
+            <PlayerActionPanel
+                combat={activeCombat}
+                activeCharacter={activeCharacter}
+                isGM={isGM}
+                selectedTargetId={initiativeTarget}
+            />
 
             {/* Dice Dock (Fixed Bottom) */}
             <DiceDock
@@ -343,6 +439,7 @@ export default function GameSession() {
                 players={campaign.players}
                 activeCharacter={activeCharacter} // Pass character for bonuses (future)
                 senderName={identityName} // Send dice as Character Name
+                targetParticipantId={initiativeTarget} // Pass the targeted participant ID (for GM rolling enemies)
             />
 
             {/* Chat System */}

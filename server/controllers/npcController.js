@@ -165,11 +165,12 @@ exports.createNPC = async (req, res) => {
 exports.updateNPC = async (req, res) => {
     try {
         const { id } = req.params;
-        const data = req.body;
+        // Sanitiser les données : exclure les champs système et les relations
+        const { id: _id, authorId, author, createdAt, updatedAt, ...updateData } = req.body;
 
         const updatedNPC = await prisma.NPC.update({
             where: { id },
-            data
+            data: updateData
         });
 
         res.json(updatedNPC);

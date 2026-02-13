@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { calculateAC, calculateInitiative, getEffectiveStats } from '../../utils/characterCalculations';
 import characterService from '../../services/characterService';
 
@@ -21,6 +21,8 @@ export default function CharacterHeader({ character, onLevelUp, isGM, onUpdate }
 
     // Handle updates
     const handleValueUpdate = async (field, isOverride, currentVal, label) => {
+        // Only allow edit if GM or Owner (Owner check implicitly done by not being readonly? Actually currently Header allows edits by anyone who sees it)
+        // Let's keep it open for now or check isGM inside if we wanted restrict.
         const newVal = window.prompt(`Modifier ${label} (actuel: ${currentVal})\n${isOverride ? 'Laissez vide pour réinitialiser.' : 'Entrez une nouvelle valeur.'}`, currentVal);
         if (newVal === null) return;
 
@@ -53,6 +55,8 @@ export default function CharacterHeader({ character, onLevelUp, isGM, onUpdate }
         }
     };
 
+
+
     return (
         <div className="p-4 border-b-2 border-stone-400 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10 bg-[#fdf6e3]/90">
             <div className="flex items-center gap-4 w-full md:w-auto">
@@ -81,15 +85,14 @@ export default function CharacterHeader({ character, onLevelUp, isGM, onUpdate }
                         <span className="text-amber-700">•</span>
                         <span>{character.class} {character.subClass ? `(${character.subClass})` : ''}</span>
 
-                        {(isGM || true) && ( // Allow level up for everyone for now or check perms
-                            <button
-                                onClick={onLevelUp}
-                                className="ml-2 bg-amber-600 hover:bg-amber-700 text-white text-[10px] px-2 py-0.5 rounded-full shadow border border-amber-800 transition-colors uppercase tracking-wide"
-                                title="Monter de niveau"
-                            >
-                                Level Up
-                            </button>
-                        )}
+
+                        <button
+                            onClick={onLevelUp}
+                            className="ml-2 bg-amber-600 hover:bg-amber-700 text-white text-[10px] px-2 py-0.5 rounded-full shadow border border-amber-800 transition-colors uppercase tracking-wide"
+                            title="Monter de niveau"
+                        >
+                            Level Up
+                        </button>
                     </div>
                 </div>
             </div>

@@ -12,7 +12,9 @@ export default function CharactersList() {
 
     const loadData = async () => {
         try {
+            setLoading(true);
             const data = await characterService.getAll();
+            console.log("[DEBUG UI] Loaded characters list:", data);
             setCharacters(data);
         } catch (error) {
             console.error("Failed to load characters", error);
@@ -20,6 +22,22 @@ export default function CharactersList() {
             setLoading(false);
         }
     };
+
+
+
+    // I will replace loadData and Return block separately? No, let's do one block for loadData and one for rendering.
+
+    // Let's retry with targeted replacements.
+
+    // 1. loadData with log
+    // 2. Header with Refresh button
+    // 3. Card with ID display
+
+    // I'll do one big replace for simplicity if context allows.
+    // The previous view_file gave me everything.
+
+    // ...
+
 
     const handleDelete = async (id) => {
         try {
@@ -34,7 +52,16 @@ export default function CharactersList() {
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold text-indigo-400">Personnages</h1>
+                <div className="flex items-center">
+                    <h1 className="text-3xl font-bold text-indigo-400">Personnages</h1>
+                    <button
+                        onClick={loadData}
+                        className="ml-4 bg-stone-700 hover:bg-stone-600 text-stone-300 px-3 py-1 rounded text-sm transition"
+                        title="Forcer le rechargement de la liste"
+                    >
+                        🔄
+                    </button>
+                </div>
                 <NavLink
                     to="/characters/new"
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow transition"
@@ -64,6 +91,7 @@ export default function CharactersList() {
                                 </div>
                                 <div className="p-4">
                                     <h3 className="text-xl font-bold text-stone-100 group-hover:text-indigo-400 font-serif">{char.name}</h3>
+                                    <p className="text-xs text-stone-600 font-mono mt-1 opacity-50 select-text cursor-text" title="ID du personnage">{char.id}</p>
                                     <p className="text-sm text-stone-400 font-serif">{char.race} {char.class} (Lv.{char.level})</p>
                                     <div className="mt-4 flex justify-between text-xs text-stone-500">
                                         <span>HP: {char.hpCurrent}/{char.hpMax}</span>

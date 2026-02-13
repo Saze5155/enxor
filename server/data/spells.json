@@ -6,13 +6,14 @@
         "temps_incantation": "1 action",
         "portee": "36 mètres",
         "composantes": "V, S",
-        "duree": "Instantanée",
+        "duree": "Instantané",
         "description": "Vous créez trois projectiles magiques lumineux. Chaque projectile touche une créature de votre choix que vous pouvez voir à portée. Un projectile inflige 1d4 + 1 dégâts de force à sa cible. Les projectiles frappent tous en même temps.",
         "aux_niveaux_superieurs": "Quand vous lancez ce sort en utilisant un emplacement de sort de niveau 2 ou supérieur, le sort crée un projectile de plus pour chaque niveau d'emplacement au-delà du niveau 1.",
         "classes": [
             "Ensorceleur",
             "Magicien"
-        ]
+        ],
+        "visible": true
     },
     {
         "nom": "Bouclier",

@@ -38,8 +38,8 @@ export default function EquipmentTab({ character, onUpdate }) {
 
     // Also consider extra arm slots for filtering logic if needed (usually handled by type 'arme')
 
-    const equippedItems = character.inventory.filter(i => i.isEquipped && i.equippedSlot);
-    const unequippedItems = character.inventory.filter(i =>
+    const equippedItems = (character.inventory || []).filter(i => i.isEquipped && i.equippedSlot);
+    const unequippedItems = (character.inventory || []).filter(i =>
         !i.isEquipped &&
         (EQUIPPABLE_TYPES.includes((i.type?.toLowerCase()) || '') ||
             // Fallback for names

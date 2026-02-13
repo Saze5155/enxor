@@ -18,6 +18,7 @@ export default function MJTools() {
     const [data, setData] = useState({ races: [], classes: [], items: [], spells: [], feats: [], enemies: [], npcs: [] });
     const [loading, setLoading] = useState(true);
     const [editingItem, setEditingItem] = useState(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const handleEdit = (item) => {
         setEditingItem(item);
@@ -30,6 +31,7 @@ export default function MJTools() {
     const handleSuccess = () => {
         loadData();
         setEditingItem(null);
+        setRefreshTrigger(prev => prev + 1);
     };
 
     const loadData = async () => {
@@ -66,11 +68,11 @@ export default function MJTools() {
     const handleUpdate = async (type, item, visible) => {
         try {
             let updatedItem;
-            if (type === 'races') updatedItem = await dataService.updateRace({ ...item, visible });
-            if (type === 'classes') updatedItem = await dataService.updateClass({ ...item, visible });
-            if (type === 'items') updatedItem = await dataService.updateItem({ ...item, visible });
-            if (type === 'spells') updatedItem = await dataService.updateSpell({ ...item, visible });
-            if (type === 'feats') updatedItem = await dataService.updateFeat({ ...item, visible });
+            if (type === 'races') updatedItem = await dataService.updateRace(item.nom, { ...item, visible });
+            if (type === 'classes') updatedItem = await dataService.updateClass(item.nom, { ...item, visible });
+            if (type === 'items') updatedItem = await dataService.updateItem(item.name, { ...item, visible });
+            if (type === 'spells') updatedItem = await dataService.updateSpell(item.nom, { ...item, visible });
+            if (type === 'feats') updatedItem = await dataService.updateFeat(item.nom, { ...item, visible });
 
             // Optimistic update
             setData(prev => ({
@@ -90,10 +92,10 @@ export default function MJTools() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Liste des Races Existantes</h2>
-                            <DataManager title="Races" data={data.races} type="races" onUpdate={(item, val) => handleUpdate('races', item, val)} />
+                            <DataManager title="Races" data={data.races} type="races" onUpdate={(item, val) => handleUpdate('races', item, val)} onEdit={handleEdit} />
                         </div>
                         <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
-                            <RaceCreator />
+                            <RaceCreator initialData={editingItem} onCancel={handleCancelEdit} onSuccess={handleSuccess} />
                         </div>
                     </div>
                 );
@@ -102,10 +104,10 @@ export default function MJTools() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Liste des Objets Existants</h2>
-                            <DataManager title="Objets" data={data.items} type="items" onUpdate={(item, val) => handleUpdate('items', item, val)} />
+                            <DataManager title="Objets" data={data.items} type="items" onUpdate={(item, val) => handleUpdate('items', item, val)} onEdit={handleEdit} />
                         </div>
                         <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
-                            <ItemCreator />
+                            <ItemCreator initialData={editingItem} onCancel={handleCancelEdit} onSuccess={handleSuccess} />
                         </div>
                     </div>
                 );
@@ -114,10 +116,10 @@ export default function MJTools() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Liste des Classes Existantes</h2>
-                            <DataManager title="Classes" data={data.classes} type="classes" onUpdate={(item, val) => handleUpdate('classes', item, val)} />
+                            <DataManager title="Classes" data={data.classes} type="classes" onUpdate={(item, val) => handleUpdate('classes', item, val)} onEdit={handleEdit} />
                         </div>
                         <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
-                            <ClassCreator />
+                            <ClassCreator initialData={editingItem} onCancel={handleCancelEdit} onSuccess={handleSuccess} />
                         </div>
                     </div>
                 );
@@ -126,10 +128,10 @@ export default function MJTools() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Liste des Sorts Existants</h2>
-                            <DataManager title="Sorts" data={data.spells} type="spells" onUpdate={(item, val) => handleUpdate('spells', item, val)} />
+                            <DataManager title="Sorts" data={data.spells} type="spells" onUpdate={(item, val) => handleUpdate('spells', item, val)} onEdit={handleEdit} />
                         </div>
                         <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
-                            <SpellCreator />
+                            <SpellCreator initialData={editingItem} onCancel={handleCancelEdit} onSuccess={handleSuccess} />
                         </div>
                     </div>
                 );
@@ -138,10 +140,10 @@ export default function MJTools() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Liste des Dons Existants</h2>
-                            <DataManager title="Dons" data={data.feats} type="feats" onUpdate={(item, val) => handleUpdate('feats', item, val)} />
+                            <DataManager title="Dons" data={data.feats} type="feats" onUpdate={(item, val) => handleUpdate('feats', item, val)} onEdit={handleEdit} />
                         </div>
                         <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
-                            <FeatCreator />
+                            <FeatCreator initialData={editingItem} onCancel={handleCancelEdit} onSuccess={handleSuccess} />
                         </div>
                     </div>
                 );
@@ -172,7 +174,7 @@ export default function MJTools() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <h2 className="text-xl font-bold text-amber-500 mb-4 border-b border-stone-700 pb-2">Liste des PNJ</h2>
-                            <NPCList onEdit={handleEdit} />
+                            <NPCList onEdit={handleEdit} refreshTrigger={refreshTrigger} />
                         </div>
                         <div className="border-t lg:border-t-0 lg:border-l border-stone-700 pt-8 lg:pt-0 lg:pl-8">
                             <NPCCreator

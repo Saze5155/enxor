@@ -298,14 +298,16 @@ exports.getCharacters = async (req, res) => {
         const { userId, role } = req.user;
         const where = role === 'MJ' ? {} : { userId };
 
+        console.log(`[DEBUG] getCharacters for User: ${userId}, Role: ${role}`);
+
         const characters = await prisma.character.findMany({
             where,
             include: { 
                 user: { select: { username: true } },
-                // Include summary counts or basic info if needed, but for list maybe keep it light
-                // inventory: false 
             }
         });
+
+        console.log(`[DEBUG] Found ${characters.length} characters in DB.`);
 
         // Parse JSON fields for frontend
         const parsedChars = characters.map(c => ({
@@ -328,6 +330,9 @@ exports.getCharacter = async (req, res) => {
         const { id } = req.params;
         const { userId, role } = req.user;
 
+        console.log(`[DEBUG] getCharacter ID: "${id}"`);
+        console.log(`[DEBUG] User: ${userId}, Role: ${role}`);
+
         const character = await prisma.character.findUnique({
              where: { id },
              include: { 
@@ -338,7 +343,10 @@ exports.getCharacter = async (req, res) => {
              }
         });
 
-        if (!character) return res.status(404).json({ message: "Personnage introuvable" });
+        if (!character) {
+             console.log(`[DEBUG] Character NOT FOUND for ID: "${id}"`);
+             return res.status(404).json({ message: "Personnage introuvable" });
+        }
 
         // Access check
         if (role !== 'MJ' && character.userId !== userId) {
@@ -390,9 +398,13 @@ exports.updateCharacter = async (req, res) => {
 
         // Remove protected fields
         delete updateData.id;
-        delete updateData.userId;
         delete updateData.createdAt;
         delete updateData.updatedAt;
+
+        // Only allow userId change if MJ
+        if (role !== 'MJ') {
+            delete updateData.userId;
+        }
         
         // Handle Relations (Inventory, Spells, Features)
         // If these arrays are passed, we assume a full replace logic (for simplicity of "Save" button)
@@ -433,8 +445,9 @@ exports.updateCharacter = async (req, res) => {
             // Let's implement a "replace relations" logic if provided.
             
             if (req.body.inventory && Array.isArray(req.body.inventory)) {
-                 await prisma.characterItem.deleteMany({ where: { characterId: id } });
+                 // SAFETY: Only update if not empty, to prevent accidental wipes from partial frontend loads
                  if (req.body.inventory.length > 0) {
+                     await prisma.characterItem.deleteMany({ where: { characterId: id } });
                      await prisma.characterItem.createMany({
                          data: req.body.inventory.map(item => ({
                              characterId: id,
@@ -448,6 +461,8 @@ exports.updateCharacter = async (req, res) => {
                              notes: item.notes
                          }))
                      });
+                 } else {
+                     console.log(`[INFO] Received empty inventory for char ${id}. Ignoring update to prevent data loss.`);
                  }
             }
             
